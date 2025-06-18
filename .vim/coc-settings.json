@@ -1,0 +1,12 @@
+  {
+     "languageserver": {
+        "ada": {
+           "command": "ada_language_server",
+           "settings":{
+              "ada": {
+                 "projectFile": "kazakh_book.gpr"
+              }
+           }
+        }
+     }
+  }
