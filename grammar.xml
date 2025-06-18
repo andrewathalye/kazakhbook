@@ -1,0 +1,233 @@
+<grammar>
+   <!-- Abstract features that can be possessed
+        by various structures
+   -->
+   <features>
+      <feature id="number">
+         <value id="singular" />
+         <value id="plural" />
+      </feature>
+
+      <feature id="person">
+         <value id="1" />
+         <value id="2i" />
+         <value id="2f" />
+         <value id="3" />
+      </feature>
+
+      <feature id="possessor" alias="person" />
+
+      <feature id="case">
+         <value id="nominative" />
+         <value id="ablative" />
+         <value id="locative" />
+         <value id="dative" />
+         <value id="genitive" />
+         <value id="accusative" />
+         <value id="instrumental" />
+         <!-- Not traditionally considered a case
+              but does not combine with any others -->
+         <value id="possessive" />
+      </feature>
+
+      <feature id="hardness">
+         <value id="hard"/>
+         <value id="soft"/>
+      </feature>
+
+      <feature id="class">
+         <value id="voiceless"/>
+         <value id="voiced"/>
+         <value id="sonorant"/>
+         <value id="vowel"/>
+      </feature>
+
+      <feature id="foreign"/>
+   </features>
+
+   <!-- Mapping between abstract phonemes and
+        concrete realisations based upon context.
+   -->
+   <phonemes>
+      <phoneme provide="class/vowel" id="aschwa">
+         <phone provide="hardness/hard" id="a">
+            <context word="contains:foreign">ɑ / a / æ</context>
+            <context>ɑ</context>
+         </phone>
+         <phone provide="hardness/soft" id="schwa">æ / ɘɪ</phone>
+      </phoneme>
+
+      <phoneme provide="class/voiced" id="b">
+         <context>b / β</context>
+         <context word="contains:foreign">b</context>
+      </phoneme>
+
+      <phoneme provide="class/voiced foreign" id="v">v</phoneme>
+
+      <phoneme provide="class/voiced" id="ggh">
+         <phone provide="hardness/soft" id="g">g</phone>
+         <phone provide="hardness/hard" id="gh">ʁ</phone>
+      </phoneme>
+
+      <phoneme provide="class/voiced" id="d">d</phoneme>
+
+      <phoneme provide="class/vowel hardness/soft" id="je">
+         <context after="[]||syllable/open">jɘ / je</context>
+         <context dialect="urban">jɘ / je</context>
+         <context word="contains:foreign">je</context>
+         <context>ɘ / e</context>
+      </phoneme>
+
+      <phoneme provide="class/voiced" id="zh">
+         <context dialect="south">dʒ</context>
+         <context dialect="west">j</context>
+         <context word="contains:foreign">ʐ / ʑ</context>
+         <context>ʒ</context>
+      </phoneme>
+
+      <phoneme provide="class/voiced" id="z">z</phoneme>
+
+      <phoneme provide="class/sonorant" id="j">j</phoneme>
+
+      <phoneme provide="class/voiceless" id="kq">
+         <phone provide="hardness/soft" id="k">k</phone>
+         <phone provide="hardness/hard" id="q">
+            <context before="class/vowel">q^h</context>
+            <context before="[]">ʔ</context>
+            <context>q</context>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="class/sonorant" id="l">
+         <context after="!class/vowel" syllable="contains:hardness/hard">ɯl</context>
+         <context after="!class/vowel" syllable="contains:hardness/soft">ɪl</context>
+         <context>l</context>
+      </phoneme>
+
+      <phoneme provide="class/sonorant" id="m">m</phoneme>
+
+      <phoneme provide="class/sonorant" id="n">n</phoneme>
+
+      <phoneme provide="class/sonorant" id="ng">ɴ / ŋ</phoneme>
+
+      <phoneme provide="class/vowel" id="ooe">
+         <phone provide="hardness/hard" id="o">
+            <context after="[] syllable/open">^wo</context>
+            <context>o</context>
+         </phone>
+         <phone provide="hardness/soft" id="oe">
+            <context after="[] syllable/open">^wø</context>
+            <context>ø</context>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="class/voiceless" id="p">p</phoneme>
+
+      <phoneme provide="class/sonorant" id="r">
+         <context after="!class/vowel" syllable="contains:hardness/hard">ɯɾ</context>
+         <context after="!class/vowel" syllable="contains:hardness/soft">ɪɾ</context>
+         <context word="contains:foreign">ɾ / r</context>
+         <context>ɾ</context>
+      </phoneme>
+
+      <phoneme provide="class/voiceless" id="s">s</phoneme>
+
+      <phoneme provide="class/voiceless" id="t">t</phoneme>
+
+      <!-- TODO is this really a separate phoneme? -->
+      <phoneme provide="class/sonorant" id="u">
+         <context after="[]" before="class/vowel">w</context>
+         <context syllable="contains:hardness/hard">ʊw</context>
+         <context syllable="contains:hardness/soft">ʏw</context>
+         <context word="contains:foreign">u / ʊ</context>
+      </phoneme>
+
+      <phoneme provide="class/vowel" id="ooue">
+         <phone provide="class/hard" id="oo">ʊ</phone>
+         <phone provide="class/soft" id="ue">ʏ</phone>
+      </phoneme>
+
+      <phoneme provide="class/voiceless foreign" id="f">f / p</phoneme>
+
+      <phoneme provide="class/voiceless" id="khh">
+         <phone id="kh">
+            <context word="contains:foreign">x</context>
+            <context>χ</context>
+         </phone>
+         <phone provide="foreign" id="h">h / x / q</phone>
+      </phoneme>
+
+      <phoneme provide="class/voiceless foreign" id="ts">t͡s</phoneme>
+      <phoneme provide="class/voiceless foreign" id="ch">t͡ʃ</phoneme>
+      <phoneme provide="class/voiceless" id="sh">
+         <context word="contains:foreign">ʃ / ɕ</context>
+         <context>ʃ</context>
+      </phoneme>
+
+      <phoneme provide="class/voiceless" id="shsh">
+         <context word="contains:foreign">ʃː / ɕː</context>
+         <context>ʃː</context>
+      </phoneme>
+
+      <!-- TODO think about how to implement this -->
+      <phoneme provide="class/vowel" id="yi">
+         <phone provide="hardness/hard" id="y">
+            <context word="matches:бүгін">ɯ~ʏ</context>
+            <context word="contains:foreign" syllable="contains:hardness/hard">ɯ / ɨ</context>
+            <context syllable="contains:hardness/hard">ɯ</context>
+         </phone>
+
+         <!-- Default for this phoneme is the soft variant -->
+         <phone provide="hardness/soft" id="i">ɪ</phone>
+      </phoneme>
+
+      <!-- ё, и, ъ, ь, э, ю, я are not phonemes -->
+   </phonemes>
+
+   <!-- Contextual mapping between letters and abstract
+        phonemes.
+   -->
+   <letters>
+      <letter variants="А а" require="hardness/hard">aschwa</letter>
+      <letter variants="Ә ә" require="hardness/soft">aschwa</letter>
+      <letter variants="Б б">b</letter>
+      <letter variants="Г г" require="hardness/soft">ggh</letter>
+      <letter variants="Ғ ғ" require="hardness/hard">ggh</letter>
+      <letter variants="Д д">d</letter>
+      <letter variants="Е е">je</letter>
+      <letter variants="Ё ё" require="hardness/hard">j ooe</letter>
+      <letter variants="Ж ж">zh</letter>
+      <letter variants="З з">z</letter>
+      <letter variants="И и">yi j</letter>
+      <letter variants="Й й">j</letter>
+      <letter variants="К к" require="hardness/hard">kq</letter>
+      <letter variants="Қ қ" require="hardness/soft">kq</letter>
+      <letter variants="Л л">l</letter>
+      <letter variants="М м">m</letter>
+      <letter variants="Н н">n</letter>
+      <letter variants="Ң ң">ng</letter>
+      <letter variants="О о" require="hardness/hard">ooe</letter>
+      <letter variants="Ө ө" require="hardness/soft">ooe</letter>
+      <letter variants="П п">p</letter>
+      <letter variants="Р р">r</letter>
+      <letter variants="С с">s</letter>
+      <letter variants="Т т">t</letter>
+      <letter variants="У у">u</letter>
+      <letter variants="Ұ ұ" require="hardness/hard">ooue</letter>
+      <letter variants="Ү ү" require="hardness/soft">ooue</letter>
+      <letter variants="Ф ф">f</letter>
+      <letter variants="Х х">khh</letter>
+      <letter variants="Һ һ" require="foreign">khh</letter>
+      <letter variants="Ц ц">ts</letter>
+      <letter variants="Ч ч">ch</letter>
+      <letter variants="Ш ш">sh</letter>
+      <letter variants="Щ щ">shsh</letter>
+      <letter variants="Ъ ъ"/>
+      <letter variants="Ы ы" require="hardness/hard">yi</letter>
+      <letter variants="І і" require="hardness/soft">yi</letter>
+      <letter variants="Ь ь"/>
+      <letter variants="Э э">e</letter>
+      <letter variants="Ю ю">j u</letter>
+      <letter variants="Я я" require="hardness/hard">j aschwa</letter>
+   </letters>
+</grammar>

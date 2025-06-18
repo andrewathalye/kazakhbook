@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="book.xsd">
+   <titlepage>
+      <title>
+         <rus>Схематическая грамматика казахского языка</rus>
+      </title>
+      <author>Эндрю Салил Аталье</author>
+      <year>2025</year>
+   </titlepage>
+
+   <chapter id="phonetics">
+      <title>
+         <rus>Фонетика</rus>
+         <kaz>Фонетика</kaz>
+      </title>
+   </chapter>
+
+   <chapter id="phonology">
+      <title>
+         <rus>Фонология</rus>
+         <kaz>Фонология</kaz>
+      </title>
+   </chapter>
+
+   <chapter id="particles">
+      <title>
+         <rus>Частицы и именные суффиксы</rus>
+         <kaz>Демеуліктер және номиналды жұрнақтар</kaz>
+      </title>
+
+      <table id="question">
+         <title>
+            <rus>Вопроительная частица / отрицательный суффикс</rus>
+            <kaz>Сұраулық демеулік / болымсыздық жұрнақ</kaz>
+         </title>
+
+         <form ref="particles/question/1"/>
+
+         <comment>
+            <rus>
+                  Частица является <i>отрицательным суффиксом</i>, когда добавляется к глаголам, а <i>вопросительной частицей</i>, когда втречается после имён. Вопросительная частица <i>требуется</i>, если в предложении отсутствует вопросительное местоимение и является вопросом.
+            </rus>
+         </comment>
+      </table>
+
+      <table id="intense_question">
+         <title>
+            <rus>Усилительная вопросительная частица</rus>
+            <kaz>Күшейткіш сұраулық демеулік</kaz>
+            <meaning><rus>ну а X</rus></meaning>
+         </title>
+
+         <row>
+            <kaz>X-<i>не</i> <rus>(слово)</rus> <form ref="particles/intense_question/1"/></kaz>
+         </row>
+
+         <comment>
+            <rus>
+               Чаще всего употребляется в вопросительных предложениях.
+            </rus>
+            <example>
+               <translation>
+                  <kaz>Мен бірінші курста, сен ше?</kaz>
+                  <rus>Я на первом курсе, а ты?</rus>
+               </translation>
+            </example>
+         </comment>
+      </table>
+
+      <table id="concretising">
+         <title>
+            <rus>Конкретизирующая частица</rus>
+            <kaz>Нақтылық демеулік</kaz>
+            <meaning><rus>же, ведь</rus></meaning>
+         </title>
+
+         <form ref="particles/concretising/1"/>
+      </table>
+
+      <table id="demonstrative">
+         <title>
+            <rus>Указательный суффикс</rus>
+            <kaz>Сілтеу жұрнақ</kaz>
+            <meaning><rus>который</rus></meaning>
+         </title>
+
+         <form ref="suffixes/demonstrative/1"/>
+
+         <comment>
+            <rus>
+               Конструкция часто встречается в контекстах, где бувальный перевод <meaning>который</meaning> игнорируется, особенно в литературных произведениях.
+               <example>
+                  <translation>
+                     <kaz>Дәріханада<b>ғы</b> тұрды — ушеу.</kaz>
+                     <rus>
+                        <option>В <b>которой</b> аптеке они стояли, их трое.</option>
+                        <option>В аптеке стояли трое (людей)</option>
+                     </rus>
+                  </translation>
+               </example>
+            </rus>
+         </comment>
+      </table>
+
+      <table id="intensifying">
+         <title>
+            <rus>Усилительные частицы</rus>
+            <kaz>Күшейткіш демеуліктер</kaz>
+         </title>
+         <rows>
+            <row>
+               <form ref="particles/intensifying/1"/>
+               <rus>Боль, сожаление, возмущение</rus>
+            </row>
+            <row>
+               <form ref="particles/intensifying/2"/>
+               <rus>Удивление, сожаление</rus>
+            </row>
+            <row>
+               <form ref="particles/intensifying/3"/>
+               <rus>Усиливание значения</rus>
+            </row>
+            <row>
+               <form ref="particles/intensifying/4"/>
+               <rus>Удивление, одобрение</rus>
+            </row>
+         </rows>
+
+         <comment>
+            <rus>Эти частицы считаются разговорными.</rus>
+         </comment>
+      </table>
+
+      <table id="limiting">
+         <title>
+            <rus>Ограничительные частицы</rus>
+            <kaz>Шектік демеуліктер</kaz>
+            <meaning><rus>только, лишь</rus></meaning>
+         </title>
+
+         <form ref="particles/limiting/1"/>
+         <form ref="particles/limiting/2"/>
+         <form ref="particles/limiting/3"/>
+
+         <comment>
+            <rus>
+                  При сопоставлении с отрицательным глаголом в повелительном наклонении и вспомогательным глаголом қою, частица <kaz><b>-ақ</b></kaz> добавляет значение <meaning>лучше не X</meaning>. Если главный глагол в прошедшем времени изъявительного наклонения, значение меняется на <meaning>так и не X</meaning>.
+            </rus>
+      </table>
+
+      <table id="conjectural">
+         <title>
+            <rus>Предположительные частицы</rus>
+            <kaz>Болжалды демеулік</kaz>
+            <meaning><rus>как будто, якобы</rus></meaning>
+         </title>
+
+         <form ref="particles/conjectural/1"/>
+         <form ref="particles/conjectural/2"/>
+
+         <comment>
+            <example>
+               <translation>
+                  <kaz>Ол <placeholder/> айтты-мыс</kaz>
+                  <rus>Он говорил, якобы <placeholder/></rus>
+               </translation>
+            </example>
+            <example>
+               <translation>
+                  <kaz>Көрген-ді</kaz>
+                  <rus>Видел якобы</rus>
+               </translation>
+            </example>
+         </comment>
+      </table>
+
+      <table id="possessive">
+         <title>
+            <rus>Притяжательные окончания</rus>
+            <kaz>Тәуедлік жалғау</kaz>
+         </title>
+
+         <form ref="suffixes/possessive/1"/>
+
+         <comment><rus>Приведенные ниже суффиксы иногда считаются падежными окончаниями</rus></comment>
+         <form ref="suffixes/possessive/2"/>
+
+         <comment>
+            <!--TODO-->
+         </comment>
+   </chapter>
+</book>
