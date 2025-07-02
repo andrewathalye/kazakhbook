@@ -3,6 +3,94 @@
         by various structures
    -->
    <features>
+      <!-- Sound features -->
+      <feature id="place">
+         <value id="bilabial"/>
+         <value id="labiodental"/>
+         <value id="dental"/>
+         <value id="alveolar"/>
+         <value id="postalveolar"/>
+         <value id="retroflex"/>
+         <value id="palatal"/>
+         <value id="velar"/>
+         <value id="uvular"/>
+         <value id="pharyngeal"/>
+         <value id="glottal"/>
+
+         <!-- For vowels -->
+         <value id="front"/>
+         <value id="frontcentral"/>
+         <value id="central"/>
+         <value id="backcentral"/>
+         <value id="back"/>
+      </feature>
+
+      <feature id="manner">
+         <value id="plosive"/>
+         <value id="nasal"/>
+         <value id="trill"/>
+         <value id="flap"/>
+         <value id="latflap"/>
+         <value id="fricative"/>
+         <value id="latfric"/>
+         <value id="approximant"/>
+         <value id="latapprox"/>
+
+         <value id="click"/>
+         <value id="implosive"/>
+         <value id="ejective"/>
+
+         <value id="affricate"/>
+         <value id="diphthong"/>
+
+         <value id="vocalic"/>
+      </feature>
+
+      <feature id="height">
+         <value id="close"/>
+         <value id="closeclosemid"/>
+         <value id="closemid"/>
+         <value id="mid"/>
+         <value id="openmid"/>
+         <value id="openopenmid"/>
+         <value id="open"/>
+      </feature>
+
+      <feature id="voicing">
+         <value id="voiceless"/>
+         <value id="whispered"/>
+         <value id="voiced"/>
+      </feature>
+
+      <feature id="stressed"/>
+
+      <feature id="hardness">
+         <value id="hard"/>
+         <value id="soft"/>
+      </feature>
+
+      <feature id="rounded"/>
+
+      <feature id="length">
+         <value id="short"/>
+         <value id="long"/>
+      </feature>
+
+      <!-- Not currently needed -->
+      <feature id="tense"/>
+
+      <!-- Word features -->
+      <feature id="wordclass">
+         <value id="particle"/>
+         <value id="conjunction"/>
+         <value id="noun"/>
+         <value id="number"/>
+         <value id="adjective"/>
+         <value id="adverb"/>
+         <value id="verb"/>
+      </feature>
+
+      <!-- Noun features -->
       <feature id="number">
          <value id="singular" />
          <value id="plural" />
@@ -14,7 +102,7 @@
          <value id="2f" />
          <value id="3" />
       </feature>
-
+      
       <feature id="possessor" alias="person" />
 
       <feature id="case">
@@ -30,155 +118,309 @@
          <value id="possessive" />
       </feature>
 
-      <feature id="hardness">
-         <value id="hard"/>
-         <value id="soft"/>
+      <!-- Verb features -->
+      <feature id="tense">
+         <!-- TODO -->
       </feature>
 
-      <feature id="class">
-         <value id="voiceless"/>
-         <value id="voiced"/>
-         <value id="sonorant"/>
-         <value id="vowel"/>
-      </feature>
-
+      <!-- General features -->
       <feature id="foreign"/>
    </features>
 
    <!-- Mapping between abstract phonemes and
         concrete realisations based upon context.
+
+        Phonemes provide features common to all their realisations.
+        If a phoneme has only one realisation, it may choose to omit
+        phones.
+
+        Each phone provides only the features unique to it, as well
+        as an optional list of contexts that can trigger it.
+
+        Dipthongs provide two sets of properties, one for each component.
+        The algorithm then picks specific phones based upon requested features
+
+        TODO diphthong handling, probably need a separate term for diphthongs and affricates
    -->
    <phonemes>
-      <phoneme provide="class/vowel" id="aschwa">
-         <phone provide="hardness/hard" id="a">
-            <context word="contains:foreign">ɑ / a / æ</context>
-            <context>ɑ</context>
+      <phoneme provide="voicing/voiced manner/vocalic height/open !rounded" id="aschwa">
+         <phone provide="hardness/hard place/back">
+            <ipa>ɑ</ipa>
          </phone>
-         <phone provide="hardness/soft" id="schwa">æ / ɘɪ</phone>
-      </phoneme>
 
-      <phoneme provide="class/voiced" id="b">
-         <context>b / β</context>
-         <context word="contains:foreign">b</context>
-      </phoneme>
+         <phone provide="place/front foreign">
+            <ipa>a</ipa>
+         </phone>
 
-      <phoneme provide="class/voiced foreign" id="v">v</phoneme>
-
-      <phoneme provide="class/voiced" id="ggh">
-         <phone provide="hardness/soft" id="g">g</phone>
-         <phone provide="hardness/hard" id="gh">ʁ</phone>
-      </phoneme>
-
-      <phoneme provide="class/voiced" id="d">d</phoneme>
-
-      <phoneme provide="class/vowel hardness/soft" id="je">
-         <context after="[]||syllable/open">jɘ / je</context>
-         <context dialect="urban">jɘ / je</context>
-         <context word="contains:foreign">je</context>
-         <context>ɘ / e</context>
-      </phoneme>
-
-      <phoneme provide="class/voiced" id="zh">
-         <context dialect="south">dʒ</context>
-         <context dialect="west">j</context>
-         <context word="contains:foreign">ʐ / ʑ</context>
-         <context>ʒ</context>
-      </phoneme>
-
-      <phoneme provide="class/voiced" id="z">z</phoneme>
-
-      <phoneme provide="class/sonorant" id="j">j</phoneme>
-
-      <phoneme provide="class/voiceless" id="kq">
-         <phone provide="hardness/soft" id="k">k</phone>
-         <phone provide="hardness/hard" id="q">
-            <context before="class/vowel">q^h</context>
-            <context before="[]">ʔ</context>
-            <context>q</context>
+         <phone provide="hardness/soft place/front">
+            <ipa>æ</ipa>
          </phone>
       </phoneme>
 
-      <phoneme provide="class/sonorant" id="l">
-         <context after="!class/vowel" syllable="contains:hardness/hard">ɯl</context>
-         <context after="!class/vowel" syllable="contains:hardness/soft">ɪl</context>
-         <context>l</context>
-      </phoneme>
-
-      <phoneme provide="class/sonorant" id="m">m</phoneme>
-
-      <phoneme provide="class/sonorant" id="n">n</phoneme>
-
-      <phoneme provide="class/sonorant" id="ng">ɴ / ŋ</phoneme>
-
-      <phoneme provide="class/vowel" id="ooe">
-         <phone provide="hardness/hard" id="o">
-            <context after="[] syllable/open">^wo</context>
-            <context>o</context>
+      <phoneme provide="voicing/voiced place/bilabial" id="b">
+         <phone provide="manner/fricative !foreign">
+            <context before="[]||manner/vocalic" after="manner/vocalic"/>
+            <ipa>β</ipa>
          </phone>
-         <phone provide="hardness/soft" id="oe">
-            <context after="[] syllable/open">^wø</context>
-            <context>ø</context>
+
+         <phone provide="manner/plosive">
+            <ipa>b</ipa>
          </phone>
       </phoneme>
 
-      <phoneme provide="class/voiceless" id="p">p</phoneme>
-
-      <phoneme provide="class/sonorant" id="r">
-         <context after="!class/vowel" syllable="contains:hardness/hard">ɯɾ</context>
-         <context after="!class/vowel" syllable="contains:hardness/soft">ɪɾ</context>
-         <context word="contains:foreign">ɾ / r</context>
-         <context>ɾ</context>
+      <phoneme provide="voicing/voiced manner/fricative place/labiodental foreign" id="v">
+         <ipa>v</ipa>
       </phoneme>
 
-      <phoneme provide="class/voiceless" id="s">s</phoneme>
+      <phoneme provide="voicing/voiced" id="ggh">
+         <phone provide="hardness/soft manner/plosive place/velar">
+            <ipa>g</ipa>
+         </phone>
 
-      <phoneme provide="class/voiceless" id="t">t</phoneme>
+         <phone provide="hardness/hard manner/fricative place/uvular">
+            <ipa>ʁ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/plosive place/alveolar" id="d">
+         <ipa>d</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced hardness/soft !rounded" id="je">
+         <phone provide="manner/diphthong stressed">
+            <diphthong start="place/palatal manner/approximant" end="manner/vocalic height/closemid place/front"/>
+            <or>
+               <context dialect="urban"/>
+               <context after="[]||manner/vocalic"/>
+            </or>
+            <ipa>je</ipa>
+         </phone>
+
+         <phone provide="manner/diphthong !stressed">
+            <diphthong start="place/palatal manner/approximant" end="manner/vocalic height/mid place/central"/>
+            <or>
+               <context after="[]||manner/vocalic"/>
+               <context dialect="urban"/>
+            </or>
+            <ipa>jɘ</ipa>
+         </phone>
+
+         <phone provide="manner/vocalic height/closemid place/front stressed">
+            <ipa>e</ipa>
+         </phone>
+
+         <phone provide="manner/vocalic height/mid place/central !stressed">
+            <ipa>ɘ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced" id="zh">
+         <phone provide="manner/affricate">
+            <affricate start="place/alveolar" end="place/postalveolar"/>
+            <context dialect="south"/>
+            <ipa>dʒ</ipa>
+         </phone>
+
+         <phone provide="manner/approximant place/palatal">
+            <context dialect="west"/>
+            <ipa>j</ipa>
+         </phone>
+
+         <phone provide="foreign manner/fricative place/retroflex">
+            <ipa>ʐ</ipa>
+         </phone>
+
+         <phone provide="manner/fricative place/postalveolar">
+            <ipa>ʒ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/fricative place/alveolar" id="z">
+         <ipa>z</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/approximant place/palatal" id="j">
+         <ipa>j</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/unvoiced manner/plosive" id="kq">
+         <phone provide="hardness/soft place/velar">
+            <ipa>k</ipa>
+         </phone>
+
+         <phone provide="hardness/hard place/uvular aspirated">
+            <context before="voicing/vocalic"/>
+            <ipa>q^h</ipa>
+         </phone>
+
+         <phone provide="hardness/hard place/uvular !aspirated">
+            <ipa>q</ipa>
+         </phone>
+
+         <phone provide="hardness/hard place/glottal">
+            <context before="[]"/>
+            <ipa>ʔ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme id="l">
+         <phone provide="manner/diphthong hardness/hard">
+            <diphthong start="voicing/vocalic height/close place/back !rounded" end="voicing/voiced place/alveolar manner/latapprox"/>
+            <context after="!voicing/vocalic"/>
+            <ipa>ɯl</ipa>
+         </phone>
+
+         <phone provide="manner/diphthong hardness/soft">
+            <diphthong start="voicing/vocalic height/closeclosemid place/front !rounded" end="voicing/voiced place/alveolar manner/latapprox"/>
+            <context after="!voicing/vocalic"/>
+            <ipa>ɪl</ipa>
+         </phone>
+
+         <phone provide="voicing/voiced place/alveolar manner/latapprox">
+            <ipa>l</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/nasal place/bilabial" id="m">
+         <ipa>m</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/nasal place/alveolar" id="n">
+         <ipa>n</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/nasal" id="ng">
+         <phone provide="place/velar">
+            <context after="manner/vocalic"/>
+            <ipa>ŋ</ipa>
+         </phone>
+
+         <phone provide="place/uvular">
+            <ipa>ɴ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced" id="ooe">
+         <phone provide="manner/diphthong hardness/hard">
+            <diphthong start="manner/approximant place/labialvelar" end="manner/vocalic place/back height/closemid rounded"/>
+            <context after="[]|manner/vocalic"/>
+            <ipa>^wo</ipa>
+         </phone>
+
+         <phone provide="manner/diphthong hardness/soft">
+            <diphthong start="manner/approximant place/labialvelar" end="manner/vocalic place/front height/closemid rounded"/>
+            <context after="[]|manner/vocalic"/>
+            <ipa>^wø</ipa>
+         </phone>
+
+         <phone provide="hardness/hard manner/vocalic place/back height/closemid rounded">
+            <ipa>o</ipa>
+         </phone>
+
+         <phone provide="hardness/hard manner/vocalic place/front height/closemid rounded">
+            <ipa>ø</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/plosive place/bilabial" id="p">
+         <ipa>p</ipa>
+      </phoneme>
+
+      <phoneme id="r">
+         <phone provide="manner/diphthong hardness/hard">
+            <diphthong start="voicing/vocalic height/close place/back !rounded" end="voicing/voiced manner/flap place/alveolar"/>
+            <context after="!voicing/vocalic"/>
+            <ipa>ɯɾ</ipa>
+         </phone>
+
+         <phone provide="manner/diphthong hardness/soft">
+            <diphthong start="voicing/vocalic height/closeclosemid place/front !rounded" end="voicing/voiced manner/flap place/alveolar"/>
+            <context after="!voicing/vocalic"/>
+            <ipa>ɪɾ</ipa>
+         </phone>
+
+         <phone provide="voicing/voiced manner/flap place/alveolar">
+            <ipa>ɾ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/fricative place/alveolar" id="s">
+         <ipa>s</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/plosive place/alveolar" id="t">
+         <ipa>t</ipa>
+      </phoneme>
 
       <!-- TODO is this really a separate phoneme? -->
-      <phoneme provide="class/sonorant" id="u">
-         <context after="[]" before="class/vowel">w</context>
+      <phoneme provide="soundclass/sonorant" id="u">
+         <context after="[]" before="soundclass/vowel">w</context>
          <context syllable="contains:hardness/hard">ʊw</context>
          <context syllable="contains:hardness/soft">ʏw</context>
          <context word="contains:foreign">u / ʊ</context>
       </phoneme>
 
-      <phoneme provide="class/vowel" id="ooue">
-         <phone provide="class/hard" id="oo">ʊ</phone>
-         <phone provide="class/soft" id="ue">ʏ</phone>
-      </phoneme>
-
-      <phoneme provide="class/voiceless foreign" id="f">f / p</phoneme>
-
-      <phoneme provide="class/voiceless" id="khh">
-         <phone id="kh">
-            <context word="contains:foreign">x</context>
-            <context>χ</context>
+      <phoneme provide="voicing/voiced manner/vocalic height/closeclosemid rounded" id="ooue">
+         <phone provide="hardness/hard place/backcentral">
+            <ipa>ʊ</ipa>
          </phone>
-         <phone provide="foreign" id="h">h / x / q</phone>
+         
+         <phone provide="hardness/soft place/frontcentral">
+            <ipa>ʏ</ipa>
+         </phone>
       </phoneme>
 
-      <phoneme provide="class/voiceless foreign" id="ts">t͡s</phoneme>
-      <phoneme provide="class/voiceless foreign" id="ch">t͡ʃ</phoneme>
-      <phoneme provide="class/voiceless" id="sh">
-         <context word="contains:foreign">ʃ / ɕ</context>
-         <context>ʃ</context>
-      </phoneme>
-
-      <phoneme provide="class/voiceless" id="shsh">
-         <context word="contains:foreign">ʃː / ɕː</context>
-         <context>ʃː</context>
-      </phoneme>
-
-      <!-- TODO think about how to implement this -->
-      <phoneme provide="class/vowel" id="yi">
-         <phone provide="hardness/hard" id="y">
-            <context word="matches:бүгін">ɯ~ʏ</context>
-            <context word="contains:foreign" syllable="contains:hardness/hard">ɯ / ɨ</context>
-            <context syllable="contains:hardness/hard">ɯ</context>
+      <phoneme provide="foreign voicing/voiceless place/bilabial" id="f">
+         <phone provide="manner/plosive">
+            <ipa>p</ipa>
          </phone>
 
-         <!-- Default for this phoneme is the soft variant -->
-         <phone provide="hardness/soft" id="i">ɪ</phone>
+         <phone provide="manner/fricative">
+            <context before="manner/vocalic rounded"/>
+            <ipa>ɸ</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless" id="khh">
+         <phone provide="manner/fricative place/uvular">
+            <ipa>χ</ipa>
+         </phone>
+
+         <phone provide="foreign manner/fricative place/velar">
+            <ipa>x</ipa>
+         </phone>
+
+         <phone provide="foreign manner/fricative place/glottal">
+            <ipa>h</ipa>
+         </phone>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/affricate foreign" id="ts">
+         <affricate start="place/alveolar" end="place/alveolar"/>
+         <ipa>t͡s</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/affricate foreign" id="ch">
+         <affricate start="place/alveolar" end="place/postalveolar"/>
+         <ipa>t͡ʃ</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/fricative place/postalveolar" id="sh">
+         <ipa>ʃ</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiceless manner/fricative place/postalveolar length/long" id="shsh">
+         <ipa>ʃː</ipa>
+      </phoneme>
+
+      <phoneme provide="voicing/voiced manner/vocalic length/short" id="yi">
+         <phone provide="hardness/hard height/closeclosemid place/frontcentral">
+            <ipa>ɯ</ipa>
+         </phone>
+
+         <phone provide="hardness/soft height/close place/back">
+            <ipa>ɪ</ipa>
+         </phone>
       </phoneme>
 
       <!-- ё, и, ъ, ь, э, ю, я are not phonemes -->
@@ -186,6 +428,7 @@
 
    <!-- Contextual mapping between letters and abstract
         phonemes.
+        Note: Forms and rules are given using letters, not phonemes.
    -->
    <letters>
       <letter variants="А а" require="hardness/hard">aschwa</letter>
@@ -230,4 +473,21 @@
       <letter variants="Ю ю">j u</letter>
       <letter variants="Я я" require="hardness/hard">j aschwa</letter>
    </letters>
+
+   <!-- Rules (used for mutation) -->
+   <rules>
+      <rule id="harmony1">
+         <context before="!soundclass/plosive">hardness/soft</context>
+      </rule>
+   </rules>
+
+   <!-- Definition of affixal and combinatory forms -->
+   <forms>
+      <form require="wordclass/noun" provide="number/singular" id="singular">
+         <suffix/>
+      </form>
+      <form require="wordclass/noun" provide="number/plural" id="plural">
+         <suffix rule="harmony1">дар</suffix>
+      </form>
+   </forms>
 </grammar>
