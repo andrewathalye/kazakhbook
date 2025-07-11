@@ -1,5 +1,47 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <!-- SHARED -->
+   <xs:simpleType name="provide">
+      <xs:restriction base="xs:string" />
+   </xs:simpleType>
+
+   <xs:simpleType name="require">
+      <xs:restriction base="xs:string" />
+   </xs:simpleType>
+
+   <xs:simpleType name="before">
+      <xs:restriction base="xs:string" />
+   </xs:simpleType>
+
+   <xs:simpleType name="after">
+      <xs:restriction base="xs:string" />
+   </xs:simpleType>
+
+   <xs:simpleType name="this">
+      <xs:restriction base="xs:string"/>
+   </xs:simpleType>
+
+   <xs:complexType name="or">
+      <xs:sequence minOccurs="2" maxOccurs="unbounded">
+         <xs:choice>
+            <xs:element name="before" type="before"/>
+            <xs:element name="after" type="after"/>
+            <xs:element name="this" type="this"/>
+         </xs:choice>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="context">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:choice>
+            <xs:element name="before" type="before"/>
+            <xs:element name="after" type="after"/>
+            <xs:element name="this" type="this"/>
+            <xs:element name="or" type="or"/>
+         </xs:choice>
+      </xs:sequence>
+   </xs:complexType>
+
    <!-- FEATURES -->
    <xs:complexType name="feature">
       <xs:choice>
@@ -17,11 +59,6 @@
    </xs:complexType>
 
    <!-- PHONEMES -->
-   <xs:complexType name="context">
-      <xs:attribute name="before" type="xs:string" />
-      <xs:attribute name="after" type="xs:string" />
-   </xs:complexType>
-
    <xs:simpleType name="ipa">
       <xs:restriction base="xs:string" />
    </xs:simpleType>
@@ -32,15 +69,27 @@
             <xs:element name="context" type="context" />
          </xs:sequence>
 
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="provide" type="provide" />
+         </xs:sequence>
+
          <xs:element name="ipa" type="ipa" />
       </xs:sequence>
-      <xs:attribute name="provide" type="xs:string" use="required" />
    </xs:complexType>
 
    <xs:complexType name="phoneme">
       <xs:choice>
+         <!-- List of phones -->
          <xs:sequence maxOccurs="unbounded">
             <xs:element name="phone" type="phone" />
+         </xs:sequence>
+
+         <!-- Only one realisation -->
+         <xs:sequence>
+            <xs:sequence maxOccurs="unbounded">
+               <xs:element name="provide" type="provide" />
+            </xs:sequence>
+            <xs:element name="ipa" type="ipa" />
          </xs:sequence>
       </xs:choice>
 
@@ -64,7 +113,7 @@
          </xs:sequence>
 
          <xs:sequence maxOccurs="unbounded">
-            <xs:element name="require" type="xs:string"/>
+            <xs:element name="require" type="xs:string" />
          </xs:sequence>
       </xs:sequence>
    </xs:complexType>
@@ -79,11 +128,17 @@
                <xs:element name="majuscule" type="xs:string" />
                <xs:element name="minuscule" type="xs:string" />
             </xs:sequence>
-            <xs:element name="unicase" type="xs:string"/>
+            <xs:element name="unicase" type="xs:string" />
          </xs:choice>
          <xs:element minOccurs="0" maxOccurs="unbounded" name="pronunciation" type="pronunciation" />
       </xs:sequence>
    </xs:complexType>
+
+   <!-- RULES -->
+   <xs:complexType name="rule"></xs:complexType>
+
+   <!-- FORMS -->
+   <xs:complexType name="form"></xs:complexType>
 
    <!-- GRAMMAR -->
    <xs:element name="grammar">
