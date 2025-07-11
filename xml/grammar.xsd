@@ -1,3 +1,134 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <!-- FEATURES -->
+   <xs:complexType name="feature">
+      <xs:choice>
+         <!-- Free naming -->
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="value">
+               <xs:complexType>
+                  <xs:attribute name="id" type="xs:string" use="required" />
+               </xs:complexType>
+            </xs:element>
+         </xs:sequence>
+      </xs:choice>
+
+      <xs:attribute name="id" type="xs:string" />
+   </xs:complexType>
+
+   <!-- PHONEMES -->
+   <xs:complexType name="context">
+      <xs:attribute name="before" type="xs:string" />
+      <xs:attribute name="after" type="xs:string" />
+   </xs:complexType>
+
+   <xs:simpleType name="ipa">
+      <xs:restriction base="xs:string" />
+   </xs:simpleType>
+
+   <xs:complexType name="phone">
+      <xs:sequence>
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="context" type="context" />
+         </xs:sequence>
+
+         <xs:element name="ipa" type="ipa" />
+      </xs:sequence>
+      <xs:attribute name="provide" type="xs:string" use="required" />
+   </xs:complexType>
+
+   <xs:complexType name="phoneme">
+      <xs:choice>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="phone" type="phone" />
+         </xs:sequence>
+      </xs:choice>
+
+      <xs:attribute name="id" type="xs:string" use="required" />
+   </xs:complexType>
+
+   <!-- LETTERS -->
+   <xs:complexType name="complex">
+      <xs:sequence>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="context" type="context" />
+         </xs:sequence>
+         <xs:element name="unicode" type="xs:string" />
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="pronunciation">
+      <xs:sequence>
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="context" type="context" />
+         </xs:sequence>
+
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="require" type="xs:string"/>
+         </xs:sequence>
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="symbol">
+      <xs:sequence>
+         <xs:choice>
+            <xs:sequence maxOccurs="unbounded">
+               <xs:element name="complex" type="complex" />
+            </xs:sequence>
+            <xs:sequence>
+               <xs:element name="majuscule" type="xs:string" />
+               <xs:element name="minuscule" type="xs:string" />
+            </xs:sequence>
+            <xs:element name="unicase" type="xs:string"/>
+         </xs:choice>
+         <xs:element minOccurs="0" maxOccurs="unbounded" name="pronunciation" type="pronunciation" />
+      </xs:sequence>
+   </xs:complexType>
+
+   <!-- GRAMMAR -->
+   <xs:element name="grammar">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="features">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="feature" type="feature" />
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+
+            <xs:element name="phonemes">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="phoneme" type="phoneme" />
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+
+            <xs:element name="symbols">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="symbol" type="symbol" />
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+
+            <xs:element name="rules">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="rule" type="rule" />
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+
+            <xs:element name="forms">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="form" type="form" />
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
 </xs:schema>
