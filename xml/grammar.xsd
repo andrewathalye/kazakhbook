@@ -17,29 +17,20 @@
       <xs:restriction base="xs:string" />
    </xs:simpleType>
 
-   <xs:simpleType name="this">
-      <xs:restriction base="xs:string"/>
+   <xs:simpleType name="global">
+      <xs:restriction base="xs:string" />
    </xs:simpleType>
 
-   <xs:complexType name="or">
-      <xs:sequence minOccurs="2" maxOccurs="unbounded">
-         <xs:choice>
-            <xs:element name="before" type="before"/>
-            <xs:element name="after" type="after"/>
-            <xs:element name="this" type="this"/>
-         </xs:choice>
-      </xs:sequence>
-   </xs:complexType>
-
    <xs:complexType name="context">
-      <xs:sequence maxOccurs="unbounded">
-         <xs:choice>
-            <xs:element name="before" type="before"/>
-            <xs:element name="after" type="after"/>
-            <xs:element name="this" type="this"/>
-            <xs:element name="or" type="or"/>
-         </xs:choice>
-      </xs:sequence>
+      <xs:annotation>
+         <xs:documentation>Each type of context must not be repeated</xs:documentation>
+      </xs:annotation>
+
+      <xs:all>
+         <xs:element name="before" type="before" minOccurs="0"/>
+         <xs:element name="after" type="after" minOccurs="0"/>
+         <xs:element name="global" type="global" minOccurs="0"/>
+      </xs:all>
    </xs:complexType>
 
    <!-- FEATURES -->
@@ -138,7 +129,17 @@
    <xs:complexType name="rule"></xs:complexType>
 
    <!-- FORMS -->
-   <xs:complexType name="form"></xs:complexType>
+   <xs:complexType name="form">
+      <xs:sequence>
+         <xs:element name="require" type="require"/>
+         <xs:element name="provide" type="provide"/>
+         <xs:choice>
+            <xs:element name="suffix" type="xs:string"/>
+         </xs:choice>
+      </xs:sequence>
+
+      <xs:attribute name="id" type="xs:string"/>
+   </xs:complexType>
 
    <!-- GRAMMAR -->
    <xs:element name="grammar">
@@ -170,7 +171,7 @@
 
             <xs:element name="rules">
                <xs:complexType>
-                  <xs:sequence maxOccurs="unbounded">
+                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
                      <xs:element name="rule" type="rule" />
                   </xs:sequence>
                </xs:complexType>
@@ -178,7 +179,7 @@
 
             <xs:element name="forms">
                <xs:complexType>
-                  <xs:sequence maxOccurs="unbounded">
+                  <xs:sequence minOccurs="0" maxOccurs="unbounded">
                      <xs:element name="form" type="form" />
                   </xs:sequence>
                </xs:complexType>

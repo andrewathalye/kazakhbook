@@ -104,17 +104,17 @@
          <value id="verb" />
       </feature>
 
-      <!-- Noun features -->
-      <feature id="number">
-         <value id="singular" />
-         <value id="plural" />
-      </feature>
-
       <feature id="person">
          <value id="1" />
          <value id="2i" />
          <value id="2f" />
          <value id="3" />
+      </feature>
+
+      <!-- Noun features -->
+      <feature id="number">
+         <value id="singular" />
+         <value id="plural" />
       </feature>
 
       <feature id="possessor">
@@ -137,10 +137,49 @@
          <value id="possessive" />
       </feature>
 
-      <!-- Verb features -->
-      <feature id="tense">
-         <!-- TODO -->
+      <!-- Adjective features -->
+      <feature id="degree">
+         <value id="positive" />
+         <value id="comparative" />
+         <value id="dimcomp" />
+         <value id="excessive" />
+         <value id="intensive" />
+         <value id="superlative" /> <!-- TODO ?? complex forms -->
       </feature>
+
+      <!-- Verb features -->
+      <feature id="voice">
+         <value id="active" />
+         <value id="reflexive" />
+         <value id="passive" />
+         <value id="reciprocal" />
+         <value id="causative" />
+      </feature>
+      <!-- TODO this needs some thought, multiple voices can be applied -->
+
+      <feature id="mood">
+         <value id="indefinite" />
+         <value id="participial" />
+         <value id="gerundive" />
+         <value id="indicative" />
+         <value id="optative" />
+         <value id="subjunctive" />
+         <value id="imperative" />
+      </feature>
+
+      <feature id="tense">
+         <value id="present" /> <!-- TODO ?? complex / simple -->
+         <value id="past" />
+         <value id="pluperfect" />
+         <value id="aoristpast" />
+         <value id="transitivepast" />
+         <value id="transitivefut" />
+         <value id="potentialfut" />
+         <value id="intentionalfut" />
+      </feature>
+      <!-- TODO think about conditional present / future -->
+
+      <feature id="softened" />
 
       <!-- General features -->
       <feature id="dialect">
@@ -174,18 +213,25 @@
       </phoneme>
 
       <phoneme id="b">
+         <!-- Three contexts for a fricative realisation -->
          <phone>
             <context>
-               <or>
-                  <before>[]</before>
-                  <before>manner/vocalic</before>
-                  <after>manner/vocalic</after>
-               </or>
+               <before>[]</before>
             </context>
+
+            <context>
+               <before>manner/vocalic</before>
+            </context>
+
+            <context>
+               <after>manner/vocalic</after>
+            </context>
+
             <provide>voicing/voiced place/bilabial manner/fricative !foreign</provide>
             <ipa>β</ipa>
          </phone>
 
+         <!-- By default, use a plosive -->
          <phone>
             <provide>voicing/voiced place/bilabial manner/plosive</provide>
             <ipa>b</ipa>
@@ -216,12 +262,14 @@
 
       <phoneme id="je">
          <phone>
+            <!-- Two contexts for a stressed diphthong -->
             <context>
-               <or>
-                  <after>[]</after>
-                  <after>manner/vocalic</after>
-               </or>
+               <after>[]</after>
             </context>
+            <context>
+               <after>manner/vocalic</after>
+            </context>
+
             <provide>@j</provide>
             <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front
                !rounded
@@ -230,12 +278,14 @@
          </phone>
 
          <phone>
+            <!-- Two contexts for an unstressed diphthong -->
             <context>
-               <or>
-                  <after>[]</after>
-                  <after>manner/vocalic</after>
-               </or>
+               <after>[]</after>
             </context>
+            <context>
+               <after>manner/vocalic</after>
+            </context>
+
             <provide>@j</provide>
             <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central !rounded
                !stressed</provide>
@@ -243,12 +293,14 @@
          </phone>
 
          <phone>
+            <!-- Stressed default monophthong -->
             <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/closemid
                place/front stressed</provide>
             <ipa>e</ipa>
          </phone>
 
          <phone>
+            <!-- Unstressed monophthong -->
             <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/mid place/central
                !stressed</provide>
             <ipa>ɘ</ipa>
@@ -258,8 +310,9 @@
       <phoneme id="zh">
          <phone>
             <context>
-               <this>dialect/south</this>
+               <global>dialect/south</global>
             </context>
+
             <provide>@d</provide>
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>dʒ</ipa>
@@ -267,13 +320,15 @@
 
          <phone>
             <context>
-               <this>dialect/west</this>
+               <global>dialect/west</global>
             </context>
+
             <provide>@j</provide>
             <ipa>j</ipa>
          </phone>
 
          <phone>
+            <!-- Default, unmarked realisation -->
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>ʒ</ipa>
          </phone>
@@ -291,54 +346,63 @@
 
       <phoneme id="kq">
          <phone>
+            <!-- Default soft pronunciation -->
             <provide>voicing/unvoiced manner/plosive hardness/soft place/velar</provide>
             <ipa>k</ipa>
          </phone>
 
          <phone>
+            <!-- Aspirated variant before vowels -->
             <context>
                <before>voicing/vocalic</before>
             </context>
+
             <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular aspirated</provide>
             <ipa>q^h</ipa>
          </phone>
 
          <phone>
-            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular !aspirated</provide>
-            <ipa>q</ipa>
-         </phone>
-
-         <phone>
+            <!-- Glottal variant at the end of a word -->
             <context>
                <before>[]</before>
             </context>
             <provide>voicing/unvoiced manner/plosive hardness/hard place/glottal</provide>
             <ipa>ʔ</ipa>
          </phone>
+
+         <phone>
+            <!-- Default hard pronunciation -->
+            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular !aspirated</provide>
+            <ipa>q</ipa>
+         </phone>
       </phoneme>
 
       <phoneme id="l">
          <phone>
+            <!-- After a vowel or at the beginning of a word -->
             <context>
-               <after>!voicing/vocalic</after>
+               <after>manner/vocalic</after>
             </context>
+            <context>
+               <after>[]</after>
+            </context>
+
+            <provide>voicing/voiced place/alveolar manner/latapprox</provide>
+            <ipa>l</ipa>
+         </phone>
+
+         <phone>
+            <!-- After a non-vowel (hard) -->
             <provide>@yi hardness/hard</provide>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>ɯl</ipa>
          </phone>
 
          <phone>
-            <context>
-               <after>!voicing/vocalic</after>
-            </context>
+            <!-- After a non-vowel (soft) -->
             <provide>@yi hardness/soft</provide>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>ɪl</ipa>
-         </phone>
-
-         <phone>
-            <provide>voicing/voiced place/alveolar manner/latapprox</provide>
-            <ipa>l</ipa>
          </phone>
       </phoneme>
 
@@ -354,6 +418,7 @@
 
       <phoneme id="ng">
          <phone>
+            <!-- Variant after a vowel -->
             <context>
                <after>manner/vocalic</after>
             </context>
@@ -362,6 +427,7 @@
          </phone>
 
          <phone>
+            <!-- Default variant -->
             <provide>voicing/voiced manner/nasal place/uvular</provide>
             <ipa>ɴ</ipa>
          </phone>
@@ -369,12 +435,14 @@
 
       <phoneme id="ooe">
          <phone>
+            <!-- Labialised hard variant -->
             <context>
-               <or>
-                  <after>[]</after>
-                  <after>manner/vocalic</after>
-               </or>
+               <after>[]</after>
             </context>
+            <context>
+               <after>manner/vocalic</after>
+            </context>
+
             <provide>@w</provide>
             <provide>voicing/voiced manner/vocalic place/back height/closemid rounded hardness/hard</provide>
             <ipa>^wo</ipa>
@@ -382,22 +450,25 @@
 
          <phone>
             <context>
-               <or>
-                  <after>[]</after>
-                  <after>manner/vocalic</after>
-               </or>
+               <after>[]</after>
             </context>
+            <context>
+               <after>manner/vocalic</after>
+            </context>
+
             <provide>@w</provide>
             <provide>voicing/voiced manner/vocalic place/front height/closemid rounded hardness/soft</provide>
             <ipa>^wø</ipa>
          </phone>
 
          <phone>
+            <!-- Default hard variant -->
             <provide>hardness/hard manner/vocalic place/back height/closemid rounded</provide>
             <ipa>o</ipa>
          </phone>
 
          <phone>
+            <!-- Default soft variant -->
             <provide>hardness/soft manner/vocalic place/front height/closemid rounded</provide>
             <ipa>ø</ipa>
          </phone>
@@ -410,26 +481,30 @@
 
       <phoneme id="r">
          <phone>
+            <!-- Word-initial and post-vocalic variant -->
             <context>
-               <after>!voicing/vocalic</after>
+               <after>voicing/vocalic</after>
             </context>
+            <context>
+               <after>[]</after>
+            </context>
+
+            <provide>voicing/voiced manner/flap place/alveolar</provide>
+            <ipa>ɾ</ipa>
+         </phone>
+
+         <phone>
+            <!-- Default hard variant -->
             <provide>@yi hardness/hard</provide>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɯɾ</ipa>
          </phone>
 
          <phone>
-            <context>
-               <after>!voicing/vocalic</after>
-            </context>
+            <!-- Default soft variant -->
             <provide>@yi hardness/soft</provide>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɪɾ</ipa>
-         </phone>
-
-         <phone>
-            <provide>voicing/voiced manner/flap place/alveolar</provide>
-            <ipa>ɾ</ipa>
          </phone>
       </phoneme>
 
@@ -453,6 +528,7 @@
             <ipa>w</ipa>
          </phone>
       </phoneme>
+      <!-- Is this a phoneme TODO -->
 
       <phoneme id="ooue">
          <phone>
@@ -470,16 +546,18 @@
 
       <phoneme id="f">
          <phone>
-            <provide>foreign voicing/voiceless manner/plosive place/bilabial</provide>
-            <ipa>p</ipa>
-         </phone>
-
-         <phone>
+            <!-- Variant before rounded vowels-->
             <context>
                <before>manner/vocalic rounded</before>
             </context>
             <provide>foreign voicing/voiceless place/bilabial manner/fricative</provide>
             <ipa>ɸ</ipa>
+         </phone>
+
+         <phone>
+            <!-- Default variant -->
+            <provide>foreign voicing/voiceless manner/plosive place/bilabial</provide>
+            <ipa>p</ipa>
          </phone>
       </phoneme>
 
@@ -511,6 +589,7 @@
                place/frontcentral length/short</provide>
             <ipa>ɯ</ipa>
          </phone>
+
          <phone>
             <provide>voicing/voiced manner/vocalic hardness/soft height/close place/back
                length/short</provide>
@@ -866,13 +945,6 @@
       </symbol>
    </symbols>
 
-   <!-- Rules (used for mutation) -->
-   <rules>
-      <rule />
-   </rules>
-
-   <!-- Definition of affixal and combinatory forms -->
-   <forms>
-      <form />
-   </forms>
+   <rules />
+   <forms />
 </grammar>

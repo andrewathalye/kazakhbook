@@ -1,232 +1,124 @@
-   <!-- Various forms with context
-   -->
+<!-- Rules (used for mutation) -->
+   <rules>
+      <rule id="bvgd_wordfinal_devoicing">
+         <context>
+            <after>[]</after>
+         </context>
+
+         <transform>
+            <from>voicing/voiced manner/plosive</from>
+            <to>voicing/voiceless</to>
+         </transform>
+         <transform>
+            <from>@v</from>
+            <to>voicing/voiceless</to>
+         </transform>
+      </rule>
+
+      <rule id="ld_obstruent">
+         <context>
+            <before>manner/plosive</before>
+         </context>
+         <context>
+            <before>manner/fricative</before>
+         </context>
+
+         <transform>
+            <from>@l</from>
+            <to>@d</to>
+         </transform>
+      </rule>
+
+      <rule id="ghq_dt_unvoiced">
+         <context>
+            <before>voicing/voiceless</before>
+         </context>
+         <transform>
+            <from>@ggh</from>
+            <to>@kq</to>
+         </transform>
+         <transform>
+            <from>@d</from>
+            <to>@t</to>
+         </transform>
+      </rule>
+
+      <rule id="dn_nasal_3p">
+         <context>
+            <before>manner/nasal</before>
+         </context>
+         <context>
+            <before>person/3</before>
+         </context>
+         <transform>
+            <from>manner/plosive</from>
+            <to>manner/nasal</to>
+         </transform>
+      </rule>
+   </rules>
+
+   <!-- Definition of affixal and combinatory forms -->
    <forms>
-      <class id="numbers">
-         <form provide="number/singular" id="singular" />
-         <form provide="number/plural" id="plural">
-            <harmony hardsoft custom>
-               <voiced inherit="" extra="л м н ң / ж з" />
-               <voiceless extra="б в г д" />
-               <sonorant inherit="vowels" extra="р у й" />
-               <base>дар</base>
-            </harmony>
-         </form>
-      </class>
+      <!-- Plural endings -->
+      <form id="singular">
+         <require>wordclass/noun</require>
+         <provide>number/singular</provide>
+         <suffix/>
+      </form>
 
-      <class id="cases">
-         <form provide="case/nominative" id="nominative" />
-         <form provide="case/ablative" id="ablative">
-            <harmony hardsoft custom>
-               <voiced inherit="vowels" extra="л р у й / ж з" />
-               <voiceless extra="б в г д" />
-               <sonorant inherit="" extra="м н ң / 3" />
-               <base>дан</base>
-            </harmony>
-         </form>
-         <form provide="case/locative" id="locative">
-            <harmony hardsoft custom>
-               <voiced inherit="sonorants" extra="ж з" />
-               <voiceless extra="б в г д" />
-               <custom base="нда" extra="3" />
-               <sonorant inherit="" extra="3" />
-               <base>да</base>
-            </harmony>
-         </form>
-         <form provide="case/dative" id="dative">
-            <harmony hardsoft custom>
-               <voiced inherit="sonorants" extra="ж з" />
-               <voiceless extra="б в г д" />
-               <custom base="на" extra="3" />
-               <custom base="а" extra="1s 2s" />
-               <base>ға</base>
-            </harmony>
-         </form>
-         <form provide="case/genitive" id="genitive">
-            <harmony hardsoft custom>
-               <voiced inherit="" extra="и ю / л р у й / ж з" />
-               <voiceless extra="б в г д" />
-               <sonorant inherit="vowels" extra="м н ң / 3" />
-               <base>дың</base>
-            </harmony>
-         </form>
-         <group provide="case/accusative" id="accusative">
-            <form standard>
-               <harmony hardsoft custom>
-                  <voiced inherit="sonorants" extra="ж з" />
-                  <voiceless extra="б в г д" />
-                  <sonorant inherit="vowels" />
-                  <custom base="н" extra="3" />
-                  <base>ды</base>
-               </harmony>
-            </form>
-            <form id="null" />
-         </group>
-         <group provide="case/instrumental" id="instrumental">
-            <form standard>
-               <harmony custom>
-                  <voiced inherit="" extra="ж з" />
-                  <voiceless extra="б в г д" />
-                  <sonorant extra="3" />
-                  <base>бен</base>
-               </harmony>
-            </form>
-            <form id="2">
-               <harmony custom>
-                  <voiced inherit="" extra="ж з" />
-                  <voiceless extra="б в г д" />
-                  <sonorant extra="3" />
-                  <base>бенен</base>
-               </harmony>
-            </form>
-         </group>
-         <form provide="case/possessive" id="possessive">
-            <harmony custom>
-               <voiced inherit="sonorants" extra="д з" />
-               <voiceless extra="б в г д" />
-               <sonorant inherit="vowels" />
-               <base>дікі</base>
-            </harmony>
-         </form>
-      </class>
+      <form id="plural">
+         <require>wordclass/noun</require>
+         <provide>number/plural</provide>
+         <suffix>лар</suffix>
+      </form>
 
-      <class id="pronouns">
-      <group provide="predicate" derive="case" id="personal">
-         <form provide="person/1 number/singular" id="1s">
-            <override feature="case/ablative">менен
-            </irregular>
-            <override feature="case/dative">маған
-            </irregular>
-            <override feature="case/dative">менің
-            </irregular>
-            <override feature="case/accusative">мені
-            </irregular>
-            <override feature="case/instrumental">менімен
-            </irregular>
-            <override feature="case/possessive">менікі
-            </irregular>
-            <base>мен</base>
-         </form>
-         <form provide="person/1 number/plural" id="1p">біз</form>
-         <form provide="person/2i" derive="number" id="2i">
-            <override feature="case/ablative">сенен
-            </irregular>
-            <override feature="case/dative">саған
-            </irregular>
-            <override feature="case/dative">сенің
-            </irregular>
-            <override feature="case/accusative">сені
-            </irregular>
-            <override feature="case/instrumental">сенімен
-            </irregular>
-            <override feature="case/possessive">сенікі
-            </irregular>
-            <base>сен</base>
-         </form>
-         <form provide="person/2f" derive="number" id="2f">сіз</form>
-         <form provide="person/3" derive="number" id="3">
-            <override feature="case/ablative">одан
-            </irregular>
-            <override feature="case/dative">оған
-            </irregular>
-            <override feature="case/dative">оның
-            </irregular>
-            <override feature="case/accusative">оны
-            </irregular>
-            <override feature="case/instrumental">онымен
-            </irregular>
-            <override feature="case/possessive">онікі
-            </irregular>
-            <base>ол</base>
-         </form>
-      </group>
-      <group id="reflexive">
-         <form standard>өз</form>
-         <form derive="possessor case number" id="nominal">өз</form>
-      </group>
-      <group id="demonstrative">
-         <group provide="predicate" id="predicative">
+      <!-- Case endings -->
+      <form id="ablative">
+         <require>wordclass/noun</require>
+         <provide>case/ablative</provide>
+         <suffix>дан</suffix>
+      </form>
 
-         </group>
-         <group provide="description" id="adjectival">
-         </group>
-      </group>
-      <!-- TODO think about how to define -->
-      </pronouns>
+      <form id="locative">
+         <require>wordclass/noun</require>
+         <provide>case/locative</provide>
+         <suffix>да</suffix>
+      </form>
 
-      <class id="particles">
-         <group id="question">
-            <form standard>
-               <harmony hardsoft voiced voiceless="б в г д" vowel="л р у й">ма</harmony>
-            </form>
-         </group>
+      <form id="dative">
+         <require>wordclass/noun</require>
+         <provide>case/dative</provide>
+         <suffix>қа</suffix>
+      </form>
 
-         <group id="intense_question" mark="colloquial">
-            <form standard>ше</form>
-         </group>
+      <form id="genitive">
+         <require>wordclass/noun</require>
+         <provide>case/genitive</provide>
+         <suffix>ның</suffix>
+      </form>
 
-         <group id="concretising">
-            <form standard>
-               <harmony voiced unvoiced>ғой</harmony>
-            </form>
-         </group>
+      <form id="accusative">
+         <require>wordclass/noun</require>
+         <provide>case/accusative</provide>
+         <suffix>ны</suffix>
+      </form>
 
-         <group id="intensifying" mark="colloquial">
-            <form id="1">-ай</form>
-            <form id="2">-ау</form>
-            <form id="3">-ақ</form>
-            <form id="4">е</form>
-         </group>
+      <form id="instrumental1">
+         <require>wordclass/noun</require>
+         <provide>case/instrumental</provide>
+         <suffix>пен</suffix>
+      </form>
 
-         <group id="limiting">
-            <form id="1">
-               <harmony voiced voiceless>ғана</harmony>
-            </form>
-            <form interrupted id="2">
-               <element id="1">тек</element>
-               <element id="2">
-                  <form ref="particles/limiting/1" />
-               </element>
-            </form>
-            <form id="3">-ақ</form>
-         </group>
+      <form id="instrumental2">
+         <require>wordclass/noun</require>
+         <provide>case/instrumental</provide>
+         <suffix>пенен</suffix>
+      </form>
 
-         <group id="conjectural">
-            <form id="1">
-               <harmony hardsoft>-мыс</harmony>
-            </form>
-
-            <form id="2">
-               <harmony hardsoft>-ды</harmony>
-            </form>
-         </group>
-
-      </class>
-
-      <class id="suffixes">
-         <group id="demonstrative">
-            <form standard>
-               <harmony hardsoft voiced unvoiced>ғы</harmony>
-            </form>
-         </group>
-
-         <group id="possessive">
-            <form controller="pronouns/personal" id="1">
-               <entry id="1s">
-                  <harmony hardsoft epentheticvowel>м</harmony>
-               </entry>
-               <entry id="1p">
-                  <harmony hardsoft epentheticvowel>мыз</harmony>
-               </entry>
-               <entry id="2i">
-                  <harmony hardsoft epentheticvowel>ң</harmony>
-               </entry>
-               <entry id="2f">
-                  <harmony hardsoft epentheticvowel>ңыз</harmony>
-               </entry>
-               <entry id="3">
-                  <harmony hardsoft epentheticconsonant="с">ы</harmony>
-               </entry>
-            </form>
-         </group>
-      </class>
+      <form id="possessive">
+         <require>wordclass/noun</require>
+         <provide>case/possessive</provide>
+         <suffix>дікі</suffix>
+      </form>
    </forms>
+
