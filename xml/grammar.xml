@@ -76,7 +76,7 @@
       </feature>
 
       <!-- Not currently needed -->
-      <feature id="tense" />
+      <feature id="tensed" />
 
       <feature id="level">
          <value id="extrahigh" />
