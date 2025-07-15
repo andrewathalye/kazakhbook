@@ -19,7 +19,7 @@ procedure Analyse is
    Doc    : DOM.Core.Document;
 
    Features : Toolkit.Features.Feature_Database;
-   Phonemes : Toolkit.Phonemes.Phoneme_Map;
+   Phonemes : Toolkit.Phonemes.Phoneme_Database;
    --   Symbols  : Toolkit.Symbols.Symbol_List;
 begin
    Put_Line ("Load Schema");

@@ -20,14 +20,14 @@ package body Toolkit.Features is
    ----------------------
    -- Public Interface --
    ----------------------
-   function Compose (Instance : Feature_Instance) return String is
+   function To_XML (Instance : Feature_Instance) return String is
    begin
       return
         String (Feature_Maps.Key (Instance.Feature)) & "/" &
         String (Value_Lists.Element (Instance.Value));
-   end Compose;
+   end To_XML;
 
-   function Decompose
+   function To_Ada
      (DB : Feature_Database; XML : String) return Feature_Instance
    is
       use Ada.Strings.Fixed;
@@ -72,7 +72,7 @@ package body Toolkit.Features is
 
          return (DB.Find (Name), DB (Name).Find (Value));
       end;
-   end Decompose;
+   end To_Ada;
 
    procedure Read (Doc : DOM.Core.Document; DB : out Feature_Database) is
       N            : Node;

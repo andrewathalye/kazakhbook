@@ -13,11 +13,11 @@ package Toolkit.Features is
    --  Identifies the properties of a specific feature instance.
    --  This is valid only so long as the feature map is visible.
 
-   function Compose (Instance : Feature_Instance) return String;
+   function To_XML (Instance : Feature_Instance) return String;
    --  Return the XML identifier of a feature instance
 
    Unknown_Feature, Unknown_Value : exception;
-   function Decompose
+   function To_Ada
      (DB : Feature_Database; XML : String) return Feature_Instance;
    --  Convert an XML identifier to a feature instance
    --  Raise Unknown_Feature if the feature can’t be resolved.
