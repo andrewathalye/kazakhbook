@@ -1,81 +1,80 @@
-pragma Ada_2012;
+pragma Ada_2022;
+
+with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
+
+with DOM.Core.Attrs;
+with DOM.Core.Documents;
+with DOM.Core.Elements;
+with DOM.Core.Nodes;
+with Toolkit.XML;
+
 package body Toolkit.Phonemes is
+   -----------------
+   -- Resolve_Set --
+   -----------------
+   function Resolve_Set
+     (Required_Set : Features.Feature_Set; Context : Contexts.Context;
+      Within       : Phoneme_Maps.Cursor) return Phoneme_Instance;
+   --  Private variant that allows specifying a phoneme
 
-   pragma Warnings (Off);
-   function Describe
-     (Sounds : Toolkit.Contexts.Feature_Set_List) return String is
-     ("unimplemented");
-   function Describe (Context : Toolkit.Contexts.Context) return String is
-     ("unimplemented");
-   --  TODO implement
-   pragma Warnings (On);
-
-   -------------
-   -- Resolve --
-   -------------
-   function Resolve
-     (DB      : Phoneme_Database; Sounds : Toolkit.Contexts.Feature_Set_List;
-      Context : Toolkit.Contexts.Context; Within : String := "")
-      return Phoneme_Instance
+   function Resolve_Set
+     (Required_Set : Features.Feature_Set; Context : Contexts.Context;
+      Within       : Phoneme_Maps.Cursor) return Phoneme_Instance
    is
-      function Search
-        (Phoneme_C : Phoneme_Maps.Cursor) return Phoneme_Instance;
-      function Search (Phoneme_C : Phoneme_Maps.Cursor) return Phoneme_Instance
-      is
-      begin
-         Check_Phones :
-         for Phone_C in Phoneme_Maps.Element (Phoneme_C).Iterate loop
-            declare
-               use type Ada.Containers.Count_Type;
-               use Toolkit.Contexts;
-               L_Phone : Phone renames Phone_Lists.Element (Phone_C);
-            begin
-               Check_Contexts :
-               for L_Context of L_Phone.Contexts loop
-                  if Superset (Context, L_Context) then
-                     goto Check_Sounds;
-                  end if;
-               end loop Check_Contexts;
-               goto Next_Phone;
-
-               <<Check_Sounds>>
-               if Sounds.Length = L_Phone.Sounds.Length
-                  and then Superset (Sounds, L_Phone.Sounds)
-               then
-                  return
-                    (Phoneme => Phoneme_C,
-                     Instance => Phone_C,
-                     Extra   => Subtract (Sounds, L_Phone.Sounds));
-               end if;
-
-               <<Next_Phone>>
-            end;
-         end loop Check_Phones;
-         raise Unknown_Phoneme with Describe (Sounds) & Describe (Context);
-      end Search;
+      use Toolkit.Contexts;
+      use Toolkit.Features;
+      L_Phones : Phone_List renames Phoneme_Maps.Element (Within);
    begin
-      --  Check within a specific phoneme
-      if Within'Length /= 0 then
-         if DB.Contains (Phoneme_Name (Within)) then
-            return Search (DB.Find (Phoneme_Name (Within)));
-         end if;
-
-         raise Unknown_Phoneme with Within;
-      end if;
-
-      --  Otherwise try all of them
-      for Phoneme_C in DB.Iterate loop
+      for C in L_Phones.Iterate loop
+         declare
+            L_Phone : Phone renames Phone_Lists.Element (C);
          begin
-            return Search (Phoneme_C);
+            --  Check contexts
+            --  The required context must be broader or equal to
+            --  one of the permissible contexts
+            for L_Context of L_Phone.Contexts loop
+               if Superset (Context, L_Context) then
+                  goto Found_Context;
+               end if;
+            end loop;
+            goto Next;
+
+            <<Found_Context>>
+
+            --  Check sounds
+            --  The flattened set of features must be broader or equal to
+            --  the required features
+            if Superset (Flatten (L_Phone.Sounds), Required_Set) then
+               return (Phoneme => Within, Instance => C, Extra => <>);
+            end if;
+         end;
+         <<Next>>
+      end loop;
+      raise Unknown_Phoneme
+        with Features.To_XML (Required_Set) & " in " &
+        Contexts.To_XML (Context) & " within " &
+        String (Phoneme_Maps.Key (Within));
+   end Resolve_Set;
+
+   function Resolve_Set
+     (DB      : Phoneme_Database; Required_Set : Features.Feature_Set;
+      Context : Contexts.Context) return Phoneme_Instance
+   is
+   begin
+      for C in DB.Iterate loop
+         begin
+            return Resolve_Set (Required_Set, Context, C);
          exception
             when Unknown_Phoneme =>
                null;
          end;
       end loop;
 
-      raise Unknown_Phoneme with Describe (Sounds) & Describe (Context);
-   end Resolve;
+      raise Unknown_Phoneme
+        with Features.To_XML (Required_Set) & " in " &
+        Contexts.To_XML (Context);
+   end Resolve_Set;
 
    ------------
    -- To_XML --
@@ -86,18 +85,29 @@ package body Toolkit.Phonemes is
 
       Buffer : Unbounded_String;
    begin
+      Append (Buffer, "<phone>");
+
+      --  TODO what about context?
+      --
       --  If a phoneme has only one phone, we use @ notation
       if Phoneme_Maps.Element (Instance.Phoneme).Length = 1 then
+         Append (Buffer, "<provide>");
          Append (Buffer, "@" & String (Phoneme_Maps.Key (Instance.Phoneme)));
+         Append (Buffer, "</provide>");
       else
-         for Feature_Set of Phone_Lists.Element (Instance.Instance).Sounds loop
-            for Feature of Feature_Set loop
-               Append (Buffer, Features.To_XML (Feature) & " ");
-            end loop;
-            Append (Buffer, "|| ");
-            --  TODO
-         end loop;
+         Append
+           (Buffer,
+            Features.To_XML (Phone_Lists.Element (Instance.Instance).Sounds));
       end if;
+
+      Append (Buffer, "<!-- EXTRA -->");
+      Append (Buffer, Features.To_XML (Instance.Extra));
+
+      Append (Buffer, "<ipa>");
+      Append (Buffer, Phone_Lists.Element (Instance.Instance).IPA);
+      Append (Buffer, "</ipa>");
+
+      Append (Buffer, "</phone>");
 
       return To_String (Buffer);
    end To_XML;
@@ -106,12 +116,67 @@ package body Toolkit.Phonemes is
    -- To_Ada --
    ------------
    function To_Ada
-     (DB : Phoneme_Database; XML : String; Context : Toolkit.Contexts.Context)
+     (FDB         : Features.Feature_Database; PDB : Phoneme_Database;
+      Description : String; Context : Toolkit.Contexts.Context)
       return Phoneme_Instance
    is
+      use Ada.Strings.Fixed;
+      use type Phoneme_Maps.Cursor;
+
+      Required_Set     : Features.Feature_Set;
+      Required_Phoneme : Phoneme_Maps.Cursor;
+
+      Start_Index      : Natural := Description'First;
+      Next_Space_Index : Natural := 0;
    begin
-      pragma Compile_Time_Warning (Standard.True, "To_Ada unimplemented");
-      return raise Program_Error with "Unimplemented function To_Ada";
+      --  Find next (first) space
+      if Description (Description'First) = ' ' then
+         raise Constraint_Error with "Description cannot start with space";
+      end if;
+      Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
+      if Next_Space_Index = 0 then
+         Next_Space_Index := Description'Last + 1;
+      end if;
+
+      --  Check for leading @
+      if Description (Description'First) = '@' then
+         if Description'Length = 1 then
+            raise Constraint_Error with "No base phoneme provided after @";
+         end if;
+
+         Required_Phoneme :=
+           PDB.Find
+             (Phoneme_Name
+                (Description (Description'First + 1 .. Next_Space_Index - 1)));
+         Start_Index      := Next_Space_Index + 1;
+         Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
+      end if;
+
+      --  Process each feature
+      while Next_Space_Index /= 0 loop
+         if Next_Space_Index = Description'Last then
+            raise Constraint_Error with "Description cannot end with space";
+         end if;
+
+         if Description (Start_Index) = ' ' then
+            raise Constraint_Error
+              with "Description may not have two spaces in a row";
+         end if;
+
+         Required_Set.Append
+           (Features.To_Ada
+              (FDB, Description (Start_Index .. Next_Space_Index - 1)));
+
+         Start_Index      := Next_Space_Index + 1;
+         Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
+      end loop;
+
+      --  Resolve the set into a phoneme
+      if Required_Phoneme = Phoneme_Maps.No_Element then
+         return Resolve_Set (PDB, Required_Set, Context);
+      else
+         return Resolve_Set (Required_Set, Context, Required_Phoneme);
+      end if;
    end To_Ada;
 
    ----------
@@ -121,9 +186,67 @@ package body Toolkit.Phonemes is
      (Doc : DOM.Core.Document; Features : Toolkit.Features.Feature_Database;
       Phonemes : out Phoneme_Database)
    is
+      use DOM.Core;
+      use Ada.Strings.Unbounded;
+
+      L_Phones     : Phone_List;
+      X_Phoneme    : Node;
+      X_Phonemes   : Node_List :=
+        DOM.Core.Documents.Get_Elements_By_Tag_Name (Doc, "phoneme");
+      X_Phoneme_ID : Attr;
    begin
-      pragma Compile_Time_Warning (Standard.True, "Read unimplemented");
-      raise Program_Error with "Unimplemented procedure Read";
+      Phonemes.Clear;
+
+      Read_Phonemes :
+      for I in 1 .. Nodes.Length (X_Phonemes) loop
+         L_Phones.Clear;
+
+         X_Phoneme    := Nodes.Item (X_Phonemes, I - 1);
+         X_Phoneme_ID :=
+           Nodes.Get_Named_Item (Nodes.Attributes (X_Phoneme), "id");
+
+         Read_Phones :
+         declare
+            L_Phone  : Phone;
+            X_Phone  : Node;
+            X_Phones : Node_List :=
+              Elements.Get_Elements_By_Tag_Name (X_Phoneme, "phone");
+
+            X_Contexts, X_Features, X_IPA : Node_List;
+         begin
+            --  Collect all data for a single phone and add to list
+            for I in 1 .. Nodes.Length (X_Phones) loop
+               X_Phone := Nodes.Item (X_Phones, I - 1);
+
+               X_Contexts :=
+                 Elements.Get_Elements_By_Tag_Name (X_Phone, "context");
+               X_Features :=
+                 Elements.Get_Elements_By_Tag_Name (X_Phone, "provide");
+               X_IPA := Elements.Get_Elements_By_Tag_Name (X_Phone, "ipa");
+
+               L_Phone.Contexts := Contexts.To_Ada (Features, X_Contexts);
+               L_Phone.Sounds   :=
+                 Toolkit.Features.To_Ada (Features, X_Features);
+               L_Phone.IPA      :=
+                 To_Unbounded_String
+                   (Toolkit.XML.Get_Text (Nodes.Item (X_IPA, 0)));
+
+               Free (X_Contexts);
+               Free (X_Features);
+               Free (X_IPA);
+
+               L_Phones.Append (L_Phone);
+            end loop;
+
+            Free (X_Phones);
+
+            --  Add phone list with phoneme ID
+            Phonemes.Insert
+              (Phoneme_Name (Attrs.Value (X_Phoneme_ID)), L_Phones);
+         end Read_Phones;
+      end loop Read_Phonemes;
+
+      Free (X_Phonemes);
    end Read;
 
    ----------

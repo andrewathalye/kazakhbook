@@ -203,12 +203,12 @@
    -->
    <phonemes>
       <phoneme id="a">
-         <provide>voicing/voiced manner/vocalic height/open hardness/hard place/back !rounded</provide>
+         <provide>voicing/voiced manner/vocalic height/open hardness/hard place/back</provide>
          <ipa>ɑ</ipa>
       </phoneme>
 
       <phoneme id="schwa">
-         <provide>voicing/voiced manner/vocalic height/open hardness/soft place/front !rounded</provide>
+         <provide>voicing/voiced manner/vocalic height/open hardness/soft place/front</provide>
          <ipa>æ</ipa>
       </phoneme>
 
@@ -216,7 +216,7 @@
          <!-- Three contexts for a fricative realisation -->
          <phone>
             <context>
-               <before>[]</before>
+               <before><!--TODO-->[]</before>
             </context>
 
             <context>
@@ -227,7 +227,7 @@
                <after>manner/vocalic</after>
             </context>
 
-            <provide>voicing/voiced place/bilabial manner/fricative !foreign</provide>
+            <provide>voicing/voiced place/bilabial manner/fricative</provide>
             <ipa>β</ipa>
          </phone>
 
@@ -301,8 +301,7 @@
 
          <phone>
             <!-- Unstressed monophthong -->
-            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/mid place/central
-               !stressed</provide>
+            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/mid place/central</provide>
             <ipa>ɘ</ipa>
          </phone>
       </phoneme>
@@ -372,7 +371,7 @@
 
          <phone>
             <!-- Default hard pronunciation -->
-            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular !aspirated</provide>
+            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular</provide>
             <ipa>q</ipa>
          </phone>
       </phoneme>

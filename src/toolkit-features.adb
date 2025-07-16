@@ -1,118 +1,146 @@
-pragma Ada_2022;
+pragma Ada_2012;
 
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Text_IO;
 
-with DOM.Core; use DOM.Core;
-with DOM.Core.Documents;
-with DOM.Core.Elements;
-with DOM.Core.Attrs;
 with DOM.Core.Nodes;
+with Toolkit.XML;
 
 package body Toolkit.Features is
-   -----------------------
-   -- Private Interface --
-   -----------------------
-   function Hash (L : Feature_Name) return Ada.Containers.Hash_Type is
-   begin
-      return Ada.Strings.Hash (String (L));
-   end Hash;
 
-   ----------------------
-   -- Public Interface --
-   ----------------------
-   function To_XML (Instance : Feature_Instance) return String is
+   --------------
+   -- Subtract --
+   --------------
+   function Subtract (L, R : Feature_Set) return Feature_Set is
+      Result : Feature_Set;
    begin
-      return
-        String (Feature_Maps.Key (Instance.Feature)) & "/" &
-        String (Value_Lists.Element (Instance.Value));
+      for Feature of L loop
+         if not R.Contains (Feature) then
+            Result.Append (Feature);
+         end if;
+      end loop;
+
+      return Result;
+   end Subtract;
+
+   --------------
+   -- Superset --
+   --------------
+   function Superset (L, R : Feature_Set) return Boolean is
+   begin
+      for Feature of R loop
+         if not L.Contains (Feature) then
+            return False;
+         end if;
+      end loop;
+
+      return True;
+   end Superset;
+
+   -------------
+   -- Flatten --
+   -------------
+   function Flatten (L : Feature_Set_List) return Feature_Set is
+      Result : Feature_Set;
+   begin
+      for Set of L loop
+         for Feature of Set loop
+            if not Result.Contains (Feature) then
+               Result.Append (Feature);
+            end if;
+         end loop;
+      end loop;
+
+      return Result;
+   end Flatten;
+
+   ---------------
+   -- To_String --
+   ---------------
+   function To_String (Set : Feature_Set) return String is
+      use type Feature_Sets.Cursor;
+
+      Buffer : Unbounded_String;
+   begin
+      for C in Set.Iterate loop
+         Append (Buffer, To_String (Feature_Sets.Element (C)));
+
+         if C /= Set.Last then
+            Append (Buffer, ' ');
+         end if;
+      end loop;
+
+      return To_String (Buffer);
+   end To_String;
+
+   ------------
+   -- To_XML --
+   ------------
+   function To_XML (Set : Feature_Set) return String is
+     ("<provide>" & To_String (Set) & "</provide>");
+
+   function To_XML (List : Feature_Set_List) return String is
+      Buffer : Unbounded_String;
+   begin
+      for Set of List loop
+         Append (Buffer, To_XML (Set));
+      end loop;
+
+      return To_String (Buffer);
    end To_XML;
 
+   ------------
+   -- To_Ada --
+   ------------
    function To_Ada
-     (DB : Feature_Database; XML : String) return Feature_Instance
+     (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set
    is
+      use DOM.Core;
       use Ada.Strings.Fixed;
-      Slash_Index : Natural;
+      use Ada.Text_IO;
+
+      Name : constant String := Nodes.Node_Name (XML);
+      Text : constant String := Toolkit.XML.Get_Text (XML);
+      Start_Index : Positive := Text'First;
+      Space_Index : Natural;
+
+      Result : Feature_Set;
    begin
-      --  Symbolic reference to a phoneme
-      --  These shouldn’t be decomposed
-      if XML (XML'First) = '@' then
-         raise Constraint_Error;
+      Put_Line (Text);
+
+      if Name /= "provide" and
+        Name /= "require" and
+        Name /= "before" and
+        Name /= "after" and
+        Name /= "global"
+      then
+         raise Constraint_Error
+           with "Unsupported node type " & Name;
       end if;
 
-      --  Parse features
-      Slash_Index := Index (Source => XML, Pattern => "/");
+      Space_Index := Index (Text, " ", Start_Index);
+      while Space_Index > Text'First loop
+         Result.Append (To_Ada (DB, Text (Start_Index .. Space_Index - 1)));
+         Start_Index := Space_Index + 1;
+         Space_Index := Index (Text, " ", Start_Index);
+      end loop;
 
-      --  No slash means that the feature is binary
-      if Slash_Index = 0 then
-         if not DB.Contains (Feature_Name (XML)) then
-            raise Unknown_Feature;
-         end if;
-         return (DB.Find (Feature_Name (XML)), Value_Lists.No_Element);
-      end if;
-
-      --  If there is a slash, but not enough space
-      if Slash_Index < 2 or Slash_Index = XML'Last then
-         raise Constraint_Error;
-      end if;
-
-      --  Otherwise (feature name can’t contain slash)
-      declare
-         Name  : constant Feature_Name  :=
-           Feature_Name (XML (XML'First .. Slash_Index - 1));
-         Value : constant Feature_Value :=
-           Feature_Value (XML (Slash_Index + 1 .. XML'Last));
-      begin
-         if not DB.Contains (Name) then
-            raise Unknown_Feature;
-         end if;
-
-         if not DB (Name).Contains (Value) then
-            raise Unknown_Value;
-         end if;
-
-         return (DB.Find (Name), DB (Name).Find (Value));
-      end;
+      return Result;
    end To_Ada;
 
-   procedure Read (Doc : DOM.Core.Document; DB : out Feature_Database) is
-      N            : Node;
-      X_Features   : Node_List :=
-        Documents.Get_Elements_By_Tag_Name (Doc, "feature");
-      X_Feature_ID : Attr;
-      X_Values     : Node_List;
-      X_Value_ID   : Attr;
+   function To_Ada
+     (DB : Feature_Database; XML : DOM.Core.Node_List) return Feature_Set_List
+   is
+      use DOM.Core;
 
-      Values : Value_List;
+      Result : Feature_Set_List;
    begin
-      DB.Clear;
+      for I in 1 .. Nodes.Length (XML) loop
+         Result.Append (To_Ada (DB, Nodes.Item (XML, I - 1)));
+      end loop;
 
-      Add_Feature :
-      for Index in 1 .. Nodes.Length (X_Features) loop
-         N            := Nodes.Item (X_Features, Index - 1);
-         X_Feature_ID := Nodes.Get_Named_Item (Nodes.Attributes (N), "id");
+      return Result;
+   end To_Ada;
 
-         Values.Clear;
-         X_Values := Elements.Get_Elements_By_Tag_Name (N, "value");
-         Add_Value :
-         for Index in 1 .. Nodes.Length (X_Values) loop
-            N          := Nodes.Item (X_Values, Index - 1);
-            X_Value_ID := Nodes.Get_Named_Item (Nodes.Attributes (N), "id");
-            Values.Append (Feature_Value (Attrs.Value (X_Value_ID)));
-         end loop Add_Value;
-
-         Free (X_Values);
-
-         declare
-            Feature_ID : constant Feature_Name :=
-              Feature_Name (Attrs.Value (X_Feature_ID));
-         begin
-            if DB.Contains (Feature_ID) then
-               raise Duplicate_Feature with String (Feature_ID);
-            end if;
-            DB.Insert (Feature_ID, Values);
-         end;
-      end loop Add_Feature;
-
-      Free (X_Features);
-   end Read;
 end Toolkit.Features;

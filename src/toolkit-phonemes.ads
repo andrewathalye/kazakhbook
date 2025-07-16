@@ -18,11 +18,9 @@ package Toolkit.Phonemes is
    --  One concrete phoneme realisation
 
    Unknown_Phoneme : exception;
-   function Resolve
-     (DB      : Phoneme_Database;
-      Sounds  : Toolkit.Contexts.Feature_Set_List;
-      Context : Toolkit.Contexts.Context;
-      Within  : String := "") return Phoneme_Instance;
+   function Resolve_Set
+     (DB      : Phoneme_Database; Required_Set : Features.Feature_Set;
+      Context : Contexts.Context) return Phoneme_Instance;
    --  Resolve a set of sounds to a specific phoneme in a given context
    --  Optionally provide a phoneme for resolution
 
@@ -31,9 +29,10 @@ package Toolkit.Phonemes is
    --  This omits any features inherent to a phoneme
 
    function To_Ada
-     (DB : Phoneme_Database; XML : String; Context : Toolkit.Contexts.Context)
+     (FDB         : Features.Feature_Database; PDB : Phoneme_Database;
+      Description : String; Context : Contexts.Context)
       return Phoneme_Instance;
-   --  Resolve an XML feature list to a specific phoneme in a given context
+   --  Resolve a textual feature list to a specific phoneme in a given context
 
    Duplicate_Phoneme : exception;
    procedure Read
@@ -43,7 +42,7 @@ package Toolkit.Phonemes is
 private
    type Phone is record
       Contexts : Toolkit.Contexts.Context_List;
-      Sounds   : Toolkit.Contexts.Feature_Set_List;
+      Sounds   : Features.Feature_Set_List;
       IPA      : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
@@ -62,6 +61,6 @@ private
    type Phoneme_Instance is record
       Phoneme  : Phoneme_Maps.Cursor;
       Instance : Phone_Lists.Cursor;
-      Extra    : Toolkit.Contexts.Feature_Set_List;
+      Extra    : Features.Feature_Set_List;
    end record;
 end Toolkit.Phonemes;
