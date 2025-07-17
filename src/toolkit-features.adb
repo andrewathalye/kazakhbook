@@ -100,31 +100,38 @@ package body Toolkit.Features is
       use Ada.Strings.Fixed;
       use Ada.Text_IO;
 
-      Name : constant String := Nodes.Node_Name (XML);
-      Text : constant String := Toolkit.XML.Get_Text (XML);
-      Start_Index : Positive := Text'First;
+      Name        : constant String := Nodes.Node_Name (XML);
+      Text        : constant String := Toolkit.XML.Get_Text (XML);
+      Start_Index : Positive        := Text'First;
       Space_Index : Natural;
 
       Result : Feature_Set;
    begin
+      --  TODO debug
       Put_Line (Text);
 
-      if Name /= "provide" and
-        Name /= "require" and
-        Name /= "before" and
-        Name /= "after" and
-        Name /= "global"
+      if Name /= "provide" and Name /= "require" and Name /= "before" and
+        Name /= "after" and Name /= "global"
       then
-         raise Constraint_Error
-           with "Unsupported node type " & Name;
+         raise Constraint_Error with "Unsupported node type " & Name;
       end if;
 
+      --  Handle the case of a single feature
       Space_Index := Index (Text, " ", Start_Index);
-      while Space_Index > Text'First loop
+      Add_Features :
+      loop
+         --  Exit on the last feature
+         if Space_Index = 0 then
+            Result.Append (To_Ada (DB, Text (Start_Index .. Text'Last)));
+            exit Add_Features;
+         end if;
+
          Result.Append (To_Ada (DB, Text (Start_Index .. Space_Index - 1)));
+
+         --  Update indices
          Start_Index := Space_Index + 1;
          Space_Index := Index (Text, " ", Start_Index);
-      end loop;
+      end loop Add_Features;
 
       return Result;
    end To_Ada;

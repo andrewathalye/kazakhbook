@@ -14,7 +14,7 @@ package Toolkit.Features_Impl is
    type Feature_Database is private;
    type Feature_Instance is private;
 
-   Unknown_Feature, Unknown_Value : exception;
+   Unknown_Feature, Unknown_Value, Indeterminate_Feature : exception;
    Duplicate_Feature : exception;
 
    function To_String (Instance : Feature_Instance) return String;

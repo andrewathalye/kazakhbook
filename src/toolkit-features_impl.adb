@@ -39,7 +39,7 @@ package body Toolkit.Features_Impl is
       --  Symbolic reference to a phoneme
       --  These shouldn’t be decomposed
       if Text (Text'First) = '@' then
-         raise Constraint_Error;
+         raise Indeterminate_Feature;
       end if;
 
       --  Parse features
@@ -48,7 +48,7 @@ package body Toolkit.Features_Impl is
       --  No slash means that the feature is binary
       if Slash_Index = 0 then
          if not DB.Contains (Feature_Name (Text)) then
-            raise Unknown_Feature;
+            raise Unknown_Feature with Text;
          end if;
          return (DB.Find (Feature_Name (Text)), Value_Lists.No_Element);
       end if;
@@ -66,11 +66,11 @@ package body Toolkit.Features_Impl is
            Feature_Value (Text (Slash_Index + 1 .. Text'Last));
       begin
          if not DB.Contains (Name) then
-            raise Unknown_Feature;
+            raise Unknown_Feature with String (Name);
          end if;
 
          if not DB (Name).Contains (Value) then
-            raise Unknown_Value;
+            raise Unknown_Value with Text;
          end if;
 
          return (DB.Find (Name), DB (Name).Find (Value));

@@ -1,195 +1,172 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grammar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:noNamespaceSchemaLocation="grammar.xsd">
+<grammar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="grammar.xsd">
    <!-- Abstract features that can be possessed
         by various structures
    -->
    <features>
+      <!--  TODO -->
+      <feature id="[]"/>
       <!-- Sound features -->
       <feature id="place">
-         <value id="bilabial" />
-         <value id="labiodental" />
-         <value id="dental" />
-         <value id="alveolar" />
-         <value id="postalveolar" />
-         <value id="retroflex" />
-         <value id="palatal" />
-         <value id="velar" />
-         <value id="uvular" />
-         <value id="pharyngeal" />
-         <value id="glottal" />
-
+         <value id="bilabial"/>
+         <value id="labiodental"/>
+         <value id="labialvelar"/>
+         <value id="dental"/>
+         <value id="alveolar"/>
+         <value id="postalveolar"/>
+         <value id="retroflex"/>
+         <value id="palatal"/>
+         <value id="velar"/>
+         <value id="uvular"/>
+         <value id="pharyngeal"/>
+         <value id="glottal"/>
          <!-- For vowels -->
-         <value id="front" />
-         <value id="frontcentral" />
-         <value id="central" />
-         <value id="backcentral" />
-         <value id="back" />
+         <value id="front"/>
+         <value id="frontcentral"/>
+         <value id="central"/>
+         <value id="backcentral"/>
+         <value id="back"/>
       </feature>
-
       <feature id="manner">
-         <value id="plosive" />
-         <value id="nasal" />
-         <value id="trill" />
-         <value id="flap" />
-         <value id="latflap" />
-         <value id="fricative" />
-         <value id="latfric" />
-         <value id="approximant" />
-         <value id="latapprox" />
-
-         <value id="click" />
-         <value id="implosive" />
-         <value id="ejective" />
-
-         <value id="vocalic" />
+         <value id="plosive"/>
+         <value id="nasal"/>
+         <value id="trill"/>
+         <value id="flap"/>
+         <value id="latflap"/>
+         <value id="fricative"/>
+         <value id="latfric"/>
+         <value id="approximant"/>
+         <value id="latapprox"/>
+         <value id="click"/>
+         <value id="implosive"/>
+         <value id="ejective"/>
+         <value id="vocalic"/>
       </feature>
-
+      <feature id="aspirated"/>
       <feature id="height">
-         <value id="close" />
-         <value id="closeclosemid" />
-         <value id="closemid" />
-         <value id="mid" />
-         <value id="openmid" />
-         <value id="openopenmid" />
-         <value id="open" />
+         <value id="close"/>
+         <value id="closeclosemid"/>
+         <value id="closemid"/>
+         <value id="mid"/>
+         <value id="openmid"/>
+         <value id="openopenmid"/>
+         <value id="open"/>
       </feature>
-
       <feature id="voicing">
-         <value id="voiceless" />
-         <value id="whispered" />
-         <value id="voiced" />
+         <value id="voiceless"/>
+         <value id="whispered"/>
+         <value id="voiced"/>
       </feature>
-
-      <feature id="stressed" />
-
+      <feature id="stressed"/>
       <feature id="hardness">
-         <value id="hard" />
-         <value id="soft" />
+         <value id="hard"/>
+         <value id="soft"/>
       </feature>
-
-      <feature id="rounded" />
-
+      <feature id="rounded"/>
       <feature id="length">
-         <value id="short" />
-         <value id="long" />
+         <value id="short"/>
+         <value id="long"/>
       </feature>
-
       <!-- Not currently needed -->
-      <feature id="tensed" />
-
+      <feature id="tensed"/>
       <feature id="level">
-         <value id="extrahigh" />
-         <value id="high" />
-         <value id="mid" />
-         <value id="low" />
-         <value id="extralow" />
+         <value id="extrahigh"/>
+         <value id="high"/>
+         <value id="mid"/>
+         <value id="low"/>
+         <value id="extralow"/>
       </feature>
-
       <feature id="contour">
-         <value id="rising" />
-         <value id="falling" />
-         <value id="flat" />
-         <value id="risingfalling" />
+         <value id="rising"/>
+         <value id="falling"/>
+         <value id="flat"/>
+         <value id="risingfalling"/>
       </feature>
-
       <!-- Word features -->
       <feature id="wordclass">
-         <value id="particle" />
-         <value id="conjunction" />
-         <value id="noun" />
-         <value id="number" />
-         <value id="adjective" />
-         <value id="adverb" />
-         <value id="verb" />
+         <value id="particle"/>
+         <value id="conjunction"/>
+         <value id="noun"/>
+         <value id="number"/>
+         <value id="adjective"/>
+         <value id="adverb"/>
+         <value id="verb"/>
       </feature>
-
       <feature id="person">
-         <value id="1" />
-         <value id="2i" />
-         <value id="2f" />
-         <value id="3" />
+         <value id="1"/>
+         <value id="2i"/>
+         <value id="2f"/>
+         <value id="3"/>
       </feature>
-
       <!-- Noun features -->
       <feature id="number">
-         <value id="singular" />
-         <value id="plural" />
+         <value id="singular"/>
+         <value id="plural"/>
       </feature>
-
       <feature id="possessor">
-         <value id="1" />
-         <value id="2i" />
-         <value id="2f" />
-         <value id="3" />
+         <value id="1"/>
+         <value id="2i"/>
+         <value id="2f"/>
+         <value id="3"/>
       </feature>
-
       <feature id="case">
-         <value id="nominative" />
-         <value id="ablative" />
-         <value id="locative" />
-         <value id="dative" />
-         <value id="genitive" />
-         <value id="accusative" />
-         <value id="instrumental" />
+         <value id="nominative"/>
+         <value id="ablative"/>
+         <value id="locative"/>
+         <value id="dative"/>
+         <value id="genitive"/>
+         <value id="accusative"/>
+         <value id="instrumental"/>
          <!-- Not traditionally considered a case
               but does not combine with any others -->
-         <value id="possessive" />
+         <value id="possessive"/>
       </feature>
-
       <!-- Adjective features -->
       <feature id="degree">
-         <value id="positive" />
-         <value id="comparative" />
-         <value id="dimcomp" />
-         <value id="excessive" />
-         <value id="intensive" />
-         <value id="superlative" /> <!-- TODO ?? complex forms -->
+         <value id="positive"/>
+         <value id="comparative"/>
+         <value id="dimcomp"/>
+         <value id="excessive"/>
+         <value id="intensive"/>
+         <value id="superlative"/> <!-- TODO ?? complex forms -->
       </feature>
-
       <!-- Verb features -->
       <feature id="voice">
-         <value id="active" />
-         <value id="reflexive" />
-         <value id="passive" />
-         <value id="reciprocal" />
-         <value id="causative" />
+         <value id="active"/>
+         <value id="reflexive"/>
+         <value id="passive"/>
+         <value id="reciprocal"/>
+         <value id="causative"/>
       </feature>
       <!-- TODO this needs some thought, multiple voices can be applied -->
-
       <feature id="mood">
-         <value id="indefinite" />
-         <value id="participial" />
-         <value id="gerundive" />
-         <value id="indicative" />
-         <value id="optative" />
-         <value id="subjunctive" />
-         <value id="imperative" />
+         <value id="indefinite"/>
+         <value id="participial"/>
+         <value id="gerundive"/>
+         <value id="indicative"/>
+         <value id="optative"/>
+         <value id="subjunctive"/>
+         <value id="imperative"/>
       </feature>
-
       <feature id="tense">
-         <value id="present" /> <!-- TODO ?? complex / simple -->
-         <value id="past" />
-         <value id="pluperfect" />
-         <value id="aoristpast" />
-         <value id="transitivepast" />
-         <value id="transitivefut" />
-         <value id="potentialfut" />
-         <value id="intentionalfut" />
+         <value id="present"/> <!-- TODO ?? complex / simple -->
+         <value id="past"/>
+         <value id="pluperfect"/>
+         <value id="aoristpast"/>
+         <value id="transitivepast"/>
+         <value id="transitivefut"/>
+         <value id="potentialfut"/>
+         <value id="intentionalfut"/>
       </feature>
       <!-- TODO think about conditional present / future -->
-
-      <feature id="softened" />
-
+      <feature id="softened"/>
       <!-- General features -->
       <feature id="dialect">
-         <value id="west" />
-         <value id="south" />
+         <value id="west"/>
+         <value id="south"/>
       </feature>
-
-      <feature id="foreign" />
+      <feature id="foreign"/>
    </features>
-
    <!-- Mapping between abstract phonemes and
         concrete realisations based upon context.
 
@@ -206,60 +183,49 @@
          <provide>voicing/voiced manner/vocalic height/open hardness/hard place/back</provide>
          <ipa>ɑ</ipa>
       </phoneme>
-
       <phoneme id="schwa">
          <provide>voicing/voiced manner/vocalic height/open hardness/soft place/front</provide>
          <ipa>æ</ipa>
       </phoneme>
-
       <phoneme id="b">
          <!-- Three contexts for a fricative realisation -->
          <phone>
             <context>
-               <before><!--TODO-->[]</before>
+               <before>[]</before>
             </context>
-
             <context>
                <before>manner/vocalic</before>
             </context>
-
             <context>
                <after>manner/vocalic</after>
             </context>
-
             <provide>voicing/voiced place/bilabial manner/fricative</provide>
             <ipa>β</ipa>
          </phone>
-
          <!-- By default, use a plosive -->
          <phone>
             <provide>voicing/voiced place/bilabial manner/plosive</provide>
             <ipa>b</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="v">
          <provide>voicing/voiced manner/fricative place/labiodental foreign</provide>
          <ipa>v</ipa>
       </phoneme>
-
       <phoneme id="ggh">
          <phone>
             <provide>voicing/voiced hardness/soft manner/plosive place/velar</provide>
             <ipa>g</ipa>
          </phone>
-
          <phone>
             <provide>voicing/voiced hardness/hard manner/fricative place/uvular</provide>
             <ipa>ʁ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="d">
          <provide>voicing/voiced manner/plosive place/alveolar</provide>
          <ipa>d</ipa>
       </phoneme>
-
       <phoneme id="je">
          <phone>
             <!-- Two contexts for a stressed diphthong -->
@@ -269,14 +235,10 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-
             <provide>@j</provide>
-            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front
-               !rounded
-               stressed</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front !rounded stressed</provide>
             <ipa>je</ipa>
          </phone>
-
          <phone>
             <!-- Two contexts for an unstressed diphthong -->
             <context>
@@ -285,97 +247,79 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-
             <provide>@j</provide>
-            <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central !rounded
-               !stressed</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central !rounded !stressed</provide>
             <ipa>jɘ</ipa>
          </phone>
-
          <phone>
             <!-- Stressed default monophthong -->
-            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/closemid
-               place/front stressed</provide>
+            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/closemid place/front stressed</provide>
             <ipa>e</ipa>
          </phone>
-
          <phone>
             <!-- Unstressed monophthong -->
             <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/mid place/central</provide>
             <ipa>ɘ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="zh">
          <phone>
             <context>
                <global>dialect/south</global>
             </context>
-
             <provide>@d</provide>
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>dʒ</ipa>
          </phone>
-
          <phone>
             <context>
                <global>dialect/west</global>
             </context>
-
             <provide>@j</provide>
             <ipa>j</ipa>
          </phone>
-
          <phone>
             <!-- Default, unmarked realisation -->
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>ʒ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="z">
          <provide>voicing/voiced manner/fricative place/alveolar</provide>
          <ipa>z</ipa>
       </phoneme>
-
       <phoneme id="j">
          <provide>voicing/voiced manner/approximant place/palatal</provide>
          <ipa>j</ipa>
       </phoneme>
-
       <phoneme id="kq">
          <phone>
             <!-- Default soft pronunciation -->
-            <provide>voicing/unvoiced manner/plosive hardness/soft place/velar</provide>
+            <provide>voicing/voiceless manner/plosive hardness/soft place/velar</provide>
             <ipa>k</ipa>
          </phone>
-
          <phone>
             <!-- Aspirated variant before vowels -->
             <context>
-               <before>voicing/vocalic</before>
+               <before>manner/vocalic</before>
             </context>
-
-            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular aspirated</provide>
+            <provide>voicing/voiceless manner/plosive hardness/hard place/uvular aspirated</provide>
             <ipa>q^h</ipa>
          </phone>
-
          <phone>
             <!-- Glottal variant at the end of a word -->
             <context>
                <before>[]</before>
             </context>
-            <provide>voicing/unvoiced manner/plosive hardness/hard place/glottal</provide>
+            <provide>voicing/voiceless manner/plosive hardness/hard place/glottal</provide>
             <ipa>ʔ</ipa>
          </phone>
-
          <phone>
             <!-- Default hard pronunciation -->
-            <provide>voicing/unvoiced manner/plosive hardness/hard place/uvular</provide>
+            <provide>voicing/voiceless manner/plosive hardness/hard place/uvular</provide>
             <ipa>q</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="l">
          <phone>
             <!-- After a vowel or at the beginning of a word -->
@@ -385,18 +329,15 @@
             <context>
                <after>[]</after>
             </context>
-
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>l</ipa>
          </phone>
-
          <phone>
             <!-- After a non-vowel (hard) -->
             <provide>@yi hardness/hard</provide>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>ɯl</ipa>
          </phone>
-
          <phone>
             <!-- After a non-vowel (soft) -->
             <provide>@yi hardness/soft</provide>
@@ -404,17 +345,14 @@
             <ipa>ɪl</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="m">
          <provide>voicing/voiced manner/nasal place/bilabial</provide>
          <ipa>m</ipa>
       </phoneme>
-
       <phoneme id="n">
          <provide>voicing/voiced manner/nasal place/alveolar</provide>
          <ipa>n</ipa>
       </phoneme>
-
       <phoneme id="ng">
          <phone>
             <!-- Variant after a vowel -->
@@ -424,14 +362,12 @@
             <provide>voicing/voiced manner/nasal place/velar</provide>
             <ipa>ŋ</ipa>
          </phone>
-
          <phone>
             <!-- Default variant -->
             <provide>voicing/voiced manner/nasal place/uvular</provide>
             <ipa>ɴ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="ooe">
          <phone>
             <!-- Labialised hard variant -->
@@ -441,12 +377,10 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-
             <provide>@w</provide>
             <provide>voicing/voiced manner/vocalic place/back height/closemid rounded hardness/hard</provide>
             <ipa>^wo</ipa>
          </phone>
-
          <phone>
             <context>
                <after>[]</after>
@@ -454,51 +388,43 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-
             <provide>@w</provide>
             <provide>voicing/voiced manner/vocalic place/front height/closemid rounded hardness/soft</provide>
             <ipa>^wø</ipa>
          </phone>
-
          <phone>
             <!-- Default hard variant -->
             <provide>hardness/hard manner/vocalic place/back height/closemid rounded</provide>
             <ipa>o</ipa>
          </phone>
-
          <phone>
             <!-- Default soft variant -->
             <provide>hardness/soft manner/vocalic place/front height/closemid rounded</provide>
             <ipa>ø</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="p">
          <provide>voicing/voiceless manner/plosive place/bilabial</provide>
          <ipa>p</ipa>
       </phoneme>
-
       <phoneme id="r">
          <phone>
             <!-- Word-initial and post-vocalic variant -->
             <context>
-               <after>voicing/vocalic</after>
+               <after>manner/vocalic</after>
             </context>
             <context>
                <after>[]</after>
             </context>
-
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɾ</ipa>
          </phone>
-
          <phone>
             <!-- Default hard variant -->
             <provide>@yi hardness/hard</provide>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɯɾ</ipa>
          </phone>
-
          <phone>
             <!-- Default soft variant -->
             <provide>@yi hardness/soft</provide>
@@ -506,17 +432,14 @@
             <ipa>ɪɾ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="s">
          <provide>voicing/voiceless manner/fricative place/alveolar</provide>
          <ipa>s</ipa>
       </phoneme>
-
       <phoneme id="t">
          <provide>voicing/voiceless manner/plosive place/alveolar</provide>
          <ipa>t</ipa>
       </phoneme>
-
       <phoneme id="w">
          <phone>
             <context>
@@ -528,21 +451,16 @@
          </phone>
       </phoneme>
       <!-- Is this a phoneme TODO -->
-
       <phoneme id="ooue">
          <phone>
-            <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid
-               hardness/hard</provide>
+            <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>
             <ipa>ʊ</ipa>
          </phone>
-
          <phone>
-            <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid
-               hardness/soft rounded</provide>
+            <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded</provide>
             <ipa>ʏ</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="f">
          <phone>
             <!-- Variant before rounded vowels-->
@@ -552,53 +470,42 @@
             <provide>foreign voicing/voiceless place/bilabial manner/fricative</provide>
             <ipa>ɸ</ipa>
          </phone>
-
          <phone>
             <!-- Default variant -->
             <provide>foreign voicing/voiceless manner/plosive place/bilabial</provide>
             <ipa>p</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="khh">
          <phone>
             <provide>voicing/voiceless manner/fricative place/uvular</provide>
             <ipa>χ</ipa>
          </phone>
-
          <phone>
             <provide>voicing/voiceless manner/fricative place/glottal</provide>
             <ipa>h</ipa>
          </phone>
       </phoneme>
-
       <phoneme id="sh">
          <provide>voicing/voiceless manner/fricative place/postalveolar</provide>
          <ipa>ʃ</ipa>
       </phoneme>
-
       <phoneme id="shsh">
          <provide>voicing/voiceless manner/fricative place/postalveolar length/long</provide>
          <ipa>ʃː</ipa>
       </phoneme>
-
       <phoneme id="yi">
          <phone>
-            <provide>voicing/voiced manner/vocalic hardness/hard height/closeclosemid
-               place/frontcentral length/short</provide>
+            <provide>voicing/voiced manner/vocalic hardness/hard height/closeclosemid place/frontcentral length/short</provide>
             <ipa>ɯ</ipa>
          </phone>
-
          <phone>
-            <provide>voicing/voiced manner/vocalic hardness/soft height/close place/back
-               length/short</provide>
+            <provide>voicing/voiced manner/vocalic hardness/soft height/close place/back length/short</provide>
             <ipa>ɪ</ipa>
          </phone>
       </phoneme>
-
       <!-- ц, ч, у, ё, и, ъ, ь, э, ю, я are not phonemes in this analysis -->
    </phonemes>
-
    <!-- Contextual mapping between symbols and abstract
         phonemes.
         Note: Forms and rules are given using symbols, not phonemes.
@@ -607,21 +514,17 @@
       <symbol>
          <majuscule>А</majuscule>
          <minuscule>а</minuscule>
-
          <pronunciation>
             <require>@a</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ә</majuscule>
          <minuscule>ә</minuscule>
-
          <pronunciation>
             <require>@schwa</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Б</majuscule>
          <minuscule>б</minuscule>
@@ -629,7 +532,6 @@
             <require>@b</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Г</majuscule>
          <minuscule>г</minuscule>
@@ -637,7 +539,6 @@
             <require>@ggh hardness/soft</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ғ</majuscule>
          <minuscule>ғ</minuscule>
@@ -645,7 +546,6 @@
             <require>@ggh hardness/hard</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Д</majuscule>
          <minuscule>д</minuscule>
@@ -653,7 +553,6 @@
             <require>@d</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Е</majuscule>
          <minuscule>е</minuscule>
@@ -661,7 +560,6 @@
             <require>@je</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ё</majuscule>
          <minuscule>ё</minuscule>
@@ -670,7 +568,6 @@
             <require>@ooe hardness/hard foreign</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ж</majuscule>
          <minuscule>ж</minuscule>
@@ -678,7 +575,6 @@
             <require>@zh</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>З</majuscule>
          <minuscule>з</minuscule>
@@ -686,7 +582,6 @@
             <require>@z</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>И</majuscule>
          <minuscule>и</minuscule>
@@ -695,7 +590,6 @@
             <require>@j</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Й</majuscule>
          <minuscule>й</minuscule>
@@ -703,7 +597,6 @@
             <require>@j</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>К</majuscule>
          <minuscule>к</minuscule>
@@ -711,7 +604,6 @@
             <require>@kq hardness/soft</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Қ</majuscule>
          <minuscule>қ</minuscule>
@@ -719,7 +611,6 @@
             <require>@kq hardness/hard</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Л</majuscule>
          <minuscule>л</minuscule>
@@ -727,7 +618,6 @@
             <require>@l</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>М</majuscule>
          <minuscule>м</minuscule>
@@ -735,7 +625,6 @@
             <require>@m</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Н</majuscule>
          <minuscule>н</minuscule>
@@ -743,7 +632,6 @@
             <require>@n</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ң</majuscule>
          <minuscule>ң</minuscule>
@@ -751,7 +639,6 @@
             <require>@ng</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>О</majuscule>
          <minuscule>о</minuscule>
@@ -759,7 +646,6 @@
             <require>@ooe hardness/hard</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ө</majuscule>
          <minuscule>ө</minuscule>
@@ -767,7 +653,6 @@
             <require>@ooe hardness/soft</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>П</majuscule>
          <minuscule>п</minuscule>
@@ -775,7 +660,6 @@
             <require>@p</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Р</majuscule>
          <minuscule>р</minuscule>
@@ -783,7 +667,6 @@
             <require>@r</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>С</majuscule>
          <minuscule>с</minuscule>
@@ -791,7 +674,6 @@
             <require>@s</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Т</majuscule>
          <minuscule>т</minuscule>
@@ -799,7 +681,6 @@
             <require>@t</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>У</majuscule>
          <minuscule>у</minuscule>
@@ -810,13 +691,11 @@
             </context>
             <require>@w</require>
          </pronunciation>
-
          <pronunciation>
             <require>@ooue</require>
             <require>@w</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ұ</majuscule>
          <minuscule>ұ</minuscule>
@@ -824,7 +703,6 @@
             <require>@ooue hardness/hard</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ү</majuscule>
          <minuscule>ү</minuscule>
@@ -832,7 +710,6 @@
             <require>@ooue hardness/soft</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ф</majuscule>
          <minuscule>ф</minuscule>
@@ -840,7 +717,6 @@
             <require>@f</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Х</majuscule>
          <minuscule>х</minuscule>
@@ -848,7 +724,6 @@
             <require>@khh</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Һ</majuscule>
          <minuscule>һ</minuscule>
@@ -856,7 +731,6 @@
             <require>@khh foreign</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ц</majuscule>
          <minuscule>ц</minuscule>
@@ -865,7 +739,6 @@
             <require>@s foreign</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ч</majuscule>
          <minuscule>ч</minuscule>
@@ -874,7 +747,6 @@
             <require>@sh foreign</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ш</majuscule>
          <minuscule>ш</minuscule>
@@ -882,7 +754,6 @@
             <require>@sh</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Щ</majuscule>
          <minuscule>щ</minuscule>
@@ -890,12 +761,10 @@
             <require>@shh</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ъ</majuscule>
          <minuscule>ъ</minuscule>
       </symbol>
-
       <symbol>
          <majuscule>Ы</majuscule>
          <minuscule>ы</minuscule>
@@ -903,7 +772,6 @@
             <require>@yi hardness/hard</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>І</majuscule>
          <minuscule>і</minuscule>
@@ -911,12 +779,10 @@
             <require>@yi hardness/soft</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ь</majuscule>
          <minuscule>ь</minuscule>
       </symbol>
-
       <symbol>
          <majuscule>Э</majuscule>
          <minuscule>э</minuscule>
@@ -924,7 +790,6 @@
             <require>@je foreign</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Ю</majuscule>
          <minuscule>ю</minuscule>
@@ -933,7 +798,6 @@
             <require>@u</require>
          </pronunciation>
       </symbol>
-
       <symbol>
          <majuscule>Я</majuscule>
          <minuscule>я</minuscule>
@@ -943,7 +807,6 @@
          </pronunciation>
       </symbol>
    </symbols>
-
-   <rules />
-   <forms />
+   <rules/>
+   <forms/>
 </grammar>

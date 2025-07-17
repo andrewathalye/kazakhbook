@@ -55,14 +55,18 @@ package Toolkit.Features is
    --  <provide>...</provide>
    --  <provide>...</provide>
 
-   Unknown_Feature : exception renames Features_Impl.Unknown_Feature;
-   Unknown_Value   : exception renames Features_Impl.Unknown_Value;
+   Unknown_Feature       : exception renames Features_Impl.Unknown_Feature;
+   Unknown_Value         : exception renames Features_Impl.Unknown_Value;
+   Indeterminate_Feature : exception renames
+     Features_Impl.Indeterminate_Feature;
    function To_Ada
      (DB : Feature_Database; Text : String) return Feature_Instance renames
      Features_Impl.To_Ada;
    --  Convert a textual identifier to a feature instance
    --  Raise Unknown_Feature if the feature can’t be resolved.
    --  Raise Unknown_Value if the value can’t be resolved.
+   --  Raise Indeterminate_Feature if the value requires external data
+   --  (in this toolkit that means it is based on a phoneme)
 
    function To_Ada
      (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set;

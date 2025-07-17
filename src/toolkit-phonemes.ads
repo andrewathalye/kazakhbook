@@ -17,6 +17,9 @@ package Toolkit.Phonemes is
    type Phoneme_Instance is private;
    --  One concrete phoneme realisation
 
+   ----------------
+   -- RESOLUTION --
+   ----------------
    Unknown_Phoneme : exception;
    function Resolve_Set
      (DB      : Phoneme_Database; Required_Set : Features.Feature_Set;
@@ -24,20 +27,26 @@ package Toolkit.Phonemes is
    --  Resolve a set of sounds to a specific phoneme in a given context
    --  Optionally provide a phoneme for resolution
 
-   function To_XML (Instance : Phoneme_Instance) return String;
-   --  Convert a phoneme instance to an XML feature description
-   --  This omits any features inherent to a phoneme
-
-   function To_Ada
+   function Resolve_Text
      (FDB         : Features.Feature_Database; PDB : Phoneme_Database;
       Description : String; Context : Contexts.Context)
       return Phoneme_Instance;
    --  Resolve a textual feature list to a specific phoneme in a given context
 
+   ----------------
+   -- CONVERSION --
+   ----------------
+   function To_XML (Instance : Phoneme_Instance) return String;
+   --  Convert a phoneme instance to an XML feature description
+   --  This omits any features inherent to a phoneme
+
+   --------------------
+   -- INITIALISATION --
+   --------------------
    Duplicate_Phoneme : exception;
    procedure Read
-     (Doc : DOM.Core.Document; Features : Toolkit.Features.Feature_Database;
-      Phonemes : out Phoneme_Database);
+     (Doc : DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
+      PDB : out Phoneme_Database);
    --  Read a phoneme database from an XML file
 private
    type Phone is record
