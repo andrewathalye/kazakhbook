@@ -21,7 +21,12 @@ package body Toolkit.Features_Impl is
    -- To_String --
    ---------------
    function To_String (Instance : Feature_Instance) return String is
+      use type Value_Lists.Cursor;
    begin
+      if Instance.Value = Value_Lists.No_Element then
+         return String (Feature_Maps.Key (Instance.Feature));
+      end if;
+
       return
         String (Feature_Maps.Key (Instance.Feature)) & "/" &
         String (Value_Lists.Element (Instance.Value));
@@ -39,7 +44,7 @@ package body Toolkit.Features_Impl is
       --  Symbolic reference to a phoneme
       --  These shouldn’t be decomposed
       if Text (Text'First) = '@' then
-         raise Indeterminate_Feature;
+         raise Indeterminate_Feature with Text;
       end if;
 
       --  Parse features

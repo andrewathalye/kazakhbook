@@ -45,7 +45,7 @@ package Toolkit.Phonemes is
    --------------------
    Duplicate_Phoneme : exception;
    procedure Read
-     (Doc : DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
+     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       PDB : out Phoneme_Database);
    --  Read a phoneme database from an XML file
 private

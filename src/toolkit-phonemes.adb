@@ -2,6 +2,7 @@ pragma Ada_2022;
 
 with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
+with Ada.Text_IO; use Ada.Text_IO;
 
 with DOM.Core.Attrs;
 with DOM.Core.Documents;
@@ -24,13 +25,34 @@ package body Toolkit.Phonemes is
    is
       use Toolkit.Contexts;
       use Toolkit.Features;
-      L_Phones : Phone_List renames Phoneme_Maps.Element (Within);
+
+      --  Retrieve a reference to the actual map
+      type Opaque is null record;
+      type Cursor_Mirror is record
+         Container : access constant Phoneme_Maps.Map'Class;
+         Node      : access constant Opaque;
+         Position  : Natural;
+      end record;
+
+      Mirror_Within : Cursor_Mirror with
+        Address => Within'Address, Import => True;
+
+      L_Phones :
+        Phone_List renames
+        Phoneme_Maps.Constant_Reference (Mirror_Within.Container.all, Within)
+          .Element.all;
    begin
+      Put_Line ("Resolve " & Features.To_String (Required_Set));
       for C in L_Phones.Iterate loop
          declare
             L_Phone : Phone renames Phone_Lists.Element (C);
          begin
-            --  Check contexts
+            --  If the phone has no contexts (is default), go ahead
+            if L_Phone.Contexts.Is_Empty then
+               goto Found_Context;
+            end if;
+
+            --  Otherwise check contexts
             --  The required context must be broader or equal to
             --  one of the permissible contexts
             for L_Context of L_Phone.Contexts loop
@@ -223,8 +245,7 @@ package body Toolkit.Phonemes is
 
       L_Phones : Phone_List;
       X_Phone  : Node;
-      X_Phones : Node_List :=
-        Elements.Get_Elements_By_Tag_Name (XML, "phone");
+      X_Phones : Node_List := Elements.Get_Elements_By_Tag_Name (XML, "phone");
    begin
       --  Collect all data for a single phone and add to list
       for I in 1 .. Nodes.Length (X_Phones) loop

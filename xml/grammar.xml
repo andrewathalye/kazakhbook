@@ -167,6 +167,7 @@
       </feature>
       <feature id="foreign"/>
    </features>
+
    <!-- Mapping between abstract phonemes and
         concrete realisations based upon context.
 
@@ -235,8 +236,8 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-            <provide>@j</provide>
-            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front !rounded stressed</provide>
+            <provide>voicing/voiced manner/approximant place/palatal</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front stressed</provide>
             <ipa>je</ipa>
          </phone>
          <phone>
@@ -247,18 +248,18 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-            <provide>@j</provide>
-            <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central !rounded !stressed</provide>
+            <provide>voicing/voiced manner/approximant place/palatal</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
             <ipa>jɘ</ipa>
          </phone>
          <phone>
             <!-- Stressed default monophthong -->
-            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/closemid place/front stressed</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front stressed</provide>
             <ipa>e</ipa>
          </phone>
          <phone>
             <!-- Unstressed monophthong -->
-            <provide>voicing/voiced hardness/soft !rounded manner/vocalic height/mid place/central</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
             <ipa>ɘ</ipa>
          </phone>
       </phoneme>
@@ -267,7 +268,7 @@
             <context>
                <global>dialect/south</global>
             </context>
-            <provide>@d</provide>
+            <provide>voicing/voiced manner/plosive place/postalveolar</provide>
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>dʒ</ipa>
          </phone>
@@ -275,7 +276,7 @@
             <context>
                <global>dialect/west</global>
             </context>
-            <provide>@j</provide>
+            <provide>voicing/voiced manner/approximant place/palatal</provide>
             <ipa>j</ipa>
          </phone>
          <phone>
@@ -334,13 +335,13 @@
          </phone>
          <phone>
             <!-- After a non-vowel (hard) -->
-            <provide>@yi hardness/hard</provide>
+            <provide>voicing/voiced manner/vocalic place/back height/close hardness/hard</provide>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>ɯl</ipa>
          </phone>
          <phone>
             <!-- After a non-vowel (soft) -->
-            <provide>@yi hardness/soft</provide>
+            <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft</provide>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>ɪl</ipa>
          </phone>
@@ -377,7 +378,7 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-            <provide>@w</provide>
+            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <provide>voicing/voiced manner/vocalic place/back height/closemid rounded hardness/hard</provide>
             <ipa>^wo</ipa>
          </phone>
@@ -388,7 +389,7 @@
             <context>
                <after>manner/vocalic</after>
             </context>
-            <provide>@w</provide>
+            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <provide>voicing/voiced manner/vocalic place/front height/closemid rounded hardness/soft</provide>
             <ipa>^wø</ipa>
          </phone>
@@ -421,13 +422,13 @@
          </phone>
          <phone>
             <!-- Default hard variant -->
-            <provide>@yi hardness/hard</provide>
+            <provide>voicing/voiced manner/vocalic place/back height/close hardness/hard</provide>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɯɾ</ipa>
          </phone>
          <phone>
             <!-- Default soft variant -->
-            <provide>@yi hardness/soft</provide>
+            <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft</provide>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɪɾ</ipa>
          </phone>
@@ -440,17 +441,6 @@
          <provide>voicing/voiceless manner/plosive place/alveolar</provide>
          <ipa>t</ipa>
       </phoneme>
-      <phoneme id="w">
-         <phone>
-            <context>
-               <after>[]</after>
-               <before>manner/vocalic</before>
-            </context>
-            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
-            <ipa>w</ipa>
-         </phone>
-      </phoneme>
-      <!-- Is this a phoneme TODO -->
       <phoneme id="ooue">
          <phone>
             <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>

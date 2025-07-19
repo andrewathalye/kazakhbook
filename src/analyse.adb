@@ -5,6 +5,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Toolkit.Features;
 with Toolkit.Phonemes;
 --  with Toolkit.Symbols;
+with TUI;
 
 with DOM.Core;              use DOM.Core;
 with Input_Sources.File;    use Input_Sources.File;
@@ -44,5 +45,6 @@ begin
    --   Toolkit.Symbols.Read (Doc, Symbols);
 
    Put_Line ("Done");
+   TUI (Features, Phonemes);
    Free (Reader);
 end Analyse;

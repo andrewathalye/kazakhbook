@@ -2,7 +2,6 @@ pragma Ada_2012;
 
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with Ada.Text_IO;
 
 with DOM.Core.Nodes;
 with Toolkit.XML;
@@ -98,7 +97,6 @@ package body Toolkit.Features is
    is
       use DOM.Core;
       use Ada.Strings.Fixed;
-      use Ada.Text_IO;
 
       Name        : constant String := Nodes.Node_Name (XML);
       Text        : constant String := Toolkit.XML.Get_Text (XML);
@@ -107,9 +105,6 @@ package body Toolkit.Features is
 
       Result : Feature_Set;
    begin
-      --  TODO debug
-      Put_Line (Text);
-
       if Name /= "provide" and Name /= "require" and Name /= "before" and
         Name /= "after" and Name /= "global"
       then
