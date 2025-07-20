@@ -203,6 +203,7 @@
             <provide>voicing/voiced place/bilabial manner/fricative</provide>
             <ipa>β</ipa>
          </phone>
+
          <!-- By default, use a plosive -->
          <phone>
             <provide>voicing/voiced place/bilabial manner/plosive</provide>
@@ -231,10 +232,10 @@
          <phone>
             <!-- Two contexts for a stressed diphthong -->
             <context>
-               <after>[]</after>
+               <before>[]</before>
             </context>
             <context>
-               <after>manner/vocalic</after>
+               <before>manner/vocalic</before>
             </context>
             <provide>voicing/voiced manner/approximant place/palatal</provide>
             <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front stressed</provide>
@@ -497,7 +498,7 @@
       <!-- ц, ч, у, ё, и, ъ, ь, э, ю, я are not phonemes in this analysis -->
    </phonemes>
    <!-- Contextual mapping between symbols and abstract
-        phonemes.
+        phonemes (NOT phones).
         Note: Forms and rules are given using symbols, not phonemes.
    -->
    <symbols>

@@ -1,12 +1,12 @@
 pragma Ada_2012;
 
-with Ada.Strings.Fixed;
-
 with DOM.Core; use DOM.Core;
 with DOM.Core.Documents;
 with DOM.Core.Elements;
 with DOM.Core.Attrs;
 with DOM.Core.Nodes;
+
+with Toolkit.Strings;
 
 package body Toolkit.Features_Impl is
    ----------
@@ -38,37 +38,38 @@ package body Toolkit.Features_Impl is
    function To_Ada
      (DB : Feature_Database; Text : String) return Feature_Instance
    is
-      use Ada.Strings.Fixed;
-      Slash_Index : Natural;
+      use type Ada.Containers.Count_Type;
+
+      Strings : constant Toolkit.Strings.Argument_List :=
+        Toolkit.Strings.Split (Text, "/");
    begin
+      --  Invalid specifications
+      if Text'Length = 0 or Strings.Length > 2 then
+         raise Constraint_Error;
+      end if;
+
       --  Symbolic reference to a phoneme
       --  These shouldn’t be decomposed
       if Text (Text'First) = '@' then
          raise Indeterminate_Feature with Text;
       end if;
 
-      --  Parse features
-      Slash_Index := Index (Source => Text, Pattern => "/");
-
-      --  No slash means that the feature is binary
-      if Slash_Index = 0 then
-         if not DB.Contains (Feature_Name (Text)) then
-            raise Unknown_Feature with Text;
-         end if;
-         return (DB.Find (Feature_Name (Text)), Value_Lists.No_Element);
+      --  No feature value specified
+      if Strings.Length = 1 then
+         declare
+            Name : constant Feature_Name := Feature_Name (Strings.Element (1));
+         begin
+            if not DB.Contains (Name) then
+               raise Unknown_Feature with String (Name);
+            end if;
+            return (DB.Find (Name), Value_Lists.No_Element);
+         end;
       end if;
 
-      --  If there is a slash, but not enough space
-      if Slash_Index < 2 or Slash_Index = Text'Last then
-         raise Constraint_Error;
-      end if;
-
-      --  Otherwise (feature name can’t contain slash)
+      --  Otherwise
       declare
-         Name  : constant Feature_Name  :=
-           Feature_Name (Text (Text'First .. Slash_Index - 1));
-         Value : constant Feature_Value :=
-           Feature_Value (Text (Slash_Index + 1 .. Text'Last));
+         Name  : constant Feature_Name  := Feature_Name (Strings.Element (1));
+         Value : constant Feature_Value := Feature_Value (Strings.Element (2));
       begin
          if not DB.Contains (Name) then
             raise Unknown_Feature with String (Name);

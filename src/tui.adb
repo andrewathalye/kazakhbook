@@ -1,10 +1,7 @@
-pragma Warnings (Off, "-gnatwu"); --  TODO
 pragma Ada_2012;
 
 with Ada.Exceptions;
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Strings.Fixed;
-with Ada.Containers.Indefinite_Vectors;
 with Ada.IO_Exceptions;
 
 with Toolkit.Contexts;
@@ -16,38 +13,6 @@ is
    use Toolkit;
 
    type Commands is (C_Help, C_Values, C_Phones, C_Lookup, C_Quit);
-
-   package Argument_Lists is new Ada.Containers.Indefinite_Vectors
-     (Positive, String);
-   subtype Argument_List is Argument_Lists.Vector;
-
-   function Split (Input : String) return Argument_List;
-   function Split (Input : String) return Argument_List is
-      use Ada.Strings.Fixed;
-
-      Start_Index : Positive := Input'First;
-      Space_Index : Natural;
-      Result      : Argument_List;
-   begin
-      Space_Index := Index (Input, " ", Start_Index);
-
-      if Space_Index = 0 then
-         Space_Index := Input'Last + 1;
-      end if;
-
-      while Start_Index < Input'Last loop
-         Result.Append (Input (Start_Index .. Space_Index - 1));
-
-         if Space_Index = 0 then
-            exit;
-         end if;
-
-         Space_Index := Index (Input, " ", Start_Index);
-         Start_Index := Space_Index + 1;
-      end loop;
-
-      return Result;
-   end Split;
 
    procedure Help;
    procedure Help is

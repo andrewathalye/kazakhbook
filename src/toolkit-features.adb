@@ -1,9 +1,9 @@
 pragma Ada_2012;
 
-with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
 with DOM.Core.Nodes;
+with Toolkit.Strings;
 with Toolkit.XML;
 
 package body Toolkit.Features is
@@ -96,12 +96,11 @@ package body Toolkit.Features is
      (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set
    is
       use DOM.Core;
-      use Ada.Strings.Fixed;
 
       Name        : constant String := Nodes.Node_Name (XML);
       Text        : constant String := Toolkit.XML.Get_Text (XML);
-      Start_Index : Positive        := Text'First;
-      Space_Index : Natural;
+      Strings     : constant Toolkit.Strings.Argument_List :=
+        Toolkit.Strings.Split (Text);
 
       Result : Feature_Set;
    begin
@@ -111,22 +110,9 @@ package body Toolkit.Features is
          raise Constraint_Error with "Unsupported node type " & Name;
       end if;
 
-      --  Handle the case of a single feature
-      Space_Index := Index (Text, " ", Start_Index);
-      Add_Features :
-      loop
-         --  Exit on the last feature
-         if Space_Index = 0 then
-            Result.Append (To_Ada (DB, Text (Start_Index .. Text'Last)));
-            exit Add_Features;
-         end if;
-
-         Result.Append (To_Ada (DB, Text (Start_Index .. Space_Index - 1)));
-
-         --  Update indices
-         Start_Index := Space_Index + 1;
-         Space_Index := Index (Text, " ", Start_Index);
-      end loop Add_Features;
+      for S of Strings loop
+         Result.Append (To_Ada (DB, S));
+      end loop;
 
       return Result;
    end To_Ada;

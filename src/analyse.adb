@@ -4,7 +4,8 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 with Toolkit.Features;
 with Toolkit.Phonemes;
---  with Toolkit.Symbols;
+with Toolkit.Symbols;
+
 with TUI;
 
 with DOM.Core;              use DOM.Core;
@@ -21,7 +22,7 @@ procedure Analyse is
 
    Features : Toolkit.Features.Feature_Database;
    Phonemes : Toolkit.Phonemes.Phoneme_Database;
-   --   Symbols  : Toolkit.Symbols.Symbol_List;
+   Symbols  : Toolkit.Symbols.Symbol_Database;
 begin
    Put_Line ("Load Schema");
    Open ("xml/grammar.xsd", Input);
@@ -42,7 +43,8 @@ begin
    Toolkit.Features.Read (Doc, Features);
    Put_Line (">> Phonemes");
    Toolkit.Phonemes.Read (Doc, Features, Phonemes);
-   --   Toolkit.Symbols.Read (Doc, Symbols);
+   Put_Line (">> Symbols");
+   Toolkit.Symbols.Read (Doc, Features, Phonemes, Symbols);
 
    Put_Line ("Done");
    TUI (Features, Phonemes);

@@ -1,16 +1,15 @@
-pragma Ada_2022;
+pragma Ada_2012;
 
-with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
-with Ada.Text_IO; use Ada.Text_IO;
 
 with DOM.Core.Attrs;
 with DOM.Core.Documents;
 with DOM.Core.Elements;
 with DOM.Core.Nodes;
+with Toolkit.Strings;
 with Toolkit.XML;
 
-package body Toolkit.Phonemes is
+package body Toolkit.Phonemes_Impl is
    -----------------
    -- Resolve_Set --
    -----------------
@@ -42,7 +41,6 @@ package body Toolkit.Phonemes is
         Phoneme_Maps.Constant_Reference (Mirror_Within.Container.all, Within)
           .Element.all;
    begin
-      Put_Line ("Resolve " & Features.To_String (Required_Set));
       for C in L_Phones.Iterate loop
          declare
             L_Phone : Phone renames Phone_Lists.Element (C);
@@ -68,11 +66,12 @@ package body Toolkit.Phonemes is
             --  The flattened set of features must be broader or equal to
             --  the required features
             if Superset (Flatten (L_Phone.Sounds), Required_Set) then
-               return (Phoneme => Within, Instance => C, Extra => <>);
+               return (Phoneme => Within, Instance => C);
             end if;
          end;
          <<Next>>
       end loop;
+
       raise Unknown_Phoneme
         with Features.To_XML (Required_Set) & " in " &
         Contexts.To_XML (Context) & " within " &
@@ -106,55 +105,35 @@ package body Toolkit.Phonemes is
       Description : String; Context : Toolkit.Contexts.Context)
       return Phoneme_Instance
    is
-      use Ada.Strings.Fixed;
       use type Phoneme_Maps.Cursor;
 
       Required_Set     : Features.Feature_Set;
       Required_Phoneme : Phoneme_Maps.Cursor;
 
-      Start_Index      : Natural := Description'First;
-      Next_Space_Index : Natural := 0;
+      Strings : constant Toolkit.Strings.Argument_List :=
+        Toolkit.Strings.Split (Description);
    begin
-      --  Find next (first) space
-      if Description (Description'First) = ' ' then
-         raise Constraint_Error with "Description cannot start with space";
-      end if;
-      Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
-      if Next_Space_Index = 0 then
-         Next_Space_Index := Description'Last + 1;
-      end if;
+      --  Process each requested feature or phoneme
+      for S of Strings loop
+         --  Handle phoneme references
+         if S (S'First) = '@' then
+            if S'Length = 1 or Required_Phoneme /= Phoneme_Maps.No_Element then
+               raise Constraint_Error;
+            end if;
 
-      --  Check for leading @
-      if Description (Description'First) = '@' then
-         if Description'Length = 1 then
-            raise Constraint_Error with "No base phoneme provided after @";
+            declare
+               PN : constant Phoneme_Name :=
+                 Phoneme_Name (S (S'First + 1 .. S'Last));
+            begin
+               if not PDB.Contains (PN) then
+                  raise Unknown_Phoneme with String (PN);
+               end if;
+
+               Required_Phoneme := PDB.Find (PN);
+            end;
+         else
+            Required_Set.Append (Features.To_Ada (FDB, S));
          end if;
-
-         Required_Phoneme :=
-           PDB.Find
-             (Phoneme_Name
-                (Description (Description'First + 1 .. Next_Space_Index - 1)));
-         Start_Index      := Next_Space_Index + 1;
-         Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
-      end if;
-
-      --  Process each feature
-      while Next_Space_Index /= 0 loop
-         if Next_Space_Index = Description'Last then
-            raise Constraint_Error with "Description cannot end with space";
-         end if;
-
-         if Description (Start_Index) = ' ' then
-            raise Constraint_Error
-              with "Description may not have two spaces in a row";
-         end if;
-
-         Required_Set.Append
-           (Features.To_Ada
-              (FDB, Description (Start_Index .. Next_Space_Index - 1)));
-
-         Start_Index      := Next_Space_Index + 1;
-         Next_Space_Index := Index (Description, " ", Next_Space_Index + 1);
       end loop;
 
       --  Resolve the set into a phoneme
@@ -170,27 +149,15 @@ package body Toolkit.Phonemes is
    ------------
    function To_XML (Instance : Phoneme_Instance) return String is
       use Ada.Strings.Unbounded;
-      use type Ada.Containers.Count_Type;
 
       Buffer : Unbounded_String;
    begin
       Append (Buffer, "<phone>");
 
       --  TODO what about context?
-      --
-      --  If a phoneme has only one phone, we use @ notation
-      if Phoneme_Maps.Element (Instance.Phoneme).Length = 1 then
-         Append (Buffer, "<provide>");
-         Append (Buffer, "@" & String (Phoneme_Maps.Key (Instance.Phoneme)));
-         Append (Buffer, "</provide>");
-      else
-         Append
-           (Buffer,
-            Features.To_XML (Phone_Lists.Element (Instance.Instance).Sounds));
-      end if;
-
-      Append (Buffer, "<!-- EXTRA -->");
-      Append (Buffer, Features.To_XML (Instance.Extra));
+      Append
+        (Buffer,
+         Features.To_XML (Phone_Lists.Element (Instance.Instance).Sounds));
 
       Append (Buffer, "<ipa>");
       Append (Buffer, Phone_Lists.Element (Instance.Instance).IPA);
@@ -216,7 +183,10 @@ package body Toolkit.Phonemes is
       L_Phone                       : Phone;
       X_Contexts, X_Features, X_IPA : Node_List;
    begin
-      if Nodes.Node_Name (XML) /= "phone" then
+      --  Note that this requires a <phoneme> containing context/provide/ipa
+      if Nodes.Node_Name (XML) /= "phone" and
+        Nodes.Node_Name (XML) /= "phoneme"
+      then
          raise Constraint_Error;
       end if;
 
@@ -252,6 +222,11 @@ package body Toolkit.Phonemes is
          X_Phone := Nodes.Item (X_Phones, I - 1);
          L_Phones.Append (Read_Phone (FDB, X_Phone));
       end loop;
+
+      --  Use the implied <phone> if not are specified
+      if Nodes.Length (X_Phones) = 0 then
+         L_Phones.Append (Read_Phone (FDB, XML));
+      end if;
 
       Free (X_Phones);
 
@@ -295,4 +270,4 @@ package body Toolkit.Phonemes is
    begin
       return Ada.Strings.Hash (String (L));
    end Hash;
-end Toolkit.Phonemes;
+end Toolkit.Phonemes_Impl;
