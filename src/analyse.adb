@@ -46,7 +46,7 @@ begin
    Put_Line (">> Symbols");
    Toolkit.Symbols.Read (Doc, Features, Phonemes, Symbols);
 
-   Put_Line ("Done");
-   TUI (Features, Phonemes);
+   Put_Line ("Done.");
+   TUI (Features, Phonemes, Symbols);
    Free (Reader);
 end Analyse;

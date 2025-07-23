@@ -17,28 +17,37 @@ package Toolkit.Phonemes is
    use type Phoneme_Instance;
    --  One concrete phoneme realisation
 
-   package Phoneme_Sets is new Ada.Containers.Vectors
+   package Phoneme_Lists is new Ada.Containers.Vectors
      (Positive, Phoneme_Instance);
-   subtype Phoneme_Set is Phoneme_Sets.Vector;
-   --  A list of phoneme instances
+   subtype Phoneme_List is Phoneme_Lists.Vector;
+
+   subtype Abstract_Phoneme is Phonemes_Impl.Abstract_Phoneme;
+   use type Abstract_Phoneme;
+   --  A phoneme outside of its context, which must be resolved
+   --  to a concrete phoneme realisation.
+
+   package Abstract_Phoneme_Lists is new Ada.Containers.Vectors
+     (Positive, Abstract_Phoneme);
+   subtype Abstract_Phoneme_List is Abstract_Phoneme_Lists.Vector;
 
    ----------------
    -- RESOLUTION --
    ----------------
-   Unknown_Phoneme : exception renames Phonemes_Impl.Unknown_Phoneme;
-   function Resolve_Set
-     (DB      : Phoneme_Database; Required_Set : Features.Feature_Set;
+   Indeterminate_Phoneme : exception;
+   function Resolve
+     (PDB     : Phoneme_Database; AP : Abstract_Phoneme;
       Context : Contexts.Context) return Phoneme_Instance renames
-     Phonemes_Impl.Resolve_Set;
-   --  Resolve a set of sounds to a specific phoneme in a given context
-   --  Optionally provide a phoneme for resolution
+     Phonemes_Impl.Resolve;
+   --  Resolve a single abstract phoneme to a phoneme instance within a context
+   --
+   --  Raise Indeterminate_Phoneme if the context is insufficient to identify
+   --  a phone
 
-   function Resolve_Text
-     (FDB         : Features.Feature_Database; PDB : Phoneme_Database;
-      Description : String; Context : Contexts.Context)
-      return Phoneme_Instance renames
-     Phonemes_Impl.Resolve_Text;
-   --  Resolve a textual feature list to a specific phoneme in a given context
+   function Resolve
+     (PDB              : Phoneme_Database; List : Abstract_Phoneme_List;
+      External_Context : Contexts.Context) return Phoneme_List;
+   --  Resolve a list of abstract phonemes to a list of concrete
+   --  phoneme instances based upon internal and external context.
 
    ----------------
    -- CONVERSION --
@@ -47,6 +56,23 @@ package Toolkit.Phonemes is
      Phonemes_Impl.To_XML;
    --  Convert a phoneme instance to an XML feature description
    --  This omits any features inherent to a phoneme
+
+   Unknown_Phoneme : exception renames Phonemes_Impl.Unknown_Phoneme;
+   function To_Ada
+     (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
+      return Abstract_Phoneme renames
+     Phonemes_Impl.To_Ada;
+   --  Convert a featural text description to an abstract phoneme.
+
+   function To_Ada
+     (FDB : Features.Feature_Database; PDB : Phoneme_Database;
+      XML : DOM.Core.Node) return Abstract_Phoneme;
+   --  Convert an XML <require></require> node to an abstract phoneme
+
+   function Transcribe (P : Phoneme_Instance) return String renames
+     Phonemes_Impl.Transcribe;
+   function Transcribe (PL : Phoneme_List) return String;
+   --  Return the transcription of P(L) in IPA notation
 
    --------------------
    -- INITIALISATION --

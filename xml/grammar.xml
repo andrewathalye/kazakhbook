@@ -167,7 +167,6 @@
       </feature>
       <feature id="foreign"/>
    </features>
-
    <!-- Mapping between abstract phonemes and
         concrete realisations based upon context.
 
@@ -203,7 +202,6 @@
             <provide>voicing/voiced place/bilabial manner/fricative</provide>
             <ipa>β</ipa>
          </phone>
-
          <!-- By default, use a plosive -->
          <phone>
             <provide>voicing/voiced place/bilabial manner/plosive</provide>
@@ -442,6 +440,33 @@
          <provide>voicing/voiceless manner/plosive place/alveolar</provide>
          <ipa>t</ipa>
       </phoneme>
+      <phoneme id="u">
+         <!-- Variant at beginning of word and after vowels -->
+         <phone>
+            <context>
+               <before>[]</before>
+            </context>
+            <context>
+               <before>manner/vocalic</before>
+            </context>
+            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+            <ipa>w</ipa>
+         </phone>
+
+         <!-- Hard diphthong -->
+         <phone>
+            <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>
+            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+            <ipa>ʊw</ipa>
+         </phone>
+
+         <!-- Soft diphthong -->
+         <phone>
+            <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded</provide>
+            <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+            <ipa>ʏw</ipa>
+         </phone>
+      </phoneme>
       <phoneme id="ooue">
          <phone>
             <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>
@@ -676,15 +701,7 @@
          <majuscule>У</majuscule>
          <minuscule>у</minuscule>
          <pronunciation>
-            <context>
-               <after>[]</after>
-               <before>manner/vocalic</before>
-            </context>
-            <require>@w</require>
-         </pronunciation>
-         <pronunciation>
-            <require>@ooue</require>
-            <require>@w</require>
+            <require>@u</require>
          </pronunciation>
       </symbol>
       <symbol>
@@ -749,7 +766,8 @@
          <majuscule>Щ</majuscule>
          <minuscule>щ</minuscule>
          <pronunciation>
-            <require>@shh</require>
+            <require>@sh</require>
+            <require>@sh</require>
          </pronunciation>
       </symbol>
       <symbol>

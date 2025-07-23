@@ -10,19 +10,18 @@ with Toolkit.Strings;
 with Toolkit.XML;
 
 package body Toolkit.Phonemes_Impl is
-   -----------------
-   -- Resolve_Set --
-   -----------------
-   function Resolve_Set
-     (Required_Set : Features.Feature_Set; Context : Contexts.Context;
-      Within       : Phoneme_Maps.Cursor) return Phoneme_Instance;
-   --  Private variant that allows specifying a phoneme
+   -------------
+   -- Resolve --
+   -------------
+   function Resolve
+     (AP : Abstract_Phoneme; Context : Contexts.Context)
+      return Phoneme_Instance;
+   --  Internal version that has a specific phoneme attached
 
-   function Resolve_Set
-     (Required_Set : Features.Feature_Set; Context : Contexts.Context;
-      Within       : Phoneme_Maps.Cursor) return Phoneme_Instance
+   function Resolve
+     (AP : Abstract_Phoneme; Context : Contexts.Context)
+      return Phoneme_Instance
    is
-      use Toolkit.Contexts;
       use Toolkit.Features;
 
       --  Retrieve a reference to the actual map
@@ -34,58 +33,57 @@ package body Toolkit.Phonemes_Impl is
       end record;
 
       Mirror_Within : Cursor_Mirror with
-        Address => Within'Address, Import => True;
+        Address => AP.Phoneme'Address, Import => True;
 
       L_Phones :
         Phone_List renames
-        Phoneme_Maps.Constant_Reference (Mirror_Within.Container.all, Within)
+        Phoneme_Maps.Constant_Reference
+          (Mirror_Within.Container.all, AP.Phoneme)
           .Element.all;
    begin
       for C in L_Phones.Iterate loop
          declare
             L_Phone : Phone renames Phone_Lists.Element (C);
          begin
-            --  If the phone has no contexts (is default), go ahead
-            if L_Phone.Contexts.Is_Empty then
-               goto Found_Context;
+            --  If the phone has no contexts, it is good by default
+            --  Otherwise check if any contexts match
+            if not L_Phone.Contexts.Is_Empty and
+              not Contexts.Has_Superset (Context, L_Phone.Contexts)
+            then
+               goto Next;
             end if;
-
-            --  Otherwise check contexts
-            --  The required context must be broader or equal to
-            --  one of the permissible contexts
-            for L_Context of L_Phone.Contexts loop
-               if Superset (Context, L_Context) then
-                  goto Found_Context;
-               end if;
-            end loop;
-            goto Next;
-
-            <<Found_Context>>
 
             --  Check sounds
             --  The flattened set of features must be broader or equal to
             --  the required features
-            if Superset (Flatten (L_Phone.Sounds), Required_Set) then
-               return (Phoneme => Within, Instance => C);
+            --  TODO this might not be good enough for diphthongs
+            if Superset (Flatten (L_Phone.Sounds), AP.Features) then
+               return (Phoneme => AP.Phoneme, Instance => C);
             end if;
          end;
          <<Next>>
       end loop;
 
       raise Unknown_Phoneme
-        with Features.To_XML (Required_Set) & " in " &
+        with Toolkit.Features.To_XML (AP.Features) & " in " &
         Contexts.To_XML (Context) & " within " &
-        String (Phoneme_Maps.Key (Within));
-   end Resolve_Set;
+        String (Phoneme_Maps.Key (AP.Phoneme));
+   end Resolve;
 
-   function Resolve_Set
-     (DB      : Phoneme_Database; Required_Set : Features.Feature_Set;
+   function Resolve
+     (PDB     : Phoneme_Database; AP : Abstract_Phoneme;
       Context : Contexts.Context) return Phoneme_Instance
    is
+      use type Phoneme_Maps.Cursor;
    begin
-      for C in DB.Iterate loop
+      if AP.Phoneme /= Phoneme_Maps.No_Element then
+         return Resolve (AP, Context);
+      end if;
+
+      --  Otherwise go through all phonemes and search
+      for C in PDB.Iterate loop
          begin
-            return Resolve_Set (Required_Set, Context, C);
+            return Resolve (Abstract_Phoneme'(C, AP.Features), Context);
          exception
             when Unknown_Phoneme =>
                null;
@@ -93,56 +91,9 @@ package body Toolkit.Phonemes_Impl is
       end loop;
 
       raise Unknown_Phoneme
-        with Features.To_XML (Required_Set) & " in " &
+        with Features.To_XML (AP.Features) & " in " &
         Contexts.To_XML (Context);
-   end Resolve_Set;
-
-   ------------------
-   -- Resolve_Text --
-   ------------------
-   function Resolve_Text
-     (FDB         : Features.Feature_Database; PDB : Phoneme_Database;
-      Description : String; Context : Toolkit.Contexts.Context)
-      return Phoneme_Instance
-   is
-      use type Phoneme_Maps.Cursor;
-
-      Required_Set     : Features.Feature_Set;
-      Required_Phoneme : Phoneme_Maps.Cursor;
-
-      Strings : constant Toolkit.Strings.Argument_List :=
-        Toolkit.Strings.Split (Description);
-   begin
-      --  Process each requested feature or phoneme
-      for S of Strings loop
-         --  Handle phoneme references
-         if S (S'First) = '@' then
-            if S'Length = 1 or Required_Phoneme /= Phoneme_Maps.No_Element then
-               raise Constraint_Error;
-            end if;
-
-            declare
-               PN : constant Phoneme_Name :=
-                 Phoneme_Name (S (S'First + 1 .. S'Last));
-            begin
-               if not PDB.Contains (PN) then
-                  raise Unknown_Phoneme with String (PN);
-               end if;
-
-               Required_Phoneme := PDB.Find (PN);
-            end;
-         else
-            Required_Set.Append (Features.To_Ada (FDB, S));
-         end if;
-      end loop;
-
-      --  Resolve the set into a phoneme
-      if Required_Phoneme = Phoneme_Maps.No_Element then
-         return Resolve_Set (PDB, Required_Set, Context);
-      else
-         return Resolve_Set (Required_Set, Context, Required_Phoneme);
-      end if;
-   end Resolve_Text;
+   end Resolve;
 
    ------------
    -- To_XML --
@@ -167,6 +118,47 @@ package body Toolkit.Phonemes_Impl is
 
       return To_String (Buffer);
    end To_XML;
+
+   ------------
+   -- To_Ada --
+   ------------
+   function To_Ada
+     (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
+      return Abstract_Phoneme
+   is
+      use type Phoneme_Maps.Cursor;
+
+      Required_Set     : Features.Feature_Set;
+      Required_Phoneme : Phoneme_Maps.Cursor;
+
+      Strings : constant Toolkit.Strings.Argument_List :=
+        Toolkit.Strings.Split (Text);
+   begin
+      --  Process each requested feature or phoneme
+      for S of Strings loop
+         --  Handle phoneme references
+         if S (S'First) = '@' then
+            if S'Length = 1 or Required_Phoneme /= Phoneme_Maps.No_Element then
+               raise Constraint_Error;
+            end if;
+
+            declare
+               PN : constant Phoneme_Name :=
+                 Phoneme_Name (S (S'First + 1 .. S'Last));
+            begin
+               if not PDB.Contains (PN) then
+                  raise Unknown_Phoneme with String (PN);
+               end if;
+
+               Required_Phoneme := PDB.Find (PN);
+            end;
+         else
+            Required_Set.Append (Features.To_Ada (FDB, S));
+         end if;
+      end loop;
+
+      return (Required_Phoneme, Required_Set);
+   end To_Ada;
 
    ----------------
    -- Read_Phone --
@@ -270,4 +262,23 @@ package body Toolkit.Phonemes_Impl is
    begin
       return Ada.Strings.Hash (String (L));
    end Hash;
+
+   --------------
+   -- Features --
+   --------------
+   function Dump_Features
+     (AP : Abstract_Phoneme) return Toolkit.Features.Feature_Set is
+     (AP.Features);
+   function Dump_Features
+     (PI : Phoneme_Instance) return Toolkit.Features.Feature_Set is
+     (Features.Flatten (Phone_Lists.Element (PI.Instance).Sounds));
+
+   ----------------
+   -- Transcribe --
+   ----------------
+   function Transcribe (P : Phoneme_Instance) return String is
+   begin
+      return
+        Ada.Strings.Unbounded.To_String (Phone_Lists.Element (P.Instance).IPA);
+   end Transcribe;
 end Toolkit.Phonemes_Impl;

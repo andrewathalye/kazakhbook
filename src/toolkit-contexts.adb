@@ -6,6 +6,41 @@ with DOM.Core.Nodes;
 with DOM.Core.Elements;
 
 package body Toolkit.Contexts is
+   --------------------
+   -- Derive_Context --
+   --------------------
+   function Derive_Context
+     (Cursor           : Lists.Cursor;
+      External_Context : Contexts.Context) return Contexts.Context
+   is
+      use type Lists.Cursor;
+
+      Before, After : Toolkit.Features.Feature_Set;
+   begin
+      if Lists.Previous (Cursor) =
+        Lists.No_Element
+      then
+         Before := External_Context.Before;
+      else
+         Before :=
+           Features
+             (Lists.Element
+                (Lists.Previous (Cursor)));
+      end if;
+
+      if Lists.Next (Cursor) =
+        Lists.No_Element
+      then
+         After := External_Context.After;
+      else
+         After :=
+           Features
+             (Lists.Element
+                (Lists.Next (Cursor)));
+      end if;
+
+      return (Before, After, External_Context.Global);
+   end Derive_Context;
 
    --------------
    -- Superset --
@@ -21,6 +56,20 @@ package body Toolkit.Contexts is
 
       return False;
    end Superset;
+
+   ------------------
+   -- Has_Superset --
+   ------------------
+   function Has_Superset (L : Context; R : Context_List) return Boolean is
+   begin
+      for R_x of R loop
+         if Superset (L, R_x) then
+            return True;
+         end if;
+      end loop;
+
+      return False;
+   end Has_Superset;
 
    ------------
    -- To_XML --

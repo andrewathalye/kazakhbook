@@ -122,6 +122,7 @@
             <xs:element name="unicase" type="xs:string" />
          </xs:choice>
          <xs:element minOccurs="0" maxOccurs="unbounded" name="pronunciation" type="pronunciation" />
+         <xs:element minOccurs="0" name="provide" type="provide"/>
       </xs:sequence>
    </xs:complexType>
 
