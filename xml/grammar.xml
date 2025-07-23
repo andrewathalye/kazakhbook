@@ -20,6 +20,7 @@
          <value id="uvular"/>
          <value id="pharyngeal"/>
          <value id="glottal"/>
+         <value id="alveolopalatal"/>
          <!-- For vowels -->
          <value id="front"/>
          <value id="frontcentral"/>
@@ -261,6 +262,11 @@
             <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
             <ipa>ɘ</ipa>
          </phone>
+         <!-- Foreign sound (only in loanwords) -->
+         <phone>
+            <provide>voicing/voiced manner/vocalic height/closemid place/front foreign</provide>
+            <ipa>e</ipa>
+         </phone>
       </phoneme>
       <phoneme id="zh">
          <phone>
@@ -289,8 +295,14 @@
          <ipa>z</ipa>
       </phoneme>
       <phoneme id="j">
-         <provide>voicing/voiced manner/approximant place/palatal</provide>
-         <ipa>j</ipa>
+         <phone>
+            <provide>voicing/voiced manner/approximant place/palatal</provide>
+            <ipa>j</ipa>
+         </phone>
+         <phone>
+            <provide>voicing/voiced manner/approximant place/palatal foreign</provide>
+            <ipa>j</ipa>
+         </phone>
       </phoneme>
       <phoneme id="kq">
          <phone>
@@ -402,6 +414,11 @@
             <provide>hardness/soft manner/vocalic place/front height/closemid rounded</provide>
             <ipa>ø</ipa>
          </phone>
+         <phone>
+            <!-- Foreign hard variant -->
+            <provide>hardness/hard manner/vocalic place/back height/closemid rounded foreign</provide>
+            <ipa>o</ipa>
+         </phone>
       </phoneme>
       <phoneme id="p">
          <provide>voicing/voiceless manner/plosive place/bilabial</provide>
@@ -437,8 +454,14 @@
          <ipa>s</ipa>
       </phoneme>
       <phoneme id="t">
-         <provide>voicing/voiceless manner/plosive place/alveolar</provide>
-         <ipa>t</ipa>
+         <phone>
+            <provide>voicing/voiceless manner/plosive place/alveolar</provide>
+            <ipa>t</ipa>
+         </phone>
+         <phone>
+            <provide>voicing/voiceless manner/plosive place/alveolar foreign</provide>
+            <ipa>t</ipa>
+         </phone>
       </phoneme>
       <phoneme id="u">
          <!-- Variant at beginning of word and after vowels -->
@@ -452,14 +475,12 @@
             <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <ipa>w</ipa>
          </phone>
-
          <!-- Hard diphthong -->
          <phone>
             <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>
             <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <ipa>ʊw</ipa>
          </phone>
-
          <!-- Soft diphthong -->
          <phone>
             <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded</provide>
@@ -498,13 +519,19 @@
             <ipa>χ</ipa>
          </phone>
          <phone>
-            <provide>voicing/voiceless manner/fricative place/glottal</provide>
+            <provide>voicing/voiceless manner/fricative place/glottal foreign</provide>
             <ipa>h</ipa>
          </phone>
       </phoneme>
       <phoneme id="sh">
-         <provide>voicing/voiceless manner/fricative place/postalveolar</provide>
-         <ipa>ʃ</ipa>
+         <phone>
+            <provide>voicing/voiceless manner/fricative place/postalveolar</provide>
+            <ipa>ʃ</ipa>
+         </phone>
+         <phone>
+            <provide>voicing/voiceless manner/fricative place/alveolopalatal foreign</provide>
+            <ipa>ɕ</ipa>
+         </phone>
       </phoneme>
       <phoneme id="shsh">
          <provide>voicing/voiceless manner/fricative place/postalveolar length/long</provide>
@@ -583,6 +610,7 @@
             <require>@j foreign</require>
             <require>@ooe hardness/hard foreign</require>
          </pronunciation>
+         <provide>foreign</provide>
       </symbol>
       <symbol>
          <majuscule>Ж</majuscule>
@@ -765,6 +793,15 @@
       <symbol>
          <majuscule>Щ</majuscule>
          <minuscule>щ</minuscule>
+         <pronunciation>
+            <context>
+               <before>foreign</before>
+            </context>
+            <context>
+               <after>foreign</after>
+            </context>
+            <require>@sh foreign</require>
+         </pronunciation>
          <pronunciation>
             <require>@sh</require>
             <require>@sh</require>
