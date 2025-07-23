@@ -301,7 +301,7 @@
          <phone>
             <!-- Aspirated variant before vowels -->
             <context>
-               <before>manner/vocalic</before>
+               <after>manner/vocalic</after>
             </context>
             <provide>voicing/voiceless manner/plosive hardness/hard place/uvular aspirated</provide>
             <ipa>q^h</ipa>
@@ -411,10 +411,10 @@
          <phone>
             <!-- Word-initial and post-vocalic variant -->
             <context>
-               <after>manner/vocalic</after>
+               <before>manner/vocalic</before>
             </context>
             <context>
-               <after>[]</after>
+               <before>[]</before>
             </context>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɾ</ipa>

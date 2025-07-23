@@ -39,6 +39,10 @@ package Toolkit.Symbols_Impl is
    --------------
    Null_Symbol : constant Symbol_Instance;
    --  Must not be returned to user code
+
+   function Dump_Features (X : Abstract_Symbol) return Features.Feature_Set;
+   function Dump_Features (X : Symbol_Instance) return Features.Feature_Set;
+   --  Return all features associated with the symbol
 private
    type Form is record
       Contexts : Toolkit.Contexts.Context_List;

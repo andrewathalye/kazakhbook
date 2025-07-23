@@ -13,8 +13,7 @@ package body Toolkit.Symbols_Impl is
    -- To_Ada --
    ------------
    function To_Ada
-     (SDB : Symbol_Database; Text : String)
-      return Abstract_Symbol
+     (SDB : Symbol_Database; Text : String) return Abstract_Symbol
    is
       use Ada.Strings.Unbounded;
    begin
@@ -23,7 +22,7 @@ package body Toolkit.Symbols_Impl is
          Check_Forms :
          for FC in SDB (SC).Forms.Iterate loop
             declare
-               F : Form renames SDB (FC).Forms (FC);
+               F : Form renames Form_Lists.Element (FC);
             begin
                if Text = To_String (F.Text) then
                   return (SC, FC);
@@ -213,10 +212,12 @@ package body Toolkit.Symbols_Impl is
    is
       use Ada.Strings.Unbounded;
 
-      SD : Symbol_Definition renames Symbol_Databases.Element (AS);
+      SD : Symbol_Definition renames Symbol_Databases.Element (AS.Symbol);
    begin
       for P of SD.Pronunciations loop
-         if Contexts.Has_Superset (Symbol_Context, P.Contexts) then
+         if P.Contexts.Is_Empty or
+           Contexts.Has_Superset (Symbol_Context, P.Contexts)
+         then
             return
               (AS.Symbol, AS.Form,
                Phonemes.Resolve (PDB, P.Abstract_Phonemes, Phoneme_Context));
@@ -227,5 +228,18 @@ package body Toolkit.Symbols_Impl is
         with To_String (Form_Lists.Element (AS.Form).Text) & " in " &
         Contexts.To_XML (Symbol_Context);
    end Resolve;
+
+   -------------------
+   -- Dump_Features --
+   -------------------
+   function Dump_Features (X : Abstract_Symbol) return Features.Feature_Set is
+   begin
+      return Symbol_Databases.Element (X.Symbol).Features;
+   end Dump_Features;
+
+   function Dump_Features (X : Symbol_Instance) return Features.Feature_Set is
+   begin
+      return Symbol_Databases.Element (X.Symbol).Features;
+   end Dump_Features;
 
 end Toolkit.Symbols_Impl;

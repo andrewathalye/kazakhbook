@@ -3,6 +3,8 @@ pragma Ada_2012;
 with Ada.Strings.Unbounded;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 
+with Toolkit.Phonemes_Impl;
+
 package body Toolkit.Symbols is
    -------------
    -- Resolve --
@@ -12,14 +14,49 @@ package body Toolkit.Symbols is
       External_Symbol_Context, External_Phoneme_Context : Contexts.Context)
       return Symbol_List
    is
+      function Dump_Phoneme_Features
+        (X : Abstract_Symbol) return Features.Feature_Set;
+
+      function Dump_Phoneme_Features
+        (X : Abstract_Symbol) return Features.Feature_Set
+      is
+         pragma Unreferenced (X);
+      begin
+         return Features.Feature_Sets.Empty_Vector;
+      end Dump_Phoneme_Features;
+
+      function Dump_Phoneme_Features
+        (X : Symbol_Instance) return Features.Feature_Set;
+
+      function Dump_Phoneme_Features
+        (X : Symbol_Instance) return Features.Feature_Set
+      is
+         F : Features.Feature_Set;
+      begin
+         for P of To_Phonemes (X) loop
+            F.Append (Phonemes_Impl.Dump_Features (P));
+         end loop;
+
+         return F;
+      end Dump_Phoneme_Features;
+
       function Derive_Symbol_Context is new Contexts.Derive_Context
         (Index    => Positive, Element => Abstract_Symbol,
          Lists    => Abstract_Symbol_Lists,
          Features => Symbols_Impl.Dump_Features);
 
       function Derive_Phoneme_Context is new Contexts.Derive_Context
-        (Index => Positive, Element => Symbol_Instance, Lists => Symbol_Lists,
-         Features => Dump_Phoneme_Features);
+        (Index => Positive, Element => Abstract_Symbol,
+         Lists => Abstract_Symbol_Lists, Features => Dump_Phoneme_Features);
+
+      function Derive_Symbol_Context is new Contexts.Derive_Context
+        (Index    => Positive, Element => Symbol_Instance,
+         Lists    => Symbol_Lists,
+         Features => Symbols_Impl.Dump_Features);
+
+      function Derive_Phoneme_Context is new Contexts.Derive_Context
+        (Index => Positive, Element => Symbol_Instance,
+         Lists => Symbol_Lists, Features => Dump_Phoneme_Features);
 
       Result : Symbol_List;
    begin

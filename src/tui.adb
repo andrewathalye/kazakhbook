@@ -59,9 +59,10 @@ begin
             Put_Line
               (Phonemes.Transcribe
                  (Symbols.To_Phonemes
-                    (SL =>
-                       Symbols.To_Ada
-                         (SDB, Get_Line, Contexts.Null_Context))));
+                    (Symbols.Resolve
+                       (PDB => PDB, ASL => Symbols.To_Ada (SDB, Get_Line),
+                        External_Symbol_Context  => Contexts.Null_Context,
+                        External_Phoneme_Context => Contexts.Null_Context))));
          when C_Quit =>
             Quit := True;
       end case;
