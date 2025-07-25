@@ -25,8 +25,14 @@ package Toolkit.Symbols is
    --  of a word
 
    subtype Abstract_Symbol is Symbols_Impl.Abstract_Symbol;
-   use type Abstract_Symbol;
    --  An occurrence of a symbol with no fixed pronunciation
+
+   Null_Abstract_Symbol :
+     Abstract_Symbol renames Symbols_Impl.Null_Abstract_Symbol;
+   --  A specifically-invalid abstract symbol representing discontinuity.
+   --  Attempts to resolve this will result in an exception.
+
+   use type Abstract_Symbol;
 
    package Abstract_Symbol_Lists is new Ada.Containers.Vectors
      (Positive, Abstract_Symbol);

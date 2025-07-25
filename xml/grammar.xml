@@ -192,12 +192,7 @@
          <!-- Three contexts for a fricative realisation -->
          <phone>
             <context>
-               <before>[]</before>
-            </context>
-            <context>
                <before>manner/vocalic</before>
-            </context>
-            <context>
                <after>manner/vocalic</after>
             </context>
             <provide>voicing/voiced place/bilabial manner/fricative</provide>
@@ -854,5 +849,5 @@
       </symbol>
    </symbols>
    <rules/>
-   <forms/>
+   <morphemes/>
 </grammar>

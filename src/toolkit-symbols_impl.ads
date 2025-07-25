@@ -15,6 +15,7 @@ package Toolkit.Symbols_Impl is
    type Symbol_Database is private;
    type Symbol_Instance is private;
    type Abstract_Symbol is private;
+   Null_Abstract_Symbol : constant Abstract_Symbol;
 
    Unknown_Symbol : exception;
    function To_Ada
@@ -83,4 +84,6 @@ private
       Symbol : Symbol_Databases.Cursor;
       Form   : Form_Lists.Cursor;
    end record;
+
+   Null_Abstract_Symbol : constant Abstract_Symbol := (others => <>);
 end Toolkit.Symbols_Impl;
