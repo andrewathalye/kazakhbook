@@ -331,10 +331,10 @@
          <phone>
             <!-- After a vowel or at the beginning of a word -->
             <context>
-               <after>manner/vocalic</after>
+               <before>manner/vocalic</before>
             </context>
             <context>
-               <after>[]</after>
+               <before>[]</before>
             </context>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>l</ipa>
@@ -567,12 +567,40 @@
          <majuscule>Б</majuscule>
          <minuscule>б</minuscule>
          <pronunciation>
+            <!-- Kazakh words cannot have /b/ at the end -->
+            <context>
+               <after>[]</after>
+            </context>
+            <require>@p foreign</require>
+         </pronunciation>
+         <pronunciation>
             <require>@b</require>
+         </pronunciation>
+      </symbol>
+      <symbol>
+         <majuscule>В</majuscule>
+         <minuscule>в</minuscule>
+         <pronunciation>
+            <!-- Kazakh words cannot end in /v/ -->
+            <context>
+               <after>[]</after>
+            </context>
+            <require>@f foreign</require>
+         </pronunciation>
+         <pronunciation>
+            <require>@v</require>
          </pronunciation>
       </symbol>
       <symbol>
          <majuscule>Г</majuscule>
          <minuscule>г</minuscule>
+         <pronunciation>
+            <!-- Kazakh words cannot have /g/ at the end -->
+            <context>
+               <after>[]</after>
+            </context>
+            <require>@kq hardness/soft foreign</require>
+         </pronunciation>
          <pronunciation>
             <require>@ggh hardness/soft</require>
          </pronunciation>
@@ -587,6 +615,13 @@
       <symbol>
          <majuscule>Д</majuscule>
          <minuscule>д</minuscule>
+         <pronunciation>
+            <!-- Kazakh words cannot end in /d/ -->
+            <context>
+               <after>[]</after>
+            </context>
+            <require>@t foreign</require>
+         </pronunciation>
          <pronunciation>
             <require>@d</require>
          </pronunciation>
@@ -823,6 +858,9 @@
       <symbol>
          <majuscule>Ь</majuscule>
          <minuscule>ь</minuscule>
+         <pronunciation>
+            <require>@j foreign</require>
+         </pronunciation>
       </symbol>
       <symbol>
          <majuscule>Э</majuscule>
@@ -848,6 +886,66 @@
          </pronunciation>
       </symbol>
    </symbols>
-   <rules/>
-   <morphemes/>
+
+   <!--
+      Phoneme rules specifying transformations
+      These are used for features like assimilation and harmony
+   -->
+   <rules>
+      <rule id="ld_obstruent">
+         <context>
+            <before>manner/plosive</before>
+         </context>
+         <context>
+            <before>manner/fricative</before>
+         </context>
+         <transform>
+            <from>@l</from>
+            <to>@d</to>
+         </transform>
+      </rule>
+      <rule id="ghq_dt_unvoiced">
+         <context>
+            <before>voicing/voiceless</before>
+         </context>
+         <transform>
+            <from>@ggh</from>
+            <to>@kq</to>
+         </transform>
+         <transform>
+            <from>@d</from>
+            <to>@t</to>
+         </transform>
+      </rule>
+   </rules>
+
+   <!-- 
+      A database of morphemes (both affixes and stems)
+   -->
+   <morphemes>
+      <morpheme>
+         <context>
+            <before>wordclass/noun</before>
+         </context>
+         <context>
+            <before>wordclass/verb mood/indefinite</before>
+         </context>
+         <suffix/>
+         <provide>number/singular</provide>
+      </morpheme>
+      <morpheme>
+         <context>
+            <before>wordclass/noun</before>
+         </context>
+         <context>
+            <before>wordclass/verb mood/indefinite</before>
+         </context>
+         <generate>
+            <apply>ld_obstruent</apply>
+            <apply>ghq_dt_unvoiced</apply>
+            <suffix>лар</suffix>
+         </generate>
+         <provide>number/plural</provide>
+      </morpheme>
+   </morphemes>
 </grammar>

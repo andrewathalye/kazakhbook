@@ -107,7 +107,19 @@
       </xs:sequence>
    </xs:complexType>
    <!-- RULES -->
-   <xs:complexType name="rule"></xs:complexType>
+   <xs:complexType name="transform">
+      <xs:sequence>
+         <xs:element name="from" type="xs:string"/>
+         <xs:element name="to" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="rule">
+      <xs:sequence>
+         <xs:element minOccurs="0" maxOccurs="unbounded" name="context" type="context"/>
+         <xs:element maxOccurs="unbounded" name="transform" type="transform"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+   </xs:complexType>
    <!-- FORMS -->
    <xs:complexType name="circumfix">
       <xs:sequence>
@@ -115,23 +127,64 @@
          <xs:element name="postfix" type="xs:string"/>
       </xs:sequence>
    </xs:complexType>
+   <xs:complexType name="discontinuous">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:element name="item" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:simpleType name="morphtype">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="prefix"/>
+         <xs:enumeration value="stem"/>
+         <xs:enumeration value="suffix"/>
+         <xs:enumeration value="postfix"/>
+         <xs:enumeration value="circumfix"/>
+         <xs:enumeration value="interfix"/>
+         <xs:enumeration value="triliteral"/>
+         <xs:enumeration value="transfix"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:group name="morphtype">
+      <xs:choice>
+         <!-- Flective language support -->
+         <xs:element name="prefix" type="xs:string"/>
+         <xs:element name="stem" type="xs:string"/>
+         <xs:element name="suffix" type="xs:string"/>
+         <xs:element name="postfix" type="xs:string"/>
+         <xs:element name="circumfix" type="circumfix"/>
+         <xs:element name="interfix" type="xs:string"/>
+         <!-- Semitic language support -->
+         <xs:element name="triliteral" type="discontinuous"/>
+         <xs:element name="transfix" type="discontinuous"/>
+         <!-- TODO support duplifix, interfix, infix -->
+      </xs:choice>
+   </xs:group>
    <xs:complexType name="morpheme">
       <xs:sequence>
          <xs:element name="context" type="context" minOccurs="0" maxOccurs="unbounded"/>
          <xs:choice>
-            <!-- Flective language support -->
-            <xs:element name="prefix" type="xs:string"/>
-            <xs:element name="stem" type="xs:string"/>
-            <xs:element name="suffix" type="xs:string"/>
-            <xs:element name="postfix" type="xs:string"/>
-            <xs:element name="circumfix" type="circumfix"/>
-            <!-- Semitic language support -->
-            <xs:element name="triliteral" type="xs:string"/>
-            <xs:element name="transfix" type="xs:string"/>
-            <!-- TODO support duplifix, interfix, infix -->
+            <xs:element name="generate">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element maxOccurs="unbounded" name="apply" type="xs:string"/>
+                     <xs:group ref="morphtype"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:element name="morph">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="context" type="context" minOccurs="0" maxOccurs="unbounded"/>
+                     <xs:group ref="morphtype"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:group ref="morphtype"/>
          </xs:choice>
          <xs:element name="provide" type="provide"/>
       </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+      <xs:attribute name="type" type="morphtype" use="required"/>
    </xs:complexType>
    <!-- GRAMMAR -->
    <xs:element name="grammar">
