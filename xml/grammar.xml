@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="grammar.xsd">
+   <!-- 
+      Hierarchy: 
+      Features -> Phonemes -> Syllables -> Morphemes -> Words -> Clauses -> Sentences -> Texts    
+      Words also contain Symbols
+   -->
+
    <!-- Abstract features that can be possessed
         by various structures
    -->
@@ -58,7 +64,6 @@
          <value id="whispered"/>
          <value id="voiced"/>
       </feature>
-      <feature id="stressed"/>
       <feature id="hardness">
          <value id="hard"/>
          <value id="soft"/>
@@ -70,6 +75,8 @@
       </feature>
       <!-- Not currently needed -->
       <feature id="tensed"/>
+      <!-- Syllable features -->
+      <feature id="stressed"/>
       <feature id="level">
          <value id="extrahigh"/>
          <value id="high"/>
@@ -227,12 +234,13 @@
             <!-- Two contexts for a stressed diphthong -->
             <context>
                <before>[]</before>
+               <super>stressed</super>
             </context>
             <context>
                <before>manner/vocalic</before>
             </context>
             <provide>voicing/voiced manner/approximant place/palatal</provide>
-            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front stressed</provide>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
             <ipa>je</ipa>
          </phone>
          <phone>
@@ -249,7 +257,10 @@
          </phone>
          <phone>
             <!-- Stressed default monophthong -->
-            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front stressed</provide>
+            <context>
+               <super>stressed</super>
+            </context>
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
             <ipa>e</ipa>
          </phone>
          <phone>
@@ -257,9 +268,9 @@
             <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
             <ipa>ɘ</ipa>
          </phone>
-         <!-- Foreign sound (only in loanwords) -->
          <phone>
-            <provide>voicing/voiced manner/vocalic height/closemid place/front foreign</provide>
+            <!-- Foreign monophthong -->
+            <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front foreign</provide>
             <ipa>e</ipa>
          </phone>
       </phoneme>
@@ -544,6 +555,41 @@
       </phoneme>
       <!-- ц, ч, у, ё, и, ъ, ь, э, ю, я are not phonemes in this analysis -->
    </phonemes>
+   <!--
+      Rules for syllabification
+      As with other features, we try each rule in order and back-track
+      if a choice makes it impossible to determine the next syllable.
+   -->
+   <syllables>
+      <!-- V syllable -->
+      <syllable>
+         <require>voicing/voiced manner/vocalic</require>
+      </syllable>
+      <!-- CV syllable -->
+      <syllable>
+         <require>!manner/vocalic</require>
+         <require>voicing/voiced manner/vocalic</require>
+      </syllable>
+      <!-- VC syllable -->
+      <syllable>
+         <require>voicing/voiced manner/vocalic</require>
+         <require>!manner/vocalic</require>
+      </syllable>
+      <!-- CVC syllable -->
+      <syllable>
+         <require>!manner/vocalic</require>
+         <require>voicing/voiced manner/vocalic</require>
+         <require>!manner/vocalic</require>
+      </syllable>
+      <!-- CVnt syllable -->
+      <syllable>
+         <require>!manner/vocalic</require>
+         <require>voicing/voiced manner/vocalic</require>
+         <require>@n</require>
+         <require>@t</require>
+      </syllable>
+   </syllables>
+
    <!-- Contextual mapping between symbols and abstract
         phonemes (NOT phones).
         Note: Forms and rules are given using symbols, not phonemes.
@@ -571,7 +617,7 @@
             <context>
                <after>[]</after>
             </context>
-            <require>@p foreign</require>
+            <require>@p</require>
          </pronunciation>
          <pronunciation>
             <require>@b</require>
@@ -585,7 +631,7 @@
             <context>
                <after>[]</after>
             </context>
-            <require>@f foreign</require>
+            <require>@f</require>
          </pronunciation>
          <pronunciation>
             <require>@v</require>
@@ -599,7 +645,7 @@
             <context>
                <after>[]</after>
             </context>
-            <require>@kq hardness/soft foreign</require>
+            <require>@kq hardness/soft</require>
          </pronunciation>
          <pronunciation>
             <require>@ggh hardness/soft</require>
@@ -801,15 +847,15 @@
          <majuscule>Ц</majuscule>
          <minuscule>ц</minuscule>
          <pronunciation>
-            <require>@t foreign</require>
-            <require>@s foreign</require>
+            <require>@t</require>
+            <require>@s</require>
          </pronunciation>
       </symbol>
       <symbol>
          <majuscule>Ч</majuscule>
          <minuscule>ч</minuscule>
          <pronunciation>
-            <require>@t foreign</require>
+            <require>@t</require>
             <require>@sh foreign</require>
          </pronunciation>
       </symbol>
@@ -824,17 +870,7 @@
          <majuscule>Щ</majuscule>
          <minuscule>щ</minuscule>
          <pronunciation>
-            <context>
-               <before>foreign</before>
-            </context>
-            <context>
-               <after>foreign</after>
-            </context>
-            <require>@sh foreign</require>
-         </pronunciation>
-         <pronunciation>
-            <require>@sh</require>
-            <require>@sh</require>
+            <require>@shh</require>
          </pronunciation>
       </symbol>
       <symbol>
@@ -886,13 +922,13 @@
          </pronunciation>
       </symbol>
    </symbols>
-
    <!--
-      Phoneme rules specifying transformations
-      These are used for features like assimilation and harmony
+      Transformational rules for various domains
+         These apply to phonemes, syllables, and morphemes
+      May be used for assimilation, harmony, or stress
    -->
    <rules>
-      <rule id="ld_obstruent">
+      <rule id="assimilate_ld_obstruent" domain="phoneme">
          <context>
             <before>manner/plosive</before>
          </context>
@@ -904,7 +940,7 @@
             <to>@d</to>
          </transform>
       </rule>
-      <rule id="ghq_dt_unvoiced">
+      <rule id="assimilate_ghq_dt_unvoiced" domain="phoneme">
          <context>
             <before>voicing/voiceless</before>
          </context>
@@ -917,8 +953,43 @@
             <to>@t</to>
          </transform>
       </rule>
+      <rule id="stress_ultimate" domain="syllable">
+         <context>
+            <after>[]</after>
+            <super>!person !numeral !particle</super>
+         </context>
+         <context>
+            <before>[]</before>
+            <after>[]</after>
+            <super>!particle</super>
+         </context>
+         <send>
+         <value>stressed</value>
+         <target>self</target>
+         </add>
+      </rule>
+      <rule id="stress_initial_numeral" domain="syllable">
+         <context>
+            <before>[]</before>
+            <super>numeral</super>
+         </context>
+         <send>
+            <value>stressed</value>
+            <target>self</target>
+         </send>
+      </rule>
+      <rule id="stress_shift_person" domain="syllable">
+         <context>
+            <before>![]</before>
+            <after>[]</after>
+            <super>?person</super>
+         </context>
+         <send>
+            <value>stressed</value>
+            <target>previous</target>
+         </send>
+      </rule>
    </rules>
-
    <!-- 
       A database of morphemes (both affixes and stems)
    -->

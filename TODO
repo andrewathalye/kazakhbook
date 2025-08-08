@@ -1,0 +1,28 @@
+Define syllable structure
+Structure features so that they can be automatically promoted (how?)
+
+Syllable Rule
+   Declare phonemes that can appear in syllables
+   Start VC end V or sonorant
+   <syllables>
+      <onsets>
+         <onset>
+            <require>@s</require>
+            <require>@t</require>
+            <require>@r</require>
+         </onset>
+      <initials>
+         <initial>
+            <require>voicing/voiced manner/vocalic</require>
+         </initial>
+      </initials>
+      <codas>
+         <require>voicing
+      </codas>
+   </syllables>
+Morpheme
+   List of Morphs
+   Morpheme Type
+
+Morph
+   Symbol List (Null for Discontinuous)
