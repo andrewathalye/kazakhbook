@@ -16,15 +16,15 @@
    <xs:simpleType name="global">
       <xs:restriction base="xs:string"/>
    </xs:simpleType>
-   <xs:complexType name="context">
-      <xs:annotation>
-         <xs:documentation>Each type of context must not be repeated</xs:documentation>
-      </xs:annotation>
+   <xs:complexType name="context_def">
       <xs:all>
          <xs:element name="before" type="before" minOccurs="0"/>
          <xs:element name="after" type="after" minOccurs="0"/>
          <xs:element name="global" type="global" minOccurs="0"/>
       </xs:all>
+   </xs:complexType>
+   <xs:complexType name="context_ref">
+      <xs:attribute name="ref" type="xs:string"/>
    </xs:complexType>
    <!-- FEATURES -->
    <xs:complexType name="feature">
@@ -47,7 +47,7 @@
    <xs:complexType name="phone">
       <xs:sequence>
          <xs:sequence minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="context" type="context"/>
+            <xs:element name="context" type="context_ref"/>
          </xs:sequence>
          <xs:sequence maxOccurs="unbounded">
             <xs:element name="provide" type="provide"/>
@@ -71,11 +71,17 @@
       </xs:choice>
       <xs:attribute name="id" type="xs:string" use="required"/>
    </xs:complexType>
+   <!-- SYLLABLES -->
+   <xs:complexType name="syllable">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:element name="require" type="require"/>
+      </xs:sequence>
+   </xs:complexType>
    <!-- LETTERS -->
    <xs:complexType name="complex">
       <xs:sequence>
          <xs:sequence maxOccurs="unbounded">
-            <xs:element name="context" type="context"/>
+            <xs:element name="context" type="context_ref"/>
          </xs:sequence>
          <xs:element name="unicode" type="xs:string"/>
       </xs:sequence>
@@ -83,7 +89,7 @@
    <xs:complexType name="pronunciation">
       <xs:sequence>
          <xs:sequence minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="context" type="context"/>
+            <xs:element name="context" type="context_ref"/>
          </xs:sequence>
          <xs:sequence maxOccurs="unbounded">
             <xs:element name="require" type="xs:string"/>
@@ -107,19 +113,6 @@
       </xs:sequence>
    </xs:complexType>
    <!-- RULES -->
-   <xs:complexType name="transform">
-      <xs:sequence>
-         <xs:element name="from" type="xs:string"/>
-         <xs:element name="to" type="xs:string"/>
-      </xs:sequence>
-   </xs:complexType>
-   <xs:complexType name="rule">
-      <xs:sequence>
-         <xs:element minOccurs="0" maxOccurs="unbounded" name="context" type="context"/>
-         <xs:element maxOccurs="unbounded" name="transform" type="transform"/>
-      </xs:sequence>
-      <xs:attribute name="id" type="xs:string" use="required"/>
-   </xs:complexType>
    <!-- FORMS -->
    <xs:complexType name="circumfix">
       <xs:sequence>
@@ -146,6 +139,8 @@
    </xs:simpleType>
    <xs:group name="morphtype">
       <xs:choice>
+         <!-- Particles, etc. -->
+         <xs:element name="word" type="xs:string"/>
          <!-- Flective language support -->
          <xs:element name="prefix" type="xs:string"/>
          <xs:element name="stem" type="xs:string"/>
@@ -161,30 +156,25 @@
    </xs:group>
    <xs:complexType name="morpheme">
       <xs:sequence>
-         <xs:element name="context" type="context" minOccurs="0" maxOccurs="unbounded"/>
          <xs:choice>
-            <xs:element name="generate">
+            <xs:sequence>
+               <xs:element name="context" type="context_ref" minOccurs="0" maxOccurs="unbounded"/>
+               <xs:group ref="morphtype"/>
+            </xs:sequence>
+            <xs:element name="morph" maxOccurs="unbounded">
                <xs:complexType>
                   <xs:sequence>
-                     <xs:element maxOccurs="unbounded" name="apply" type="xs:string"/>
+                     <xs:element name="context" type="context_ref" minOccurs="0" maxOccurs="unbounded"/>
                      <xs:group ref="morphtype"/>
+                     <xs:element maxOccurs="unbounded" minOccurs="0" name="apply" type="xs:string"/>
                   </xs:sequence>
                </xs:complexType>
             </xs:element>
-            <xs:element name="morph">
-               <xs:complexType>
-                  <xs:sequence>
-                     <xs:element name="context" type="context" minOccurs="0" maxOccurs="unbounded"/>
-                     <xs:group ref="morphtype"/>
-                  </xs:sequence>
-               </xs:complexType>
-            </xs:element>
-            <xs:group ref="morphtype"/>
          </xs:choice>
-         <xs:element name="provide" type="provide"/>
+         <xs:element name="provide" type="provide" minOccurs="0"/>
+         <xs:element name="promote" type="provide" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:string" use="required"/>
-      <xs:attribute name="type" type="morphtype" use="required"/>
    </xs:complexType>
    <!-- GRAMMAR -->
    <xs:element name="grammar">
@@ -197,10 +187,24 @@
                   </xs:sequence>
                </xs:complexType>
             </xs:element>
+            <xs:element name="contexts">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="context" type="context_def"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
             <xs:element name="phonemes">
                <xs:complexType>
                   <xs:sequence maxOccurs="unbounded">
                      <xs:element name="phoneme" type="phoneme"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:element name="syllables">
+               <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                     <xs:element name="syllable" type="syllable"/>
                   </xs:sequence>
                </xs:complexType>
             </xs:element>
@@ -214,7 +218,7 @@
             <xs:element name="rules">
                <xs:complexType>
                   <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                     <xs:element name="rule" type="rule"/>
+                     <xs:element name="rule" type="xs:string"/>
                   </xs:sequence>
                </xs:complexType>
             </xs:element>

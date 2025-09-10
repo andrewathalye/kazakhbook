@@ -2,16 +2,14 @@
 <grammar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="grammar.xsd">
    <!-- 
       Hierarchy: 
-      Features -> Phonemes -> Syllables -> Morphemes -> Words -> Clauses -> Sentences -> Texts    
+      Phonemes -> Syllables -> Morphemes -> Words -> Clauses -> Sentences -> Texts    
       Words also contain Symbols
+      Every object is described by its children and a set of features.
    -->
-
    <!-- Abstract features that can be possessed
         by various structures
    -->
    <features>
-      <!--  TODO -->
-      <feature id="[]"/>
       <!-- Sound features -->
       <feature id="place">
          <value id="bilabial"/>
@@ -91,7 +89,7 @@
          <value id="risingfalling"/>
       </feature>
       <!-- Word features -->
-      <feature id="wordclass">
+      <feature id="word">
          <value id="particle"/>
          <value id="conjunction"/>
          <value id="noun"/>
@@ -101,7 +99,8 @@
          <value id="verb"/>
       </feature>
       <feature id="person">
-         <value id="1"/>
+         <value id="1s"/>
+         <value id="1p"/>
          <value id="2i"/>
          <value id="2f"/>
          <value id="3"/>
@@ -112,7 +111,8 @@
          <value id="plural"/>
       </feature>
       <feature id="possessor">
-         <value id="1"/>
+         <value id="1s"/>
+         <value id="1p"/>
          <value id="2i"/>
          <value id="2f"/>
          <value id="3"/>
@@ -175,6 +175,104 @@
       </feature>
       <feature id="foreign"/>
    </features>
+   <!--
+      Database of known contexts. Contexts are sets of feature-based
+      conditions under which a form is to be chosen.
+   -->
+   <contexts>
+      <!--
+         A construct permitted between two vowels
+      -->
+      <context id="intervocalic">
+         <scope id="phone">
+            <before>manner/vocalic</before>
+            <after>manner/vocalic</after>
+         </scope>
+      </context>
+      <!-- 
+         A word is countable iff it is a noun, personal pronoun
+         or indefinite verb.
+         There may only be one number marker in a word, number is not
+         marked if there is a cardinal number preceding the word TODO
+         A case marker cannot come before a number marker.
+      -->
+      <context id="numbermarker">
+         <scope id="clause">
+            <scope id="word">
+               <either>
+                  <has>word/noun</has>
+                  <has>word/pronoun !uncountable</has>
+                  <has>word/verb mood/indefinite</has>
+               </either>
+               <scope id="morpheme">
+                  <allbefore>!case</allbefore>
+                  <unique>number</unique>
+               </scope>
+            </scope>
+         </scope>
+      </context>
+      <!-- 
+         A case marker must only appear in a noun, declinable pronoun
+         or indefinite verb.
+         There may only be one case marker in a word.
+      -->
+      <context id="casemarker">
+         <scope id="word">
+            <either>
+               <has>word/noun</has>
+               <has>word/pronoun !indeclinable</has>
+               <has>word/verb mood/indefinite</has>
+            </either>
+            <scope id="morpheme">
+               <unique>case</unique>
+            </scope>
+         </scope>
+      </context>
+      <!-- 
+         Possessive suffixes must not precede number markers or repeat
+      -->
+      <context id="possessive_suffix">
+         <scope id="morpheme">
+            <allafter>!number</allafter>
+            <unique>suffix/possessive</unique>
+         </scope>
+      </context>
+      <!-- 
+         Demonstrative suffixes do not repeat and occur only after
+         a locative case ending.
+      -->
+      <context id="demonstrative_suffix">
+         <scope id="word">
+            <has>word/noun</has>
+            <scope id="morpheme">
+               <before>case/locative</before>
+               <unique>suffix/demonstrative</unique>
+            </scope>
+         </scope>
+      </context>
+      <!-- 
+         Unique postfixes do not repeat
+      -->
+      <context id="unique_postfix">
+         <scope id="word">
+            <scope id="morpheme">
+               <unique>unique_postfix</unique>
+            </scope>
+         </scope>
+      </context>
+      <!-- 
+         Only one interrogative particle may be in a clause
+         and they must be at the end of the clause.
+      -->
+      <context id="interrogative_particle">
+         <scope id="clause">
+            <scope id="word">
+               <unique>particle/interrogative</unique>
+               <after>[]</after>
+            </scope>
+         </scope>
+      </context>
+   </contexts>
    <!-- Mapping between abstract phonemes and
         concrete realisations based upon context.
 
@@ -198,10 +296,7 @@
       <phoneme id="b">
          <!-- Three contexts for a fricative realisation -->
          <phone>
-            <context>
-               <before>manner/vocalic</before>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="intervocalic"/>
             <provide>voicing/voiced place/bilabial manner/fricative</provide>
             <ipa>β</ipa>
          </phone>
@@ -232,34 +327,23 @@
       <phoneme id="je">
          <phone>
             <!-- Two contexts for a stressed diphthong -->
-            <context>
-               <before>[]</before>
-               <super>stressed</super>
-            </context>
-            <context>
-               <before>manner/vocalic</before>
-            </context>
+            <context ref="initial_or_stressed"/>
+            <context ref="postvocalic"/>
             <provide>voicing/voiced manner/approximant place/palatal</provide>
             <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
             <ipa>je</ipa>
          </phone>
          <phone>
             <!-- Two contexts for an unstressed diphthong -->
-            <context>
-               <after>[]</after>
-            </context>
-            <context>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="initial"/>
+            <context ref="postvocalic"/>
             <provide>voicing/voiced manner/approximant place/palatal</provide>
             <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
             <ipa>jɘ</ipa>
          </phone>
          <phone>
             <!-- Stressed default monophthong -->
-            <context>
-               <super>stressed</super>
-            </context>
+            <context ref="stressed"/>
             <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
             <ipa>e</ipa>
          </phone>
@@ -276,17 +360,13 @@
       </phoneme>
       <phoneme id="zh">
          <phone>
-            <context>
-               <global>dialect/south</global>
-            </context>
+            <context ref="south_dialect"/>
             <provide>voicing/voiced manner/plosive place/postalveolar</provide>
             <provide>voicing/voiced manner/fricative place/postalveolar</provide>
             <ipa>dʒ</ipa>
          </phone>
          <phone>
-            <context>
-               <global>dialect/west</global>
-            </context>
+            <context ref="west_dialect"/>
             <provide>voicing/voiced manner/approximant place/palatal</provide>
             <ipa>j</ipa>
          </phone>
@@ -318,17 +398,13 @@
          </phone>
          <phone>
             <!-- Aspirated variant before vowels -->
-            <context>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="prevocalic"/>
             <provide>voicing/voiceless manner/plosive hardness/hard place/uvular aspirated</provide>
             <ipa>q^h</ipa>
          </phone>
          <phone>
             <!-- Glottal variant at the end of a word -->
-            <context>
-               <before>[]</before>
-            </context>
+            <context ref="desinental"/>
             <provide>voicing/voiceless manner/plosive hardness/hard place/glottal</provide>
             <ipa>ʔ</ipa>
          </phone>
@@ -341,12 +417,8 @@
       <phoneme id="l">
          <phone>
             <!-- After a vowel or at the beginning of a word -->
-            <context>
-               <before>manner/vocalic</before>
-            </context>
-            <context>
-               <before>[]</before>
-            </context>
+            <context ref="prevocalic"/>
+            <context ref="desinental"/>
             <provide>voicing/voiced place/alveolar manner/latapprox</provide>
             <ipa>l</ipa>
          </phone>
@@ -374,9 +446,7 @@
       <phoneme id="ng">
          <phone>
             <!-- Variant after a vowel -->
-            <context>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="postvocalic"/>
             <provide>voicing/voiced manner/nasal place/velar</provide>
             <ipa>ŋ</ipa>
          </phone>
@@ -389,23 +459,15 @@
       <phoneme id="ooe">
          <phone>
             <!-- Labialised hard variant -->
-            <context>
-               <after>[]</after>
-            </context>
-            <context>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="desinental"/>
+            <context ref="prevocalic"/>
             <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <provide>voicing/voiced manner/vocalic place/back height/closemid rounded hardness/hard</provide>
             <ipa>^wo</ipa>
          </phone>
          <phone>
-            <context>
-               <after>[]</after>
-            </context>
-            <context>
-               <after>manner/vocalic</after>
-            </context>
+            <context ref="desinental"/>
+            <context ref="prevocalic"/>
             <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <provide>voicing/voiced manner/vocalic place/front height/closemid rounded hardness/soft</provide>
             <ipa>^wø</ipa>
@@ -433,12 +495,8 @@
       <phoneme id="r">
          <phone>
             <!-- Word-initial and post-vocalic variant -->
-            <context>
-               <before>manner/vocalic</before>
-            </context>
-            <context>
-               <before>[]</before>
-            </context>
+            <context ref="postvocalic"/>
+            <context ref="initial"/>
             <provide>voicing/voiced manner/flap place/alveolar</provide>
             <ipa>ɾ</ipa>
          </phone>
@@ -472,12 +530,8 @@
       <phoneme id="u">
          <!-- Variant at beginning of word and after vowels -->
          <phone>
-            <context>
-               <before>[]</before>
-            </context>
-            <context>
-               <before>manner/vocalic</before>
-            </context>
+            <context ref="initial"/>
+            <context ref="postvocalic"/>
             <provide>voicing/voiced manner/approximant place/labialvelar</provide>
             <ipa>w</ipa>
          </phone>
@@ -506,10 +560,8 @@
       </phoneme>
       <phoneme id="f">
          <phone>
-            <!-- Variant before rounded vowels-->
-            <context>
-               <before>manner/vocalic rounded</before>
-            </context>
+            <!-- Variant before rounded vowels TODO -->
+            <context ref="prevocalic"/>
             <provide>foreign voicing/voiceless place/bilabial manner/fricative</provide>
             <ipa>ɸ</ipa>
          </phone>
@@ -589,7 +641,6 @@
          <require>@t</require>
       </syllable>
    </syllables>
-
    <!-- Contextual mapping between symbols and abstract
         phonemes (NOT phones).
         Note: Forms and rules are given using symbols, not phonemes.
@@ -614,9 +665,7 @@
          <minuscule>б</minuscule>
          <pronunciation>
             <!-- Kazakh words cannot have /b/ at the end -->
-            <context>
-               <after>[]</after>
-            </context>
+            <context ref="desinental"/>
             <require>@p</require>
          </pronunciation>
          <pronunciation>
@@ -628,9 +677,7 @@
          <minuscule>в</minuscule>
          <pronunciation>
             <!-- Kazakh words cannot end in /v/ -->
-            <context>
-               <after>[]</after>
-            </context>
+            <context ref="desinental"/>
             <require>@f</require>
          </pronunciation>
          <pronunciation>
@@ -642,9 +689,7 @@
          <minuscule>г</minuscule>
          <pronunciation>
             <!-- Kazakh words cannot have /g/ at the end -->
-            <context>
-               <after>[]</after>
-            </context>
+            <context ref="desinental"/>
             <require>@kq hardness/soft</require>
          </pronunciation>
          <pronunciation>
@@ -663,9 +708,7 @@
          <minuscule>д</minuscule>
          <pronunciation>
             <!-- Kazakh words cannot end in /d/ -->
-            <context>
-               <after>[]</after>
-            </context>
+            <context ref="desinental"/>
             <require>@t foreign</require>
          </pronunciation>
          <pronunciation>
@@ -928,95 +971,321 @@
       May be used for assimilation, harmony, or stress
    -->
    <rules>
-      <rule id="assimilate_ld_obstruent" domain="phoneme">
-         <context>
-            <before>manner/plosive</before>
-         </context>
-         <context>
-            <before>manner/fricative</before>
-         </context>
-         <transform>
-            <from>@l</from>
-            <to>@d</to>
-         </transform>
-      </rule>
-      <rule id="assimilate_ghq_dt_unvoiced" domain="phoneme">
-         <context>
-            <before>voicing/voiceless</before>
-         </context>
-         <transform>
-            <from>@ggh</from>
-            <to>@kq</to>
-         </transform>
-         <transform>
-            <from>@d</from>
-            <to>@t</to>
-         </transform>
-      </rule>
-      <rule id="stress_ultimate" domain="syllable">
-         <context>
-            <after>[]</after>
-            <super>!person !numeral !particle</super>
-         </context>
-         <context>
-            <before>[]</before>
-            <after>[]</after>
-            <super>!particle</super>
-         </context>
-         <send>
-         <value>stressed</value>
-         <target>self</target>
-         </add>
-      </rule>
-      <rule id="stress_initial_numeral" domain="syllable">
-         <context>
-            <before>[]</before>
-            <super>numeral</super>
-         </context>
-         <send>
-            <value>stressed</value>
-            <target>self</target>
-         </send>
-      </rule>
-      <rule id="stress_shift_person" domain="syllable">
-         <context>
-            <before>![]</before>
-            <after>[]</after>
-            <super>?person</super>
-         </context>
-         <send>
-            <value>stressed</value>
-            <target>previous</target>
-         </send>
-      </rule>
    </rules>
    <!-- 
       A database of morphemes (both affixes and stems)
    -->
    <morphemes>
-      <morpheme>
-         <context>
-            <before>wordclass/noun</before>
-         </context>
-         <context>
-            <before>wordclass/verb mood/indefinite</before>
-         </context>
+      <!--
+         Grammatical number
+      -->
+      <morpheme id="singular_number">
+         <context ref="numbermarker"/>
          <suffix/>
-         <provide>number/singular</provide>
+         <promote>number/singular</promote>
       </morpheme>
-      <morpheme>
-         <context>
-            <before>wordclass/noun</before>
-         </context>
-         <context>
-            <before>wordclass/verb mood/indefinite</before>
-         </context>
-         <generate>
-            <apply>ld_obstruent</apply>
-            <apply>ghq_dt_unvoiced</apply>
+      <morpheme id="plural_number">
+         <morph>
+            <context ref="numbermarker"/>
             <suffix>лар</suffix>
-         </generate>
-         <provide>number/plural</provide>
+            <apply>ld_obstruent</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>ae_harmony</apply>
+         </morph>
+         <promote>number/plural</promote>
+      </morpheme>
+      <!--
+         Case endings
+      -->
+      <morpheme id="ablative_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>дан</suffix>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>dn_nasal</apply>
+            <apply>dn_3p</apply>
+            <apply>ae_harmony</apply>
+         </morph>
+         <promote>case/ablative</promote>
+      </morpheme>
+      <morpheme id="locative_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>да</suffix>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>dnd_3p</apply>
+            <apply>ae_harmony«/</apply>
+         </morph>
+         <promote>case/locative</promote>
+      </morpheme>
+      <morpheme id="dative_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>ға</suffix>
+            <apply>ghg_harmony</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>dn_3p</apply>
+            <apply>d_1p2psg</apply>
+         </morph>
+         <promote>case/dative</promote>
+      </morpheme>
+      <morpheme id="genitive_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>ның</suffix>
+            <apply>nd_nonvocalic</apply>
+            <apply>dn_nasal</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <promote>case/genitive</promote>
+      </morpheme>
+      <morpheme id="accusative_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>ны</suffix>
+            <apply>nd_nonvocalic</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>nyn_3p</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <promote>case/accusative</promote>
+      </morpheme>
+      <morpheme id="instrumental_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>мен</suffix>
+            <apply>mb_nonsonorant</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+         </morph>
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>менен</suffix>
+            <apply>mb_nonsonorant</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+         </morph>
+         <promote>case/instrumental</promote>
+      </morpheme>
+      <morpheme id="possessive_case">
+         <morph>
+            <context ref="casemarker"/>
+            <suffix>нікі</suffix>
+            <apply>nd_nonvocalic</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+         </morph>
+         <promote>case/possessive</promote>
+      </morpheme>
+      <!-- 
+         Personal Possessive Suffixes
+      -->
+      <morpheme id="1s_possessive_suffix">
+         <morph>
+            <context ref="possessive_suffix"/>
+            <suffix>м</suffix>
+            <apply>y_nonvocalic</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/possessive</provide>
+         <promote>possessor/1s</promote>
+      </morpheme>
+      <morpheme id="1p_possessive_suffix">
+         <morph>
+            <context ref="possessive_suffix"/>
+            <suffix>мыз</suffix>
+            <apply>y_nonvocalic</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/possessive</provide>
+         <promote>possessor/1p</promote>
+      </morpheme>
+      <morpheme id="2i_possessive_suffix">
+         <morph>
+            <context ref="possessive_suffix"/>
+            <suffix>ң</suffix>
+            <apply>y_nonvocalic</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/possessive</provide>
+         <promote>possessor/2i</promote>
+      </morpheme>
+      <morpheme id="2f_possessive_suffix">
+         <morph>
+            <context ref="possessive_suffix"/>
+            <suffix>ңыз</suffix>
+            <apply>y_nonvocalic</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/possessive</provide>
+         <promote>possessor/2f</promote>
+      </morpheme>
+      <morpheme id="3_possessive_suffix">
+         <morph>
+            <context ref="possessive_suffix"/>
+            <suffix>ы</suffix>
+            <apply>s_vocalic</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/possessive</provide>
+         <promote>possessor/3</promote>
+      </morpheme>
+      <!-- 
+         Personal Endings (Suffixes)
+      -->
+      <morpheme id="1s_personal_ending">
+         <morph>
+            <context ref="personal_ending_form1"/>
+            <suffix>мын</suffix>
+            <apply>mb_nonsonorant</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <morph>
+            <context ref="personal_ending_form2"/>
+            <suffix>м</suffix>
+         </morph>
+         <provide>suffix/personal</provide>
+         <promote>person/1s</promote>
+      </morpheme>
+      <morpheme id="1p_personal_ending">
+         <morph>
+            <context ref="personal_ending_form1"/>
+            <suffix>мыз</suffix>
+            <apply>mb_nonsonorant</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <morph>
+            <context ref="personal_ending_form2"/>
+            <suffix>қ</suffix>
+            <apply>qk_harmony</apply>
+         </morph>
+         <provide>suffix/personal</provide>
+         <promote>person/1p</promote>
+      </morpheme>
+      <morpheme id="2i_personal_ending">
+         <morph>
+            <context ref="personal_ending_form1"/>
+            <suffix>сың</suffix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <morph>
+            <context ref="personal_ending_form2"/>
+            <suffix>ң</suffix>
+         </morph>
+         <provide>suffix/personal</provide>
+         <promote>person/2i</promote>
+      </morpheme>
+      <morpheme id="2f_personal_ending">
+         <morph>
+            <context ref="personal_ending_form1"/>
+            <suffix>сыз</suffix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <morph>
+            <context ref="personal_ending_form2"/>
+            <suffix>ңыз</suffix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/personal</provide>
+         <promote>person/2f</promote>
+      </morpheme>
+      <morpheme id="3_personal_ending">
+         <morph>
+            <context ref="3_personal_ending"/>
+            <suffix>ды</suffix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>suffix/personal</provide>
+      </morpheme>
+      <!-- 
+         Miscellaneous Affixes
+      -->
+      <morpheme id="demonstrative_suffix">
+         <morph>
+            <context ref="demonstrative_suffix"/>
+            <suffix>ғы</suffix>
+            <apply>ghg_harmony</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>yi_harmony</apply>
+         </morph>
+         <promote>demonstrative</promote>
+      </morpheme>
+      <morpheme id="pain_augmentative_postfix">
+         <context ref="unique_postfix"/>
+         <postfix>-ай</postfix>
+         <provide>postfix/augmentative</provide>
+         <promote>pain</promote>
+      </morpheme>
+      <morpheme id="surprise_augmentative_postfix">
+         <context ref="unique_postfix"/>
+         <postfix>-ау</postfix>
+         <provide>postfix/augmentative</provide>
+         <promote>surprise</promote>
+      </morpheme>
+      <morpheme id="limitation_augmentative_postfix">
+         <context ref="unique_postfix"/>
+         <postfix>-ақ</postfix>
+         <provide>postfix/augmentative</provide>
+         <promote>limitation</promote>
+      </morpheme>
+      <morpheme id="conjectural_postfix">
+         <morph>
+            <context ref="unique_verbal_postfix"/>
+            <postfix>-мыс</postfix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <morph>
+            <context ref="unique_verbal_postfix"/>
+            <postfix>-ды</postfix>
+            <apply>yi_harmony</apply>
+         </morph>
+         <provide>postfix/conjectural</provide>
+         <promote>conjecture</promote>
+      </morpheme>
+      <!-- 
+         Particles
+      -->
+      <morpheme id="interrogative_particle">
+         <morph>
+            <context ref="interrogative_particle"/>
+            <word>ма</word>
+            <apply>mb_nonsonorant</apply>
+            <apply>ghq_dt_bp_unvoiced</apply>
+            <apply>ae_harmony</apply>
+         </morph>
+         <provide>word/particle particle/interrogative</provide>
+         <promote>question</promote>
+      </morpheme>
+      <morpheme id="augmentative_interrogative_particle">
+         <context ref="interrogative_particle"/>
+         <word>ше</word>
+         <provide>word/particle particle/interrogative</provide>
+         <promote>question</promote>
+      </morpheme>
+      <morpheme id="concretising_particle">
+         <morph>
+            <word>ғой</word>
+            <apply>ghq_dt_bp_unvoiced</apply>
+         </morph>
+         <promote>concrete</promote>
+      </morpheme>
+      <morpheme id="surprise_particle">
+         <word>е</word>
+         <provide>surprise</provide>
+      </morpheme>
+      <morpheme id="limiting_particle1">
+         <context ref="limiting_particle"/>
+         <word>тек</word>
+         <provide>particle/limiting</provide>
+      </morpheme>
+      <!-- TODO may not be enough for ғана қана -->
+      <morpheme id="limiting_particle2">
+         <morph>
+            <context ref="limiting_particle"/>
+            <word>ғана</word>
+            <apply>ghk_intraverbal</apply>
+         </morph>
+         <provide>particle/limiting</provide>
       </morpheme>
    </morphemes>
 </grammar>

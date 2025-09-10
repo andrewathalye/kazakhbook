@@ -34,9 +34,44 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1748026580,
+        "narHash": "sha256-rWtXrcIzU5wm/C8F9LWvUfBGu5U5E7cFzPYT1pHIJaQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "11cb3517b3af6af300dd6c055aeda73c9bf52c48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "25.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nix-ada": "nix-ada"
+        "nix-ada": "nix-ada",
+        "rsyntaxtree-nix": "rsyntaxtree-nix"
+      }
+    },
+    "rsyntaxtree-nix": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1757124239,
+        "narHash": "sha256-TQL46yMBpuZyZ+1hiJkXK415SPedfT6deDPvybX8vzg=",
+        "owner": "andrewathalye",
+        "repo": "rsyntaxtree-nix",
+        "rev": "e40568fb47d8ddc596553a678107434c8cadb26c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "andrewathalye",
+        "repo": "rsyntaxtree-nix",
+        "type": "github"
       }
     }
   },

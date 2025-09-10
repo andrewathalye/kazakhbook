@@ -1,7 +1,8 @@
-{ nix-ada ? import ../nix-ada/default.nix {}
+{ 
+  nix-ada ? import ../nix-ada/default.nix {}
+, rsyntaxtree
 }:
-
-nix-ada.pkgs.mkShell {
+nix-ada.pkgs.mkShell rec {
    nativeBuildInputs = [
       nix-ada.pkgs.gprbuild  
       nix-ada.pkgs.gnat
@@ -11,6 +12,8 @@ nix-ada.pkgs.mkShell {
       nix-ada.pkgs.lemminx
       nix-ada.pkgs.gdb
       nix-ada.pkgs.which
+      rsyntaxtree
+      nix-ada.pkgs.graphviz
    ];
       
    buildInputs = [
