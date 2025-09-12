@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:include schemaLocation="contexts.xsd"/>
+   <xs:include schemaLocation="features.xsd"/>
+   <xs:complexType name="circumfix">
+      <xs:sequence>
+         <xs:element name="prefix" type="xs:string"/>
+         <xs:element name="postfix" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="discontinuous">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:element name="item" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:group name="morphtype">
+      <xs:choice>
+         <!-- Particles, etc. -->
+         <xs:element name="word" type="xs:string"/>
+         <!-- Flective language support -->
+         <xs:element name="prefix" type="xs:string"/>
+         <xs:element name="stem" type="xs:string"/>
+         <xs:element name="suffix" type="xs:string"/>
+         <xs:element name="postfix" type="xs:string"/>
+         <xs:element name="circumfix" type="circumfix"/>
+         <xs:element name="interfix" type="xs:string"/>
+         <!-- Semitic language support -->
+         <xs:element name="triliteral" type="discontinuous"/>
+         <xs:element name="transfix" type="discontinuous"/>
+         <!-- TODO support duplifix, interfix, infix -->
+      </xs:choice>
+   </xs:group>
+   <xs:complexType name="morpheme">
+      <xs:sequence>
+         <xs:choice>
+            <xs:sequence>
+               <xs:element name="context" type="context_ref" minOccurs="0" maxOccurs="unbounded"/>
+               <xs:group ref="morphtype"/>
+            </xs:sequence>
+            <xs:element name="morph" maxOccurs="unbounded">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="context" type="context_ref" minOccurs="0" maxOccurs="unbounded"/>
+                     <xs:group ref="morphtype"/>
+                     <xs:element maxOccurs="unbounded" minOccurs="0" name="apply" type="xs:string"/>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+         </xs:choice>
+         <xs:element name="provide" type="provide" minOccurs="0"/>
+         <xs:element name="promote" type="promote" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+   </xs:complexType>
+   <xs:element name="morphemes">
+      <xs:complexType>
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="morpheme" type="morpheme"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

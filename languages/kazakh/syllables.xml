@@ -1,0 +1,35 @@
+<!--
+      Rules for syllabification
+      As with other features, we try each rule in order and back-track
+      if a choice makes it impossible to determine the next syllable.
+   -->
+<syllables>
+   <!-- V syllable -->
+   <syllable>
+      <require>voicing/voiced manner/vocalic</require>
+   </syllable>
+   <!-- CV syllable -->
+   <syllable>
+      <require>!manner/vocalic</require>
+      <require>voicing/voiced manner/vocalic</require>
+   </syllable>
+   <!-- VC syllable -->
+   <syllable>
+      <require>voicing/voiced manner/vocalic</require>
+      <require>!manner/vocalic</require>
+   </syllable>
+   <!-- CVC syllable -->
+   <syllable>
+      <require>!manner/vocalic</require>
+      <require>voicing/voiced manner/vocalic</require>
+      <require>!manner/vocalic</require>
+   </syllable>
+   <!-- CVnt syllable -->
+   <syllable>
+      <require>!manner/vocalic</require>
+      <require>voicing/voiced manner/vocalic</require>
+      <require>@n</require>
+      <require>@t</require>
+   </syllable>
+</syllables>
+

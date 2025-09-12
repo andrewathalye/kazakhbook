@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+      Database of known contexts. Contexts are sets of feature-based
+      conditions under which a form is to be chosen.
+   -->
+<contexts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/contexts.xsd">
+   <!--
+         A construct permitted between two vowels
+      -->
+   <context id="intervocalic">
+      <scope level="phoneme" within="text">
+         <prev>manner/vocalic</prev>
+         <next>manner/vocalic</next>
+      </scope>
+   </context>
+   <!-- 
+         A word is countable iff it is a noun, personal pronoun
+         or indefinite verb.
+         There may only be one number marker in a word, number is not
+         marked if there is a cardinal number preceding the word
+         A case marker cannot come before a number marker.
+      -->
+   <context id="numbermarker">
+      <scope level="morpheme" within="word">
+         <not>
+            <anyprev>case</anyprev>
+            <super>uncountable</super>
+         </not>
+         <any>
+            <super>word/noun</super>
+            <super>word/pronoun</super>
+            <super>word/verb mood/indefinite</super>
+         </any>
+         <unique>number</unique>
+      </scope>
+      <scope level="word" within="clause">
+         <not>
+            <anyprev>number/cardinal</anyprev>
+         </not>
+      </scope>
+   </context>
+   <!-- 
+         A case marker must only appear in a noun, declinable pronoun
+         or indefinite verb.
+         There may only be one case marker in a word.
+      -->
+   <context id="casemarker">
+      <scope level="morpheme" within="word">
+         <not>
+            <super>indeclinable</super>
+         </not>
+         <any>
+            <super>word/noun</super>
+            <super>word/pronoun</super>
+            <super>word/verb mood/indefinite</super>
+         </any>
+         <unique>case</unique>
+      </scope>
+   </context>
+   <!-- 
+         Possessive suffixes must not precede number markers or repeat
+      -->
+   <context id="possessive_suffix">
+      <scope level="morpheme" within="word">
+         <not>
+            <anynext>number</anynext>
+         </not>
+         <unique>suffix/possessive</unique>
+      </scope>
+   </context>
+   <!-- 
+         Demonstrative suffixes do not repeat and occur only after
+         a locative case ending.
+      -->
+   <context id="demonstrative_suffix">
+      <scope level="morpheme" within="word">
+         <prev>case/locative</prev>
+         <unique>suffix/demonstrative</unique>
+      </scope>
+   </context>
+   <!-- 
+         Unique postfixes do not repeat
+      -->
+   <context id="unique_postfix">
+      <scope level="morpheme" within="word">
+         <unique>unique_postfix</unique>
+      </scope>
+   </context>
+   <!-- 
+         Only one interrogative particle may be in a clause
+         and they must be at the end of the clause.
+      -->
+   <context id="interrogative_particle">
+      <scope level="word" within="clause">
+         <next>[]</next>
+         <unique>particle/interrogative</unique>
+      </scope>
+   </context>
+</contexts>

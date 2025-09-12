@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:include schemaLocation="contexts.xsd"/>
+   <xs:include schemaLocation="features.xsd"/>
+   <xs:complexType name="complex">
+      <xs:sequence>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="context" type="context_ref"/>
+         </xs:sequence>
+         <xs:element name="unicode" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="pronunciation">
+      <xs:sequence>
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="context" type="context_ref"/>
+         </xs:sequence>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="require" type="xs:string"/>
+         </xs:sequence>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="symbol">
+      <xs:sequence>
+         <xs:choice>
+            <xs:sequence maxOccurs="unbounded">
+               <xs:element name="complex" type="complex"/>
+            </xs:sequence>
+            <xs:sequence>
+               <xs:element name="majuscule" type="xs:string"/>
+               <xs:element name="minuscule" type="xs:string"/>
+            </xs:sequence>
+            <xs:element name="unicase" type="xs:string"/>
+         </xs:choice>
+         <xs:element minOccurs="0" maxOccurs="unbounded" name="pronunciation" type="pronunciation"/>
+         <xs:element minOccurs="0" name="provide" type="provide"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:element name="symbols">
+      <xs:complexType>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="symbol" type="symbol"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

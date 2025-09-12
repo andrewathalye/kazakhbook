@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <!-- 
+      Context scopes
+   -->
+   <xs:simpleType name="context_scope">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="phoneme"/>
+         <xs:enumeration value="syllable"/>
+         <xs:enumeration value="symbol"/>
+         <xs:enumeration value="morpheme"/>
+         <xs:enumeration value="word"/>
+         <xs:enumeration value="clause"/>
+         <xs:enumeration value="sentence"/>
+         <xs:enumeration value="text"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <!-- 
+      Definition of context
+   -->
+   <xs:group name="context_single">
+      <xs:sequence>
+         <xs:element name="anyprev" type="xs:string" minOccurs="0"/>
+         <xs:element name="anynext" type="xs:string" minOccurs="0"/>
+         <xs:element name="prev" type="xs:string" minOccurs="0"/>
+         <xs:element name="next" type="xs:string" minOccurs="0"/>
+         <xs:element name="unique" type="xs:string" minOccurs="0"/>
+         <xs:element name="super" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:complexType name="context_list">
+      <xs:group ref="context_single" maxOccurs="unbounded"/>
+   </xs:complexType>
+   <xs:complexType name="scoped_context">
+      <xs:sequence>
+         <xs:element name="not" type="context_list" minOccurs="0"/>
+         <xs:element name="any" type="context_list" minOccurs="0"/>
+         <xs:group ref="context_single"/>
+      </xs:sequence>
+      <xs:attribute name="level" type="context_scope" use="required"/>
+      <xs:attribute name="within" type="context_scope" use="required"/>
+   </xs:complexType>
+   <xs:complexType name="context_def">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:element name="scope" type="scoped_context"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+   </xs:complexType>
+   <!-- 
+      Reference to context
+   -->
+   <xs:complexType name="context_ref">
+      <xs:attribute name="ref" type="xs:string" use="required"/>
+   </xs:complexType>
+   <xs:element name="contexts">
+      <xs:complexType>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="context" type="context_def"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

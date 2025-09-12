@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+      Hierarchy: 
+      Phonemes -> Syllables -> Morphemes -> Words -> Clauses -> Sentences -> Texts    
+      Words also contain Symbols
+      Every object is described by its children and a set of features.
+   -->
+<!-- Abstract features that can be possessed
+        by various structures
+   -->
+<features xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/features.xsd">
+   <!-- Sound features -->
+   <feature id="place">
+      <value id="bilabial"/>
+      <value id="labiodental"/>
+      <value id="labialvelar"/>
+      <value id="dental"/>
+      <value id="alveolar"/>
+      <value id="postalveolar"/>
+      <value id="retroflex"/>
+      <value id="palatal"/>
+      <value id="velar"/>
+      <value id="uvular"/>
+      <value id="pharyngeal"/>
+      <value id="glottal"/>
+      <value id="alveolopalatal"/>
+      <!-- For vowels -->
+      <value id="front"/>
+      <value id="frontcentral"/>
+      <value id="central"/>
+      <value id="backcentral"/>
+      <value id="back"/>
+   </feature>
+   <feature id="manner">
+      <value id="plosive"/>
+      <value id="nasal"/>
+      <value id="trill"/>
+      <value id="flap"/>
+      <value id="latflap"/>
+      <value id="fricative"/>
+      <value id="latfric"/>
+      <value id="approximant"/>
+      <value id="latapprox"/>
+      <value id="click"/>
+      <value id="implosive"/>
+      <value id="ejective"/>
+      <value id="vocalic"/>
+   </feature>
+   <feature id="aspirated"/>
+   <feature id="height">
+      <value id="close"/>
+      <value id="closeclosemid"/>
+      <value id="closemid"/>
+      <value id="mid"/>
+      <value id="openmid"/>
+      <value id="openopenmid"/>
+      <value id="open"/>
+   </feature>
+   <feature id="voicing">
+      <value id="voiceless"/>
+      <value id="whispered"/>
+      <value id="voiced"/>
+   </feature>
+   <feature id="hardness">
+      <value id="hard"/>
+      <value id="soft"/>
+   </feature>
+   <feature id="rounded"/>
+   <feature id="length">
+      <value id="short"/>
+      <value id="long"/>
+   </feature>
+   <!-- Not currently needed -->
+   <feature id="tensed"/>
+   <!-- Syllable features -->
+   <feature id="stressed"/>
+   <feature id="level">
+      <value id="extrahigh"/>
+      <value id="high"/>
+      <value id="mid"/>
+      <value id="low"/>
+      <value id="extralow"/>
+   </feature>
+   <feature id="contour">
+      <value id="rising"/>
+      <value id="falling"/>
+      <value id="flat"/>
+      <value id="risingfalling"/>
+   </feature>
+   <!-- Word features -->
+   <feature id="word">
+      <value id="particle"/>
+      <value id="conjunction"/>
+      <value id="noun"/>
+      <value id="number"/>
+      <value id="adjective"/>
+      <value id="adverb"/>
+      <value id="verb"/>
+   </feature>
+   <feature id="person">
+      <value id="1s"/>
+      <value id="1p"/>
+      <value id="2i"/>
+      <value id="2f"/>
+      <value id="3"/>
+   </feature>
+   <!-- Noun features -->
+   <feature id="number">
+      <value id="singular"/>
+      <value id="plural"/>
+   </feature>
+   <feature id="possessor">
+      <value id="1s"/>
+      <value id="1p"/>
+      <value id="2i"/>
+      <value id="2f"/>
+      <value id="3"/>
+   </feature>
+   <feature id="case">
+      <value id="nominative"/>
+      <value id="ablative"/>
+      <value id="locative"/>
+      <value id="dative"/>
+      <value id="genitive"/>
+      <value id="accusative"/>
+      <value id="instrumental"/>
+      <!-- Not traditionally considered a case
+              but does not combine with any others -->
+      <value id="possessive"/>
+   </feature>
+   <!-- Adjective features -->
+   <feature id="degree">
+      <value id="positive"/>
+      <value id="comparative"/>
+      <value id="dimcomp"/>
+      <value id="excessive"/>
+      <value id="intensive"/>
+      <value id="superlative"/> <!-- TODO ?? complex forms -->
+   </feature>
+   <!-- Verb features -->
+   <feature id="voice">
+      <value id="active"/>
+      <value id="reflexive"/>
+      <value id="passive"/>
+      <value id="reciprocal"/>
+      <value id="causative"/>
+   </feature>
+   <!-- TODO this needs some thought, multiple voices can be applied -->
+   <feature id="mood">
+      <value id="indefinite"/>
+      <value id="participial"/>
+      <value id="gerundive"/>
+      <value id="indicative"/>
+      <value id="optative"/>
+      <value id="subjunctive"/>
+      <value id="imperative"/>
+   </feature>
+   <feature id="tense">
+      <value id="present"/> <!-- TODO ?? complex / simple -->
+      <value id="past"/>
+      <value id="pluperfect"/>
+      <value id="aoristpast"/>
+      <value id="transitivepast"/>
+      <value id="transitivefut"/>
+      <value id="potentialfut"/>
+      <value id="intentionalfut"/>
+   </feature>
+   <!-- TODO think about conditional present / future -->
+   <feature id="softened"/>
+   <!-- General features -->
+   <feature id="dialect">
+      <value id="west"/>
+      <value id="south"/>
+   </feature>
+   <feature id="foreign"/>
+</features>

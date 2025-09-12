@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!-- 
+      A database of morphemes (both affixes and stems)
+   -->
+<morphemes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/morphemes.xsd">
+   <!--
+         Grammatical number
+      -->
+   <morpheme id="singular_number">
+      <context ref="numbermarker"/>
+      <suffix/>
+      <promote>number/singular</promote>
+   </morpheme>
+   <morpheme id="plural_number">
+      <morph>
+         <context ref="numbermarker"/>
+         <suffix>лар</suffix>
+         <apply>ld_obstruent</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>ae_harmony</apply>
+      </morph>
+      <promote>number/plural</promote>
+   </morpheme>
+   <!--
+         Case endings
+      -->
+   <morpheme id="ablative_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>дан</suffix>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>dn_nasal</apply>
+         <apply>dn_3p</apply>
+         <apply>ae_harmony</apply>
+      </morph>
+      <promote>case/ablative</promote>
+   </morpheme>
+   <morpheme id="locative_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>да</suffix>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>dnd_3p</apply>
+         <apply>ae_harmony«/</apply>
+      </morph>
+      <promote>case/locative</promote>
+   </morpheme>
+   <morpheme id="dative_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>ға</suffix>
+         <apply>ghg_harmony</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>dn_3p</apply>
+         <apply>d_1p2psg</apply>
+      </morph>
+      <promote>case/dative</promote>
+   </morpheme>
+   <morpheme id="genitive_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>ның</suffix>
+         <apply>nd_nonvocalic</apply>
+         <apply>dn_nasal</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <promote>case/genitive</promote>
+   </morpheme>
+   <morpheme id="accusative_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>ны</suffix>
+         <apply>nd_nonvocalic</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>nyn_3p</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <promote>case/accusative</promote>
+   </morpheme>
+   <morpheme id="instrumental_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>мен</suffix>
+         <apply>mb_nonsonorant</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+      </morph>
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>менен</suffix>
+         <apply>mb_nonsonorant</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+      </morph>
+      <promote>case/instrumental</promote>
+   </morpheme>
+   <morpheme id="possessive_case">
+      <morph>
+         <context ref="casemarker"/>
+         <suffix>нікі</suffix>
+         <apply>nd_nonvocalic</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+      </morph>
+      <promote>case/possessive</promote>
+   </morpheme>
+   <!-- 
+         Personal Possessive Suffixes
+      -->
+   <morpheme id="1s_possessive_suffix">
+      <morph>
+         <context ref="possessive_suffix"/>
+         <suffix>м</suffix>
+         <apply>y_nonvocalic</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/possessive</provide>
+      <promote>possessor/1s</promote>
+   </morpheme>
+   <morpheme id="1p_possessive_suffix">
+      <morph>
+         <context ref="possessive_suffix"/>
+         <suffix>мыз</suffix>
+         <apply>y_nonvocalic</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/possessive</provide>
+      <promote>possessor/1p</promote>
+   </morpheme>
+   <morpheme id="2i_possessive_suffix">
+      <morph>
+         <context ref="possessive_suffix"/>
+         <suffix>ң</suffix>
+         <apply>y_nonvocalic</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/possessive</provide>
+      <promote>possessor/2i</promote>
+   </morpheme>
+   <morpheme id="2f_possessive_suffix">
+      <morph>
+         <context ref="possessive_suffix"/>
+         <suffix>ңыз</suffix>
+         <apply>y_nonvocalic</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/possessive</provide>
+      <promote>possessor/2f</promote>
+   </morpheme>
+   <morpheme id="3_possessive_suffix">
+      <morph>
+         <context ref="possessive_suffix"/>
+         <suffix>ы</suffix>
+         <apply>s_vocalic</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/possessive</provide>
+      <promote>possessor/3</promote>
+   </morpheme>
+   <!-- 
+         Personal Endings (Suffixes)
+      -->
+   <morpheme id="1s_personal_ending">
+      <morph>
+         <context ref="personal_ending_form1"/>
+         <suffix>мын</suffix>
+         <apply>mb_nonsonorant</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <morph>
+         <context ref="personal_ending_form2"/>
+         <suffix>м</suffix>
+      </morph>
+      <provide>suffix/personal</provide>
+      <promote>person/1s</promote>
+   </morpheme>
+   <morpheme id="1p_personal_ending">
+      <morph>
+         <context ref="personal_ending_form1"/>
+         <suffix>мыз</suffix>
+         <apply>mb_nonsonorant</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <morph>
+         <context ref="personal_ending_form2"/>
+         <suffix>қ</suffix>
+         <apply>qk_harmony</apply>
+      </morph>
+      <provide>suffix/personal</provide>
+      <promote>person/1p</promote>
+   </morpheme>
+   <morpheme id="2i_personal_ending">
+      <morph>
+         <context ref="personal_ending_form1"/>
+         <suffix>сың</suffix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <morph>
+         <context ref="personal_ending_form2"/>
+         <suffix>ң</suffix>
+      </morph>
+      <provide>suffix/personal</provide>
+      <promote>person/2i</promote>
+   </morpheme>
+   <morpheme id="2f_personal_ending">
+      <morph>
+         <context ref="personal_ending_form1"/>
+         <suffix>сыз</suffix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <morph>
+         <context ref="personal_ending_form2"/>
+         <suffix>ңыз</suffix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/personal</provide>
+      <promote>person/2f</promote>
+   </morpheme>
+   <morpheme id="3_personal_ending">
+      <morph>
+         <context ref="3_personal_ending"/>
+         <suffix>ды</suffix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>suffix/personal</provide>
+   </morpheme>
+   <!-- 
+         Miscellaneous Affixes
+      -->
+   <morpheme id="demonstrative_suffix">
+      <morph>
+         <context ref="demonstrative_suffix"/>
+         <suffix>ғы</suffix>
+         <apply>ghg_harmony</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>yi_harmony</apply>
+      </morph>
+      <promote>demonstrative</promote>
+   </morpheme>
+   <morpheme id="pain_augmentative_postfix">
+      <context ref="unique_postfix"/>
+      <postfix>-ай</postfix>
+      <provide>postfix/augmentative</provide>
+      <promote>pain</promote>
+   </morpheme>
+   <morpheme id="surprise_augmentative_postfix">
+      <context ref="unique_postfix"/>
+      <postfix>-ау</postfix>
+      <provide>postfix/augmentative</provide>
+      <promote>surprise</promote>
+   </morpheme>
+   <morpheme id="limitation_augmentative_postfix">
+      <context ref="unique_postfix"/>
+      <postfix>-ақ</postfix>
+      <provide>postfix/augmentative</provide>
+      <promote>limitation</promote>
+   </morpheme>
+   <morpheme id="conjectural_postfix">
+      <morph>
+         <context ref="unique_verbal_postfix"/>
+         <postfix>-мыс</postfix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <morph>
+         <context ref="unique_verbal_postfix"/>
+         <postfix>-ды</postfix>
+         <apply>yi_harmony</apply>
+      </morph>
+      <provide>postfix/conjectural</provide>
+      <promote>conjecture</promote>
+   </morpheme>
+   <!-- 
+         Particles
+      -->
+   <morpheme id="interrogative_particle">
+      <morph>
+         <context ref="interrogative_particle"/>
+         <word>ма</word>
+         <apply>mb_nonsonorant</apply>
+         <apply>ghq_dt_bp_unvoiced</apply>
+         <apply>ae_harmony</apply>
+      </morph>
+      <provide>word/particle particle/interrogative</provide>
+      <promote>question</promote>
+   </morpheme>
+   <morpheme id="augmentative_interrogative_particle">
+      <context ref="interrogative_particle"/>
+      <word>ше</word>
+      <provide>word/particle particle/interrogative</provide>
+      <promote>question</promote>
+   </morpheme>
+   <morpheme id="concretising_particle">
+      <morph>
+         <word>ғой</word>
+         <apply>ghq_dt_bp_unvoiced</apply>
+      </morph>
+      <promote>concrete</promote>
+   </morpheme>
+   <morpheme id="surprise_particle">
+      <word>е</word>
+      <provide>surprise</provide>
+   </morpheme>
+   <morpheme id="limiting_particle1">
+      <context ref="limiting_particle"/>
+      <word>тек</word>
+      <provide>particle/limiting</provide>
+   </morpheme>
+   <!-- TODO may not be enough for ғана қана -->
+   <morpheme id="limiting_particle2">
+      <morph>
+         <context ref="limiting_particle"/>
+         <word>ғана</word>
+         <apply>ghk_intraverbal</apply>
+      </morph>
+      <provide>particle/limiting</provide>
+   </morpheme>
+</morphemes>

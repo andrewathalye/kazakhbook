@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!-- Contextual mapping between symbols and abstract
+        phonemes (NOT phones).
+        Note: Forms and rules are given using symbols, not phonemes.
+   -->
+<symbols xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/symbols.xsd">
+   <symbol>
+      <majuscule>А</majuscule>
+      <minuscule>а</minuscule>
+      <pronunciation>
+         <require>@a</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ә</majuscule>
+      <minuscule>ә</minuscule>
+      <pronunciation>
+         <require>@schwa</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Б</majuscule>
+      <minuscule>б</minuscule>
+      <pronunciation>
+         <!-- Kazakh words cannot have /b/ at the end -->
+         <context ref="desinental"/>
+         <require>@p</require>
+      </pronunciation>
+      <pronunciation>
+         <require>@b</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>В</majuscule>
+      <minuscule>в</minuscule>
+      <pronunciation>
+         <!-- Kazakh words cannot end in /v/ -->
+         <context ref="desinental"/>
+         <require>@f</require>
+      </pronunciation>
+      <pronunciation>
+         <require>@v</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Г</majuscule>
+      <minuscule>г</minuscule>
+      <pronunciation>
+         <!-- Kazakh words cannot have /g/ at the end -->
+         <context ref="desinental"/>
+         <require>@kq hardness/soft</require>
+      </pronunciation>
+      <pronunciation>
+         <require>@ggh hardness/soft</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ғ</majuscule>
+      <minuscule>ғ</minuscule>
+      <pronunciation>
+         <require>@ggh hardness/hard</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Д</majuscule>
+      <minuscule>д</minuscule>
+      <pronunciation>
+         <!-- Kazakh words cannot end in /d/ -->
+         <context ref="desinental"/>
+         <require>@t foreign</require>
+      </pronunciation>
+      <pronunciation>
+         <require>@d</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Е</majuscule>
+      <minuscule>е</minuscule>
+      <pronunciation>
+         <require>@je</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ё</majuscule>
+      <minuscule>ё</minuscule>
+      <pronunciation>
+         <require>@j foreign</require>
+         <require>@ooe hardness/hard foreign</require>
+      </pronunciation>
+      <provide>foreign</provide>
+   </symbol>
+   <symbol>
+      <majuscule>Ж</majuscule>
+      <minuscule>ж</minuscule>
+      <pronunciation>
+         <require>@zh</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>З</majuscule>
+      <minuscule>з</minuscule>
+      <pronunciation>
+         <require>@z</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>И</majuscule>
+      <minuscule>и</minuscule>
+      <pronunciation>
+         <require>@yi</require>
+         <require>@j</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Й</majuscule>
+      <minuscule>й</minuscule>
+      <pronunciation>
+         <require>@j</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>К</majuscule>
+      <minuscule>к</minuscule>
+      <pronunciation>
+         <require>@kq hardness/soft</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Қ</majuscule>
+      <minuscule>қ</minuscule>
+      <pronunciation>
+         <require>@kq hardness/hard</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Л</majuscule>
+      <minuscule>л</minuscule>
+      <pronunciation>
+         <require>@l</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>М</majuscule>
+      <minuscule>м</minuscule>
+      <pronunciation>
+         <require>@m</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Н</majuscule>
+      <minuscule>н</minuscule>
+      <pronunciation>
+         <require>@n</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ң</majuscule>
+      <minuscule>ң</minuscule>
+      <pronunciation>
+         <require>@ng</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>О</majuscule>
+      <minuscule>о</minuscule>
+      <pronunciation>
+         <require>@ooe hardness/hard</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ө</majuscule>
+      <minuscule>ө</minuscule>
+      <pronunciation>
+         <require>@ooe hardness/soft</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>П</majuscule>
+      <minuscule>п</minuscule>
+      <pronunciation>
+         <require>@p</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Р</majuscule>
+      <minuscule>р</minuscule>
+      <pronunciation>
+         <require>@r</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>С</majuscule>
+      <minuscule>с</minuscule>
+      <pronunciation>
+         <require>@s</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Т</majuscule>
+      <minuscule>т</minuscule>
+      <pronunciation>
+         <require>@t</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>У</majuscule>
+      <minuscule>у</minuscule>
+      <pronunciation>
+         <context ref="initial_prevocalic"/>
+         <context ref="intervocalic"/>
+         <require>@w</require>
+      </pronunciation>
+      <pronunciation>
+         <require>@ooue</require>
+         <require>@w</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ұ</majuscule>
+      <minuscule>ұ</minuscule>
+      <pronunciation>
+         <require>@ooue hardness/hard</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ү</majuscule>
+      <minuscule>ү</minuscule>
+      <pronunciation>
+         <require>@ooue hardness/soft</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ф</majuscule>
+      <minuscule>ф</minuscule>
+      <pronunciation>
+         <require>@f</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Х</majuscule>
+      <minuscule>х</minuscule>
+      <pronunciation>
+         <require>@khh</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Һ</majuscule>
+      <minuscule>һ</minuscule>
+      <pronunciation>
+         <require>@khh foreign</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ц</majuscule>
+      <minuscule>ц</minuscule>
+      <pronunciation>
+         <require>@t</require>
+         <require>@s</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ч</majuscule>
+      <minuscule>ч</minuscule>
+      <pronunciation>
+         <require>@t</require>
+         <require>@sh foreign</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ш</majuscule>
+      <minuscule>ш</minuscule>
+      <pronunciation>
+         <require>@sh</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Щ</majuscule>
+      <minuscule>щ</minuscule>
+      <pronunciation>
+         <require>@shh</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ъ</majuscule>
+      <minuscule>ъ</minuscule>
+   </symbol>
+   <symbol>
+      <majuscule>Ы</majuscule>
+      <minuscule>ы</minuscule>
+      <pronunciation>
+         <require>@yi hardness/hard</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>І</majuscule>
+      <minuscule>і</minuscule>
+      <pronunciation>
+         <require>@yi hardness/soft</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ь</majuscule>
+      <minuscule>ь</minuscule>
+      <pronunciation>
+         <require>@j foreign</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Э</majuscule>
+      <minuscule>э</minuscule>
+      <pronunciation>
+         <require>@je foreign</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Ю</majuscule>
+      <minuscule>ю</minuscule>
+      <pronunciation>
+         <require>@j</require>
+         <require>@ooue</require>
+         <require>@w</require>
+      </pronunciation>
+   </symbol>
+   <symbol>
+      <majuscule>Я</majuscule>
+      <minuscule>я</minuscule>
+      <pronunciation>
+         <require>@j</require>
+         <require>@a</require>
+      </pronunciation>
+   </symbol>
+</symbols>

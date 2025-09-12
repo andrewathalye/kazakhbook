@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:include schemaLocation="contexts.xsd"/>
+   <xs:include schemaLocation="features.xsd"/>
+
+   <xs:simpleType name="ipa">
+      <xs:restriction base="xs:string"/>
+   </xs:simpleType>
+   <xs:complexType name="phone">
+      <xs:sequence>
+         <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="context" type="context_ref"/>
+         </xs:sequence>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="provide" type="provide"/>
+         </xs:sequence>
+         <xs:element name="ipa" type="ipa"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="phoneme">
+      <xs:choice>
+         <!-- List of phones -->
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="phone" type="phone"/>
+         </xs:sequence>
+         <!-- Only one realisation -->
+         <xs:sequence>
+            <xs:sequence maxOccurs="unbounded">
+               <xs:element name="provide" type="provide"/>
+            </xs:sequence>
+            <xs:element name="ipa" type="ipa"/>
+         </xs:sequence>
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+   </xs:complexType>
+   <xs:element name="phonemes">
+      <xs:complexType>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="phoneme" type="phoneme"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

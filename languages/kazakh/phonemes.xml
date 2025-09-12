@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mapping between abstract phonemes and
+        concrete realisations based upon context.
+
+        Phonemes offer multiple different realisations
+        Each realisation ('phone') offers optional context and a list of
+        sounds required to produce it, as feature sets.
+        Finally, each phone offers an IPA transcription.
+        Alternatively, a phoneme may offer only one realisation without context
+
+        The language toolkit picks phones based upon feature set requirements.
+   -->
+<phonemes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/phonemes.xsd">
+   <phoneme id="a">
+      <provide>voicing/voiced manner/vocalic height/open hardness/hard place/back</provide>
+      <ipa>ɑ</ipa>
+   </phoneme>
+   <phoneme id="schwa">
+      <provide>voicing/voiced manner/vocalic height/open hardness/soft place/front</provide>
+      <ipa>æ</ipa>
+   </phoneme>
+   <phoneme id="b">
+      <!-- Three contexts for a fricative realisation -->
+      <phone>
+         <context ref="intervocalic"/>
+         <provide>voicing/voiced place/bilabial manner/fricative</provide>
+         <ipa>β</ipa>
+      </phone>
+      <!-- By default, use a plosive -->
+      <phone>
+         <provide>voicing/voiced place/bilabial manner/plosive</provide>
+         <ipa>b</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="v">
+      <provide>voicing/voiced manner/fricative place/labiodental foreign</provide>
+      <ipa>v</ipa>
+   </phoneme>
+   <phoneme id="ggh">
+      <phone>
+         <provide>voicing/voiced hardness/soft manner/plosive place/velar</provide>
+         <ipa>g</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiced hardness/hard manner/fricative place/uvular</provide>
+         <ipa>ʁ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="d">
+      <provide>voicing/voiced manner/plosive place/alveolar</provide>
+      <ipa>d</ipa>
+   </phoneme>
+   <phoneme id="je">
+      <phone>
+         <!-- Two contexts for a stressed diphthong -->
+         <context ref="initial_or_stressed"/>
+         <context ref="postvocalic"/>
+         <provide>voicing/voiced manner/approximant place/palatal</provide>
+         <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
+         <ipa>je</ipa>
+      </phone>
+      <phone>
+         <!-- Two contexts for an unstressed diphthong -->
+         <context ref="initial"/>
+         <context ref="postvocalic"/>
+         <provide>voicing/voiced manner/approximant place/palatal</provide>
+         <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
+         <ipa>jɘ</ipa>
+      </phone>
+      <phone>
+         <!-- Stressed default monophthong -->
+         <context ref="stressed"/>
+         <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front</provide>
+         <ipa>e</ipa>
+      </phone>
+      <phone>
+         <!-- Unstressed monophthong -->
+         <provide>voicing/voiced hardness/soft manner/vocalic height/mid place/central</provide>
+         <ipa>ɘ</ipa>
+      </phone>
+      <phone>
+         <!-- Foreign monophthong -->
+         <provide>voicing/voiced hardness/soft manner/vocalic height/closemid place/front foreign</provide>
+         <ipa>e</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="zh">
+      <phone>
+         <context ref="south_dialect"/>
+         <provide>voicing/voiced manner/plosive place/postalveolar</provide>
+         <provide>voicing/voiced manner/fricative place/postalveolar</provide>
+         <ipa>dʒ</ipa>
+      </phone>
+      <phone>
+         <context ref="west_dialect"/>
+         <provide>voicing/voiced manner/approximant place/palatal</provide>
+         <ipa>j</ipa>
+      </phone>
+      <phone>
+         <!-- Default, unmarked realisation -->
+         <provide>voicing/voiced manner/fricative place/postalveolar</provide>
+         <ipa>ʒ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="z">
+      <provide>voicing/voiced manner/fricative place/alveolar</provide>
+      <ipa>z</ipa>
+   </phoneme>
+   <phoneme id="j">
+      <phone>
+         <provide>voicing/voiced manner/approximant place/palatal</provide>
+         <ipa>j</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiced manner/approximant place/palatal foreign</provide>
+         <ipa>j</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="kq">
+      <phone>
+         <!-- Default soft pronunciation -->
+         <provide>voicing/voiceless manner/plosive hardness/soft place/velar</provide>
+         <ipa>k</ipa>
+      </phone>
+      <phone>
+         <!-- Aspirated variant before vowels -->
+         <context ref="prevocalic"/>
+         <provide>voicing/voiceless manner/plosive hardness/hard place/uvular aspirated</provide>
+         <ipa>q^h</ipa>
+      </phone>
+      <phone>
+         <!-- Glottal variant at the end of a word -->
+         <context ref="desinental"/>
+         <provide>voicing/voiceless manner/plosive hardness/hard place/glottal</provide>
+         <ipa>ʔ</ipa>
+      </phone>
+      <phone>
+         <!-- Default hard pronunciation -->
+         <provide>voicing/voiceless manner/plosive hardness/hard place/uvular</provide>
+         <ipa>q</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="l">
+      <phone>
+         <!-- After a vowel or at the beginning of a word -->
+         <context ref="prevocalic"/>
+         <context ref="desinental"/>
+         <provide>voicing/voiced place/alveolar manner/latapprox</provide>
+         <ipa>l</ipa>
+      </phone>
+      <phone>
+         <!-- After a non-vowel (hard) -->
+         <provide>voicing/voiced manner/vocalic place/back height/close hardness/hard</provide>
+         <provide>voicing/voiced place/alveolar manner/latapprox</provide>
+         <ipa>ɯl</ipa>
+      </phone>
+      <phone>
+         <!-- After a non-vowel (soft) -->
+         <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft</provide>
+         <provide>voicing/voiced place/alveolar manner/latapprox</provide>
+         <ipa>ɪl</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="m">
+      <provide>voicing/voiced manner/nasal place/bilabial</provide>
+      <ipa>m</ipa>
+   </phoneme>
+   <phoneme id="n">
+      <provide>voicing/voiced manner/nasal place/alveolar</provide>
+      <ipa>n</ipa>
+   </phoneme>
+   <phoneme id="ng">
+      <phone>
+         <!-- Variant after a vowel -->
+         <context ref="postvocalic"/>
+         <provide>voicing/voiced manner/nasal place/velar</provide>
+         <ipa>ŋ</ipa>
+      </phone>
+      <phone>
+         <!-- Default variant -->
+         <provide>voicing/voiced manner/nasal place/uvular</provide>
+         <ipa>ɴ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="ooe">
+      <phone>
+         <!-- Labialised hard variant -->
+         <context ref="desinental"/>
+         <context ref="prevocalic"/>
+         <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+         <provide>voicing/voiced manner/vocalic place/back height/closemid rounded hardness/hard</provide>
+         <ipa>^wo</ipa>
+      </phone>
+      <phone>
+         <context ref="desinental"/>
+         <context ref="prevocalic"/>
+         <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+         <provide>voicing/voiced manner/vocalic place/front height/closemid rounded hardness/soft</provide>
+         <ipa>^wø</ipa>
+      </phone>
+      <phone>
+         <!-- Default hard variant -->
+         <provide>hardness/hard manner/vocalic place/back height/closemid rounded</provide>
+         <ipa>o</ipa>
+      </phone>
+      <phone>
+         <!-- Default soft variant -->
+         <provide>hardness/soft manner/vocalic place/front height/closemid rounded</provide>
+         <ipa>ø</ipa>
+      </phone>
+      <phone>
+         <!-- Foreign hard variant -->
+         <provide>hardness/hard manner/vocalic place/back height/closemid rounded foreign</provide>
+         <ipa>o</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="p">
+      <provide>voicing/voiceless manner/plosive place/bilabial</provide>
+      <ipa>p</ipa>
+   </phoneme>
+   <phoneme id="r">
+      <phone>
+         <!-- Word-initial and post-vocalic variant -->
+         <context ref="postvocalic"/>
+         <context ref="initial"/>
+         <provide>voicing/voiced manner/flap place/alveolar</provide>
+         <ipa>ɾ</ipa>
+      </phone>
+      <phone>
+         <!-- Default hard variant -->
+         <provide>voicing/voiced manner/vocalic place/back height/close hardness/hard</provide>
+         <provide>voicing/voiced manner/flap place/alveolar</provide>
+         <ipa>ɯɾ</ipa>
+      </phone>
+      <phone>
+         <!-- Default soft variant -->
+         <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft</provide>
+         <provide>voicing/voiced manner/flap place/alveolar</provide>
+         <ipa>ɪɾ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="s">
+      <provide>voicing/voiceless manner/fricative place/alveolar</provide>
+      <ipa>s</ipa>
+   </phoneme>
+   <phoneme id="t">
+      <phone>
+         <provide>voicing/voiceless manner/plosive place/alveolar</provide>
+         <ipa>t</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiceless manner/plosive place/alveolar foreign</provide>
+         <ipa>t</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="w">
+      <provide>voicing/voiced manner/approximant place/labialvelar</provide>
+      <ipa>w</ipa>
+   </phoneme>
+   <phoneme id="ooue">
+      <phone>
+         <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard</provide>
+         <ipa>ʊ</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded</provide>
+         <ipa>ʏ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="f">
+      <phone>
+         <!-- Variant before rounded vowels TODO -->
+         <context ref="prevocalic"/>
+         <provide>foreign voicing/voiceless place/bilabial manner/fricative</provide>
+         <ipa>ɸ</ipa>
+      </phone>
+      <phone>
+         <!-- Default variant -->
+         <provide>foreign voicing/voiceless manner/plosive place/bilabial</provide>
+         <ipa>p</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="khh">
+      <phone>
+         <provide>voicing/voiceless manner/fricative place/uvular</provide>
+         <ipa>χ</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiceless manner/fricative place/glottal foreign</provide>
+         <ipa>h</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="sh">
+      <phone>
+         <provide>voicing/voiceless manner/fricative place/postalveolar</provide>
+         <ipa>ʃ</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiceless manner/fricative place/alveolopalatal foreign</provide>
+         <ipa>ɕ</ipa>
+      </phone>
+   </phoneme>
+   <phoneme id="shsh">
+      <provide>voicing/voiceless manner/fricative place/postalveolar length/long</provide>
+      <ipa>ʃː</ipa>
+   </phoneme>
+   <phoneme id="yi">
+      <!-- Variant after syllable containing ұ -->
+      <phone>
+         <context ref="yi_ooue_preceding_syllable"/>
+         <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard length/short</provide>
+         <ipa>ʊ</ipa>
+      </phone>
+      <!-- Variant after syllable containing ү -->
+      <phone>
+         <context ref="yi_ooue_preceding_syllable"/>
+         <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded length/short</provide>
+         <ipa>ʏ</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiced manner/vocalic hardness/hard height/closeclosemid place/frontcentral length/short</provide>
+         <ipa>ɯ</ipa>
+      </phone>
+      <phone>
+         <provide>voicing/voiced manner/vocalic hardness/soft height/close place/back length/short</provide>
+         <ipa>ɪ</ipa>
+      </phone>
+   </phoneme>
+   <!-- ц, ч, у, ё, и, ъ, ь, э, ю, я are not phonemes in this analysis -->
+</phonemes>
+
