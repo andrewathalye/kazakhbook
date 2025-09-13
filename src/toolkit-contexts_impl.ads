@@ -4,8 +4,8 @@ with DOM.Core;
 with Toolkit.Features;
 
 private with Ada.Containers.Vectors;
-private with Ada.Containers.Hashed_Maps;
-private with Ada.Strings.Unbounded.Hash;
+private with Ada.Containers.Indefinite_Hashed_Maps;
+private with Ada.Strings.Hash;
 
 package Toolkit.Contexts_Impl is
    type Context_Scope is
@@ -13,6 +13,9 @@ package Toolkit.Contexts_Impl is
 
    type Context_Database is private;
    type Context is private;
+
+   Invalid_Context : exception;
+   function Lookup (DB : Context_Database; Name : String) return Context;
 
    No_Cursor : exception;
    type Cursor is interface;
@@ -43,16 +46,19 @@ private
    package CM is new Ada.Containers.Vectors (Natural, Context_Single);
    subtype Context_Multiple is CM.Vector;
 
-   type Context_Def (Level, Within : Context_Scope := None) is record
+   type Scoped_Context (Level, Within : Context_Scope := None) is record
       C_Not : Context_Multiple;
       C_Any : Context_Multiple;
       C_All : Context_Multiple;
    end record;
 
-   use type Ada.Strings.Unbounded.Unbounded_String;
-   package Context_Databases is new Ada.Containers.Hashed_Maps
-     (Ada.Strings.Unbounded.Unbounded_String, Context_Def,
-      Ada.Strings.Unbounded.Hash, "=");
+   package Scoped_Context_Lists is new Ada.Containers.Vectors
+     (Natural, Scoped_Context);
+   subtype Scoped_Context_List is Scoped_Context_Lists.Vector;
+
+   use type Scoped_Context_List;
+   package Context_Databases is new Ada.Containers.Indefinite_Hashed_Maps
+     (String, Scoped_Context_List, Ada.Strings.Hash, "=");
 
    type Context_Database is new Context_Databases.Map with null record;
    type Context is new Context_Databases.Cursor;

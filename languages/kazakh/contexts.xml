@@ -35,7 +35,7 @@
       </scope>
       <scope level="word" within="clause">
          <not>
-            <anyprev>number/cardinal</anyprev>
+            <anyprev>numberclass/cardinal</anyprev>
          </not>
       </scope>
    </context>
@@ -83,7 +83,7 @@
       -->
    <context id="unique_postfix">
       <scope level="morpheme" within="word">
-         <unique>unique_postfix</unique>
+         <unique>postfix/unique</unique>
       </scope>
    </context>
    <!-- 

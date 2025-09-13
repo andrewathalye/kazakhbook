@@ -95,21 +95,12 @@ package body Toolkit.Features is
    function To_Ada
      (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set
    is
-      use DOM.Core;
-
-      Name        : constant String := Nodes.Node_Name (XML);
       Text        : constant String := Toolkit.XML.Get_Text (XML);
       Strings     : constant Toolkit.Strings.Argument_List :=
         Toolkit.Strings.Split (Text);
 
       Result : Feature_Set;
    begin
-      if Name /= "provide" and Name /= "require" and Name /= "before" and
-        Name /= "after" and Name /= "global"
-      then
-         raise Constraint_Error with "Unsupported node type " & Name;
-      end if;
-
       for S of Strings loop
          Result.Append (To_Ada (DB, S));
       end loop;

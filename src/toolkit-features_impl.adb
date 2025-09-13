@@ -98,6 +98,10 @@ package body Toolkit.Features_Impl is
    begin
       DB.Clear;
 
+      --  The null feature (indicates end of a list)
+      --  TODO better implementation?
+      DB.Insert ("[]", Value_Lists.Empty_Vector);
+
       Add_Feature :
       for Index in 1 .. Nodes.Length (X_Features) loop
          N            := Nodes.Item (X_Features, Index - 1);

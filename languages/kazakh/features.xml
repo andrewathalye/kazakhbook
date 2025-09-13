@@ -92,6 +92,7 @@
       <value id="particle"/>
       <value id="conjunction"/>
       <value id="noun"/>
+      <value id="pronoun"/>
       <value id="number"/>
       <value id="adjective"/>
       <value id="adverb"/>
@@ -103,6 +104,12 @@
       <value id="2i"/>
       <value id="2f"/>
       <value id="3"/>
+   </feature>
+   <!-- Number features -->
+   <feature id="numberclass">
+      <value id="cardinal"/>
+      <value id="ordinal"/>
+      <value id="collective"/>
    </feature>
    <!-- Noun features -->
    <feature id="number">
@@ -128,6 +135,8 @@
               but does not combine with any others -->
       <value id="possessive"/>
    </feature>
+   <feature id="uncountable"/>
+   <feature id="indeclinable"/>
    <!-- Adjective features -->
    <feature id="degree">
       <value id="positive"/>
@@ -167,6 +176,17 @@
    </feature>
    <!-- TODO think about conditional present / future -->
    <feature id="softened"/>
+   <!-- Morphemes -->
+   <feature id="suffix">
+      <value id="possessive"/>
+      <value id="demonstrative"/>
+   </feature>
+   <feature id="postfix">
+      <value id="unique"/>
+   </feature>
+   <feature id="particle">
+      <value id="interrogative"/>
+   </feature>
    <!-- General features -->
    <feature id="dialect">
       <value id="west"/>

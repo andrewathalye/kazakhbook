@@ -29,7 +29,9 @@
       </xs:sequence>
    </xs:group>
    <xs:complexType name="context_list">
-      <xs:group ref="context_single" maxOccurs="unbounded"/>
+      <xs:sequence>
+         <xs:group ref="context_single" maxOccurs="unbounded"/>
+      </xs:sequence>
    </xs:complexType>
    <xs:complexType name="scoped_context">
       <xs:sequence>

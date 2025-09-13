@@ -63,6 +63,7 @@ package Toolkit.Contexts is
      Toolkit.Contexts_Impl.To_XML;
    --  Return an XML representation of L
 
+   Invalid_Context : exception renames Contexts_Impl.Invalid_Context;
    function To_Ada (DB : Context_Database; XML : DOM.Core.Node) return Context;
    --  Return a Context given the XML reference
 

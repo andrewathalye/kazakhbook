@@ -73,7 +73,7 @@ package Toolkit.Features is
    function To_Ada
      (DB : Feature_Database; XML : DOM.Core.Node_List) return Feature_Set_List;
    --  Convert an XML feature set (list) to Ada
-   --  Accepts either <provide> or <require> lists
+   --  Accepts any textual element
 
    --------------------
    -- INITIALISATION --
