@@ -19,10 +19,18 @@ package Toolkit.Contexts_Impl is
 
    No_Cursor : exception;
    type Cursor is interface;
+
    function Scope (C : Cursor) return Context_Scope is abstract;
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope) return Cursor'Class;
+
    function Before (C : Cursor) return Features.Feature_Set_List is abstract;
    function This (C : Cursor) return Features.Feature_Set is abstract;
    function After (C : Cursor) return Features.Feature_Set_List is abstract;
+
+   function Previous (C : Cursor) return Cursor is abstract;
+   function Next (C : Cursor) return Cursor is abstract;
+
    function Sub (C : Cursor) return Cursor'Class is abstract;
    function Super (C : Cursor) return Cursor'Class is abstract;
 

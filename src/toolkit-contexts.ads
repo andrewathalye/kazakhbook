@@ -31,17 +31,33 @@ package Toolkit.Contexts is
 
    --  function Scope (C : Cursor) return Context_Scope is abstract;
    --    Return the scope of the current cursor.
+
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope) return Cursor'Class renames
+     Contexts_Impl.Rescope;
+   --  Set the scope of cursor `C` to target or raise No_Cursor
+
    --  function Before
    --   (C : Cursor) return Features.Feature_Set_List is abstract;
    --    Return previous elements’ features in an ordered list.
+
    --  function This (C : Cursor) return Features.Feature_Set is abstract;
    --    Return the features of the current element
+
    --  function After
    --   (C : Cursor) return Features.Feature_Set_List is abstract;
    --    Return subsequent elements’ features in an ordered list
+
+   --  function Previous (C : Cursor) return Cursor is abstract;
+   --  Return a cursor to the previous element or raise No_Cursor
+
+   --  function Next (C : Cursor) return Cursor is abstract;
+   --  Return a cursor to the next element or raise No_Cursor
+
    --  function Sub (C : Cursor) return Cursor'Class is abstract;
    --    Return the cursor corresponding to the current element’s child
    --    Or raise No_Cursor
+
    --  function Super (C : Cursor) return Cursor'Class is abstract;
    --    Return the cursor corresponding to the current element’s parent
    --    Or raise No_Cursor
@@ -55,6 +71,7 @@ package Toolkit.Contexts is
      Toolkit.Contexts_Impl.Applicable;
    --  Return whether the given context applies to the current state.
    --  Raise State_Incomplete if not all data required is available
+   --  TODO raise this
 
    ----------------
    -- CONVERSION --

@@ -11,7 +11,7 @@ with DOM.Core;
 package Toolkit.Phonemes is
    subtype Phoneme_Database is Phonemes_Impl.Phoneme_Database;
    --  Database of all known phonemes.
-   --  Linked to a Feature Database
+   --  Linked to a Feature Database and Context Database
 
    subtype Phoneme_Instance is Phonemes_Impl.Phoneme_Instance;
    use type Phoneme_Instance;
@@ -35,19 +35,20 @@ package Toolkit.Phonemes is
    ----------------
    Indeterminate_Phoneme : exception;
    function Resolve
-     (PDB     : Phoneme_Database; AP : Abstract_Phoneme;
-      Context : Contexts.Context) return Phoneme_Instance renames
-     Phonemes_Impl.Resolve;
+     (PDB : Phoneme_Database; AP : Abstract_Phoneme;
+      Cur : Contexts.Cursor'Class) return Phoneme_Instance;
    --  Resolve a single abstract phoneme to a phoneme instance within a context
    --
    --  Raise Indeterminate_Phoneme if the context is insufficient to identify
    --  a phone
 
    function Resolve
-     (PDB              : Phoneme_Database; List : Abstract_Phoneme_List;
-      External_Context : Contexts.Context) return Phoneme_List;
+     (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
+      Cur : Contexts.Cursor'Class) return Phoneme_List;
    --  Resolve a list of abstract phonemes to a list of concrete
-   --  phoneme instances based upon internal and external context.
+   --  phoneme instances based upon context
+   --
+   --  Raise Indeterminate_Phoneme if the context is insufficient to identify a phoneme.
 
    ----------------
    -- CONVERSION --
@@ -55,14 +56,13 @@ package Toolkit.Phonemes is
    function To_XML (Instance : Phoneme_Instance) return String renames
      Phonemes_Impl.To_XML;
    --  Convert a phoneme instance to an XML feature description
-   --  This omits any features inherent to a phoneme
 
    Unknown_Phoneme : exception renames Phonemes_Impl.Unknown_Phoneme;
    function To_Ada
-     (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
+     (PDB : Phoneme_Database; FS : Features.Feature_Set)
       return Abstract_Phoneme renames
      Phonemes_Impl.To_Ada;
-   --  Convert a featural text description to an abstract phoneme.
+   --  Convert a feature set to an abstract phoneme
 
    function To_Ada
      (FDB : Features.Feature_Database; PDB : Phoneme_Database;
@@ -80,6 +80,7 @@ package Toolkit.Phonemes is
    Duplicate_Phoneme : exception;
    procedure Read
      (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
+      CDB :     Toolkit.Contexts.Context_Database;
       PDB : out Phoneme_Database) renames
      Phonemes_Impl.Read;
    --  Read a phoneme database from an XML file

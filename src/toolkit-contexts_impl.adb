@@ -1,11 +1,7 @@
 pragma Ada_2012;
 
-pragma Warnings (Off);
-
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
-with Ada.Containers.Indefinite_Holders;
 
 with DOM.Core.Documents;
 with DOM.Core.Elements;
@@ -25,26 +21,26 @@ package body Toolkit.Contexts_Impl is
       return Context (DB.Find (Name));
    end Lookup;
 
+   -------------
+   -- Rescope --
+   -------------
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope) return Cursor'Class
+   is
+   begin
+      if Target = C.Scope then
+         return C;
+      elsif Target > C.Scope then
+         return Rescope (C.Super, Target);
+      else
+         return Rescope (C.Sub, Target);
+      end if;
+   end Rescope;
+
    ----------------
    -- Applicable --
    ----------------
    function Applicable (Cur : Cursor'Class; Ctx : Context) return Boolean is
-      function Get_Level_Cur
-        (Cur : Cursor'Class; Level : Context_Scope) return Cursor'Class;
-      --  Get `Cur` at the correct level for the scope
-
-      function Get_Level_Cur
-        (Cur : Cursor'Class; Level : Context_Scope) return Cursor'Class
-      is
-      begin
-         if Level = Cur.Scope then
-            return Cur;
-         elsif Level > Cur.Scope then
-            return Get_Level_Cur (Cur.Super, Level);
-         else
-            return Get_Level_Cur (Cur.Sub, Level);
-         end if;
-      end Get_Level_Cur;
    begin
       ------------------------
       -- Process Each Scope --
@@ -57,13 +53,50 @@ package body Toolkit.Contexts_Impl is
 
          Level :
          declare
-            Level_Cur : Cursor'Class := Get_Level_Cur (Cur, SC.Level);
+            Level_Cur : constant Cursor'Class := Rescope (Cur, SC.Level);
             Before    : Features.Feature_Set_List;
             After     : Features.Feature_Set_List;
 
+            procedure Collect_Before (WC : Cursor'Class);
+            procedure Collect_Before (WC : Cursor'Class) is
+               LWC : Cursor'Class := WC;
+            begin
+               if WC.Scope = SC.Level then
+                  Before.Prepend_Vector (WC.Before);
+               else
+                  begin
+                     loop
+                        Collect_Before (LWC.Sub);
+                        LWC := LWC.Previous;
+                     end loop;
+                  exception
+                     when No_Cursor =>
+                        return;
+                  end;
+               end if;
+            end Collect_Before;
+
+            procedure Collect_After (WC : Cursor'Class);
+            procedure Collect_After (WC : Cursor'Class) is
+               LWC : Cursor'Class := WC;
+            begin
+               if WC.Scope = SC.Level then
+                  After.Append_Vector (WC.After);
+               else
+                  begin
+                     loop
+                        Collect_After (LWC.Sub);
+                        LWC := LWC.Next;
+                     end loop;
+                  exception
+                     when No_Cursor =>
+                        return;
+                  end;
+               end if;
+            end Collect_After;
+
             function Apply (CS : Context_Single) return Boolean;
-            function Apply (CS : Context_Single) return Boolean
-            is
+            function Apply (CS : Context_Single) return Boolean is
             begin
                case CS.K is
                   when None =>
@@ -107,8 +140,8 @@ package body Toolkit.Contexts_Impl is
             --------------------------
             -- Collect all Features --
             --------------------------
-            Before := Collect_Before (SC.Level, SC.Within);
-            After  := Collect_After (SC.Level, SC.Within);
+            Collect_Before (Level_Cur.Rescope (SC.Within));
+            Collect_After (Level_Cur.Rescope (SC.Within));
 
             ------------------------
             -- Check all Features --
