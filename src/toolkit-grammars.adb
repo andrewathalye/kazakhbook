@@ -35,11 +35,11 @@ package body Toolkit.Grammars is
       Toolkit.Contexts.Read (Get_Tree (Reader), G.Features, G.Contexts);
 
       Put_Line (">> Phonemes");
-      Put_Line ("unimplemented");
-      --  Open (Path & "/phonemes.xml", Input);
-      --  Parse (Reader, Input);
-      --  Close (Input);
-      --  Toolkit.Phonemes.Read (Get_Tree (Reader), G.Features, G.Phonemes);
+      Open (Path & "/phonemes.xml", Input);
+      Parse (Reader, Input);
+      Close (Input);
+      Toolkit.Phonemes.Read
+        (Get_Tree (Reader), G.Features, G.Contexts, G.Phonemes);
 
       Put_Line (">> Syllables");
       Put_Line ("unimplemented");

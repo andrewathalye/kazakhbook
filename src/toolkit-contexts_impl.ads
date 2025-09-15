@@ -1,3 +1,6 @@
+------------------------
+-- NOT FOR DIRECT USE --
+------------------------
 pragma Ada_2012;
 
 with DOM.Core;
@@ -17,23 +20,32 @@ package Toolkit.Contexts_Impl is
    Invalid_Context : exception;
    function Lookup (DB : Context_Database; Name : String) return Context;
 
+   ------------
+   -- CURSOR --
+   ------------
    No_Cursor : exception;
    type Cursor is interface;
+   type Cursor_Placement is (First, Last);
 
    function Scope (C : Cursor) return Context_Scope is abstract;
    function Rescope
-     (C : Cursor'Class; Target : Context_Scope) return Cursor'Class;
+     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
+      return Cursor'Class;
 
-   function Before (C : Cursor) return Features.Feature_Set_List is abstract;
-   function This (C : Cursor) return Features.Feature_Set is abstract;
-   function After (C : Cursor) return Features.Feature_Set_List is abstract;
+   function Features
+     (C : Cursor) return Toolkit.Features.Feature_Set is abstract;
 
    function Previous (C : Cursor) return Cursor is abstract;
    function Next (C : Cursor) return Cursor is abstract;
 
-   function Sub (C : Cursor) return Cursor'Class is abstract;
+   function Sub
+     (C : Cursor; Placement : Cursor_Placement)
+      return Cursor'Class is abstract;
    function Super (C : Cursor) return Cursor'Class is abstract;
 
+   -----------
+   -- STATE --
+   -----------
    State_Incomplete : exception;
    function Applicable (Cur : Cursor'Class; Ctx : Context) return Boolean;
 
@@ -41,14 +53,14 @@ package Toolkit.Contexts_Impl is
 
    Duplicate_Context : exception;
    procedure Read
-     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database);
 private
 
    type Context_Kind is (None, Anyprev, Anynext, Prev, Next, Unique, Super);
 
    type Context_Single (K : Context_Kind := None) is record
-      FS : Features.Feature_Set;
+      FS : Toolkit.Features.Feature_Set;
    end record;
 
    package CM is new Ada.Containers.Vectors (Natural, Context_Single);

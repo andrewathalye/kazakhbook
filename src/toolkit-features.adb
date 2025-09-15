@@ -8,6 +8,21 @@ with Toolkit.XML;
 
 package body Toolkit.Features is
 
+   ---------
+   -- Add --
+   ---------
+   function Add (L, R : Feature_Set) return Feature_Set is
+      Result : Feature_Set := L;
+   begin
+      for Feature of R loop
+         if not Result.Contains (Feature) then
+            Result.Append (Feature);
+         end if;
+      end loop;
+
+      return Result;
+   end Add;
+
    --------------
    -- Subtract --
    --------------
@@ -44,11 +59,7 @@ package body Toolkit.Features is
       Result : Feature_Set;
    begin
       for Set of L loop
-         for Feature of Set loop
-            if not Result.Contains (Feature) then
-               Result.Append (Feature);
-            end if;
-         end loop;
+         Result := Add (Result, Set);
       end loop;
 
       return Result;
@@ -95,8 +106,8 @@ package body Toolkit.Features is
    function To_Ada
      (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set
    is
-      Text        : constant String := Toolkit.XML.Get_Text (XML);
-      Strings     : constant Toolkit.Strings.Argument_List :=
+      Text    : constant String := Toolkit.XML.Get_Text (XML);
+      Strings : constant Toolkit.Strings.Argument_List :=
         Toolkit.Strings.Split (Text);
 
       Result : Feature_Set;

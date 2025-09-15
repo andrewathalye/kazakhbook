@@ -10,14 +10,14 @@ project Kazakh_Book is
    for Main use ("analyse");
 
    package Compiler is
-      Common_Switches := ("-gnatwa", "-gnatwe", "-gnatyy");
+      Common_Switches := ("-gnatwa", "-gnatyy");
       case Build_Mode is
          when "dev" =>
             for Default_Switches ("Ada") use 
                Common_Switches & ("-g", "-Og", "-gnata", "-gnatVa");
          when "prod" =>
             for Default_Switches ("Ada") use 
-               Common_Switches & ("-O3", "-gnatp", "-ffast-math");
+               Common_Switches & ("-O3", "-gnatp", "-gnatwe", "-ffast-math");
       end case;
    end Compiler;
 

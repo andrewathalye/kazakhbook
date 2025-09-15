@@ -14,8 +14,10 @@ package Toolkit.Features_Impl is
    type Feature_Database is private;
    type Feature_Instance is private;
 
+   Null_Feature : constant Feature_Instance;
+
    Unknown_Feature, Unknown_Value, Indeterminate_Feature : exception;
-   Duplicate_Feature : exception;
+   Duplicate_Feature                                     : exception;
 
    function To_String (Instance : Feature_Instance) return String;
    function To_Ada
@@ -41,5 +43,8 @@ private
       Feature : Feature_Maps.Cursor;
       Value   : Value_Lists.Cursor;
    end record;
+
+   Null_Feature : constant Feature_Instance :=
+     (Feature_Maps.No_Element, Value_Lists.No_Element);
 
 end Toolkit.Features_Impl;

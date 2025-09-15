@@ -25,15 +25,16 @@ package body Toolkit.Contexts_Impl is
    -- Rescope --
    -------------
    function Rescope
-     (C : Cursor'Class; Target : Context_Scope) return Cursor'Class
+     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
+      return Cursor'Class
    is
    begin
       if Target = C.Scope then
          return C;
       elsif Target > C.Scope then
-         return Rescope (C.Super, Target);
+         return Rescope (C.Super, Target, Placement);
       else
-         return Rescope (C.Sub, Target);
+         return Rescope (C.Sub (Placement), Target, Placement);
       end if;
    end Rescope;
 
@@ -53,20 +54,25 @@ package body Toolkit.Contexts_Impl is
 
          Level :
          declare
-            Level_Cur : constant Cursor'Class := Rescope (Cur, SC.Level);
-            Before    : Features.Feature_Set_List;
-            After     : Features.Feature_Set_List;
+            Level_Cur     : constant Cursor'Class :=
+              Rescope (Cur, SC.Level, First);
+            Before, After : Toolkit.Features.Feature_Set_List;
 
             procedure Collect_Before (WC : Cursor'Class);
             procedure Collect_Before (WC : Cursor'Class) is
+               use type Toolkit.Features.Feature_Set;
                LWC : Cursor'Class := WC;
             begin
-               if WC.Scope = SC.Level then
-                  Before.Prepend_Vector (WC.Before);
+               if LWC.Scope = SC.Level then
+                  while LWC.Features /= Toolkit.Features.Null_Feature_Set loop
+                     LWC := LWC.Previous;
+                     Before.Prepend (LWC.Features);
+                  end loop;
+                  Before.Prepend (Toolkit.Features.Null_Feature_Set);
                else
                   begin
                      loop
-                        Collect_Before (LWC.Sub);
+                        Collect_Before (LWC.Sub (Last));
                         LWC := LWC.Previous;
                      end loop;
                   exception
@@ -78,14 +84,19 @@ package body Toolkit.Contexts_Impl is
 
             procedure Collect_After (WC : Cursor'Class);
             procedure Collect_After (WC : Cursor'Class) is
+               use type Toolkit.Features.Feature_Set;
                LWC : Cursor'Class := WC;
             begin
-               if WC.Scope = SC.Level then
-                  After.Append_Vector (WC.After);
+               if LWC.Scope = SC.Level then
+                  while LWC.Features /= Toolkit.Features.Null_Feature_Set loop
+                     LWC := LWC.Next;
+                     After.Append (LWC.Features);
+                  end loop;
+                  After.Append (Toolkit.Features.Null_Feature_Set);
                else
                   begin
                      loop
-                        Collect_After (LWC.Sub);
+                        Collect_After (LWC.Sub (First));
                         LWC := LWC.Next;
                      end loop;
                   exception
@@ -103,36 +114,40 @@ package body Toolkit.Contexts_Impl is
                      raise Invalid_Context;
                   when Anyprev =>
                      for FS of Before loop
-                        if Features.Superset (FS, CS.FS) then
+                        if Toolkit.Features.Superset (FS, CS.FS) then
                            return True;
                         end if;
                      end loop;
                      return False;
                   when Anynext =>
                      for FS of After loop
-                        if Features.Superset (FS, CS.FS) then
+                        if Toolkit.Features.Superset (FS, CS.FS) then
                            return True;
                         end if;
                      end loop;
                      return False;
                   when Prev =>
-                     return Features.Superset (Before.Last_Element, CS.FS);
+                     return
+                       Toolkit.Features.Superset (Before.Last_Element, CS.FS);
                   when Next =>
-                     return Features.Superset (After.First_Element, CS.FS);
+                     return
+                       Toolkit.Features.Superset (After.First_Element, CS.FS);
                   when Unique =>
                      for FS of Before loop
-                        if Features.Superset (FS, CS.FS) then
+                        if Toolkit.Features.Superset (FS, CS.FS) then
                            return False;
                         end if;
                      end loop;
                      for FS of After loop
-                        if Features.Superset (FS, CS.FS) then
+                        if Toolkit.Features.Superset (FS, CS.FS) then
                            return False;
                         end if;
                      end loop;
                      return True;
                   when Super =>
-                     return Features.Superset (Level_Cur.Super.This, CS.FS);
+                     return
+                       Toolkit.Features.Superset
+                         (Level_Cur.Super.Features, CS.FS);
                end case;
             end Apply;
 
@@ -140,8 +155,8 @@ package body Toolkit.Contexts_Impl is
             --------------------------
             -- Collect all Features --
             --------------------------
-            Collect_Before (Level_Cur.Rescope (SC.Within));
-            Collect_After (Level_Cur.Rescope (SC.Within));
+            Collect_Before (Level_Cur.Rescope (SC.Within, First));
+            Collect_After (Level_Cur.Rescope (SC.Within, First));
 
             ------------------------
             -- Check all Features --
@@ -192,7 +207,7 @@ package body Toolkit.Contexts_Impl is
                raise Invalid_Context;
             end if;
             Append (Buffer, "<" & To_Lower (CS.K'Image) & ">");
-            Append (Buffer, Features.To_String (CS.FS));
+            Append (Buffer, Toolkit.Features.To_String (CS.FS));
             Append (Buffer, "</" & To_Lower (CS.K'Image) & ">");
          end loop;
       end Append_CM;
@@ -236,7 +251,7 @@ package body Toolkit.Contexts_Impl is
    ----------
 
    procedure Read
-     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database)
    is
       use type DOM.Core.Node_Types;
@@ -247,7 +262,7 @@ package body Toolkit.Contexts_Impl is
       begin
          Result :=
            (K  => Context_Kind'Value (DOM.Core.Nodes.Node_Name (X)),
-            FS => Features.To_Ada (FDB, X));
+            FS => Toolkit.Features.To_Ada (FDB, X));
          return Result;
       end Read_CS;
 

@@ -1,43 +1,16 @@
 pragma Ada_2012;
 
+with Ada.Containers;
 with Ada.Exceptions;
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Containers.Indefinite_Vectors;
 with Ada.IO_Exceptions;
-with Ada.Strings.Fixed;
 
 with Toolkit.Grammars;
+with Toolkit.Strings;
 
 procedure Analyse is
    use Toolkit;
    use type Ada.Containers.Count_Type;
-
-   package SL is new Ada.Containers.Indefinite_Vectors (Positive, String);
-
-   function Split (X : String) return SL.Vector;
-   function Split (X : String) return SL.Vector is
-      use Ada.Strings.Fixed;
-      First  : Positive := X'First;
-      Last   : Natural;
-      Result : SL.Vector;
-   begin
-      while First <= X'Last loop
-         Last := Index (X, " ", First);
-         if Last = 0 then
-            Last := X'Last;
-         elsif Last = First then
-            Last := Last - 1;
-            goto Next;
-         else
-            Last := Last - 1;
-         end if;
-
-         Result.Append (X (First .. Last));
-         <<Next>>
-         First := Last + 2;
-      end loop;
-      return Result;
-   end Split;
 
    type Commands is (C_Help, C_Load, C_Quit);
 
@@ -53,14 +26,14 @@ procedure Analyse is
    end Help;
 
    Quit      : Boolean := False;
-   Arguments : SL.Vector;
+   Arguments : Toolkit.Strings.Argument_List;
    Command   : Commands;
    Grammar   : Toolkit.Grammars.Grammar;
 begin
    while not Quit loop
       Put ("> ");
 
-      Arguments := Split (Get_Line);
+      Arguments := Toolkit.Strings.Split (Get_Line);
       begin
          Command := Commands'Value ("C_" & Arguments (1));
       exception

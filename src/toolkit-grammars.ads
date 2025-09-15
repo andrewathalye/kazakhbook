@@ -2,7 +2,7 @@ pragma Ada_2012;
 
 with Toolkit.Features;
 with Toolkit.Contexts;
---  with Toolkit.Phonemes;
+with Toolkit.Phonemes;
 --  with Toolkit.Symbols;
 
 package Toolkit.Grammars is
@@ -20,7 +20,7 @@ private
    type Grammar is record
       Features  : Toolkit.Features.Feature_Database;
       Contexts  : Toolkit.Contexts.Context_Database;
---      Phonemes  : Toolkit.Phonemes.Phoneme_Database;
+      Phonemes  : Toolkit.Phonemes.Phoneme_Database;
 --      Syllables : Toolkit.Syllables.Syllable_Database;
 --      Symbols   : Toolkit.Symbols.Symbol_Database;
 --      Rules     : Toolkit.Rules.Rule_Database;

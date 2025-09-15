@@ -30,13 +30,24 @@ package Toolkit.Phonemes is
      (Positive, Abstract_Phoneme);
    subtype Abstract_Phoneme_List is Abstract_Phoneme_Lists.Vector;
 
+   -------------
+   -- CURSORS --
+   -------------
+   function To_Cursor (C : Phoneme_Lists.Cursor) return Contexts.Cursor'Class;
+   function To_Cursor
+     (C : Abstract_Phoneme_Lists.Cursor) return Contexts.Cursor'Class;
+   --  Return a read-only cursor that can be used to explore the context
+   --   of an abstract phoneme or phoneme instance
+
    ----------------
    -- RESOLUTION --
    ----------------
-   Indeterminate_Phoneme : exception;
+   Indeterminate_Phoneme : exception renames
+     Phonemes_Impl.Indeterminate_Phoneme;
    function Resolve
      (PDB : Phoneme_Database; AP : Abstract_Phoneme;
-      Cur : Contexts.Cursor'Class) return Phoneme_Instance;
+      Cur : Contexts.Cursor'Class) return Phoneme_Instance renames
+     Phonemes_Impl.Resolve;
    --  Resolve a single abstract phoneme to a phoneme instance within a context
    --
    --  Raise Indeterminate_Phoneme if the context is insufficient to identify
@@ -48,21 +59,43 @@ package Toolkit.Phonemes is
    --  Resolve a list of abstract phonemes to a list of concrete
    --  phoneme instances based upon context
    --
-   --  Raise Indeterminate_Phoneme if the context is insufficient to identify a phoneme.
+   --  Raise Indeterminate_Phoneme if the context is insufficient
+   --   to identify a phoneme.
+
+   --------------------
+   -- TRANSFORMATION --
+   --------------------
+   function Abstractise
+     (Instance : Phoneme_Instance) return Abstract_Phoneme renames
+     Phonemes_Impl.Abstractise;
+   function Abstractise (List : Phoneme_List) return Abstract_Phoneme_List;
+   --  Convert a phoneme or phoneme list to an abstract phoneme (list)
+   --  This is used when transforming, as phoneme instances are 'final'
+   --  and fixed to a specific context.
+
+   procedure Add
+     (AP : in out Abstract_Phoneme; FS : Features.Feature_Set) renames
+     Phonemes_Impl.Add;
+   procedure Subtract
+     (AP : in out Abstract_Phoneme; FS : Features.Feature_Set) renames
+     Phonemes_Impl.Subtract;
+   --  Perform transformations on the features specified for
+   --   an abstract phoneme
 
    ----------------
    -- CONVERSION --
    ----------------
    function To_XML (Instance : Phoneme_Instance) return String renames
      Phonemes_Impl.To_XML;
-   --  Convert a phoneme instance to an XML feature description
+   --  Convert a phoneme instance to an XML phone description
 
    Unknown_Phoneme : exception renames Phonemes_Impl.Unknown_Phoneme;
    function To_Ada
-     (PDB : Phoneme_Database; FS : Features.Feature_Set)
+     (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
       return Abstract_Phoneme renames
      Phonemes_Impl.To_Ada;
-   --  Convert a feature set to an abstract phoneme
+   --  Convert a textual feature-phoneme description to an abstract phoneme
+   --  @phoneme name/value name/value ...
 
    function To_Ada
      (FDB : Features.Feature_Database; PDB : Phoneme_Database;

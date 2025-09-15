@@ -1,5 +1,6 @@
 pragma Ada_2012;
 
+with Ada.Strings.Fixed;
 with DOM.Core; use DOM.Core;
 with DOM.Core.Documents;
 with DOM.Core.Elements;
@@ -48,6 +49,15 @@ package body Toolkit.Features_Impl is
          raise Constraint_Error;
       end if;
 
+      --  [] must occur alone
+      if Ada.Strings.Fixed.Index (Text, "[]") /= 0 then
+         if Text = "[]" then
+            return Null_Feature;
+         else
+            raise Constraint_Error with "Null feature occurring in a list";
+         end if;
+      end if;
+
       --  Symbolic reference to a phoneme
       --  These shouldn’t be decomposed
       if Text (Text'First) = '@' then
@@ -68,7 +78,7 @@ package body Toolkit.Features_Impl is
 
       --  Otherwise
       declare
-         Name  : constant Feature_Name  := Feature_Name (Strings.Element (1));
+         Name : constant Feature_Name := Feature_Name (Strings.Element (1));
          Value : constant Feature_Value := Feature_Value (Strings.Element (2));
       begin
          if not DB.Contains (Name) then
@@ -87,31 +97,27 @@ package body Toolkit.Features_Impl is
    -- Read --
    ----------
    procedure Read (Doc : DOM.Core.Document; DB : out Feature_Database) is
-      N            : Node;
-      X_Features   : Node_List :=
+      N : Node;
+      X_Features : Node_List :=
         Documents.Get_Elements_By_Tag_Name (Doc, "feature");
       X_Feature_ID : Attr;
-      X_Values     : Node_List;
-      X_Value_ID   : Attr;
+      X_Values : Node_List;
+      X_Value_ID : Attr;
 
       Values : Value_List;
    begin
       DB.Clear;
 
-      --  The null feature (indicates end of a list)
-      --  TODO better implementation?
-      DB.Insert ("[]", Value_Lists.Empty_Vector);
-
       Add_Feature :
       for Index in 1 .. Nodes.Length (X_Features) loop
-         N            := Nodes.Item (X_Features, Index - 1);
+         N := Nodes.Item (X_Features, Index - 1);
          X_Feature_ID := Nodes.Get_Named_Item (Nodes.Attributes (N), "id");
 
          Values.Clear;
          X_Values := Elements.Get_Elements_By_Tag_Name (N, "value");
          Add_Value :
          for Index in 1 .. Nodes.Length (X_Values) loop
-            N          := Nodes.Item (X_Values, Index - 1);
+            N := Nodes.Item (X_Values, Index - 1);
             X_Value_ID := Nodes.Get_Named_Item (Nodes.Attributes (N), "id");
             Values.Append (Feature_Value (Attrs.Value (X_Value_ID)));
          end loop Add_Value;

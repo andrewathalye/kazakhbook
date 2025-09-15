@@ -18,34 +18,32 @@ package Toolkit.Phonemes_Impl is
    type Phoneme_Instance is private;
    type Abstract_Phoneme is private;
 
+   function Get_Features (PI : Phoneme_Instance) return Features.Feature_Set;
+   function Get_Features (AP : Abstract_Phoneme) return Features.Feature_Set;
+
+   Indeterminate_Phoneme : exception;
    function Resolve
-     (PDB     : Phoneme_Database; AP : Abstract_Phoneme;
-      Context : Contexts.Context) return Phoneme_Instance;
+     (PDB : Phoneme_Database; AP : Abstract_Phoneme;
+      Cur : Contexts.Cursor'Class) return Phoneme_Instance;
+
+   function Abstractise (Instance : Phoneme_Instance) return Abstract_Phoneme;
+   procedure Add (AP : in out Abstract_Phoneme; FS : Features.Feature_Set);
+   procedure Subtract
+     (AP : in out Abstract_Phoneme; FS : Features.Feature_Set);
 
    Unknown_Phoneme : exception;
    function To_XML (Instance : Phoneme_Instance) return String;
+
    function To_Ada
      (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
       return Abstract_Phoneme;
 
    Duplicate_Phoneme : exception;
    procedure Read
-     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
-      PDB : out Phoneme_Database);
+     (Doc : DOM.Core.Document; FDB : Features.Feature_Database;
+      CDB : Contexts.Context_Database; PDB : out Phoneme_Database);
 
    function Transcribe (P : Phoneme_Instance) return String;
-
-   --------------
-   -- INTERNAL --
-   --------------
-   function Dump_Features
-     (AP : Abstract_Phoneme) return Toolkit.Features.Feature_Set;
-   function Dump_Features
-     (PI : Phoneme_Instance) return Toolkit.Features.Feature_Set;
-   --  Return all features associated with an AP or PI
-
-   Null_Phoneme : constant Phoneme_Instance;
-   --  No phoneme, an invalid phoneme. Must not be returned to user code.
 private
    type Phone is record
       Contexts : Toolkit.Contexts.Context_List;

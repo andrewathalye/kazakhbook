@@ -1,67 +1,56 @@
 pragma Ada_2012;
 
 with Ada.Strings.Unbounded;
-with DOM.Core.Nodes;
-
 with Toolkit.XML;
 
 package body Toolkit.Phonemes is
+
+   ---------------
+   -- To_Cursor --
+   ---------------
+   use all type Contexts.Context_Scope;
+   package Phoneme_Cursors is new Contexts.Generic_Cursors
+     (Phoneme, Phoneme_Lists, Phonemes_Impl.Get_Features);
+   package Abstract_Phoneme_Cursors is new Contexts.Generic_Cursors
+     (Phoneme, Abstract_Phoneme_Lists, Phonemes_Impl.Get_Features);
+
+   function To_Cursor (C : Phoneme_Lists.Cursor) return Contexts.Cursor'Class
+   is
+   begin
+      return Phoneme_Cursors.Create (C);
+   end To_Cursor;
+
+   function To_Cursor
+     (C : Abstract_Phoneme_Lists.Cursor) return Contexts.Cursor'Class
+   is
+   begin
+      return Abstract_Phoneme_Cursors.Create (C);
+   end To_Cursor;
 
    -------------
    -- Resolve --
    -------------
    function Resolve
-     (PDB              : Phoneme_Database; List : Abstract_Phoneme_List;
-      External_Context : Contexts.Context) return Phoneme_List
+     (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
+      Cur : Contexts.Cursor'Class) return Phoneme_List
    is
-      function Derive_Context is new Contexts.Derive_Context
-        (Index => Positive,
-         Element => Abstract_Phoneme,
-         Lists => Abstract_Phoneme_Lists,
-         Features => Phonemes_Impl.Dump_Features);
-
-      function Derive_Context is new Contexts.Derive_Context
-        (Index => Positive,
-         Element => Phoneme_Instance,
-         Lists => Phoneme_Lists,
-         Features => Phonemes_Impl.Dump_Features);
-
-      Result : Phoneme_List;
    begin
-      --  Evaluate all phonemes that can be evaluated
-      --  Left-to-Right evaluation
-      for AP in List.Iterate loop
-         begin
-            Result.Append
-              (Resolve
-                 (PDB, Abstract_Phoneme_Lists.Element (AP),
-                  Derive_Context (AP, External_Context)));
-         exception
-            when Indeterminate_Phoneme =>
-               Result.Append (Phonemes_Impl.Null_Phoneme);
-         end;
-      end loop;
+      pragma Compile_Time_Warning (Standard.True, "Resolve unimplemented");
+      return raise Program_Error with "Unimplemented function Resolve";
+   end Resolve;
 
-      --  Re-evaluate all null phonemes
-      for P in Result.Iterate loop
-         if Result (P) = Phonemes_Impl.Null_Phoneme then
-            Result (P) :=
-              Resolve
-                (PDB, List (Phoneme_Lists.To_Index (P)),
-                 Derive_Context (P, External_Context));
-         end if;
-      end loop;
-
-      --  Re-evaluate all phonemes left to right
-      for P in Result.Iterate loop
-         Result (P) :=
-           Resolve
-             (PDB, List (Phoneme_Lists.To_Index (P)),
-              Derive_Context (P, External_Context));
+   -----------------
+   -- Abstractise --
+   -----------------
+   function Abstractise (List : Phoneme_List) return Abstract_Phoneme_List is
+      Result : Abstract_Phoneme_List;
+   begin
+      for PI of List loop
+         Result.Append (Abstractise (PI));
       end loop;
 
       return Result;
-   end Resolve;
+   end Abstractise;
 
    ------------
    -- To_Ada --
@@ -71,18 +60,13 @@ package body Toolkit.Phonemes is
       XML : DOM.Core.Node) return Abstract_Phoneme
    is
    begin
-      if DOM.Core.Nodes.Node_Name (XML) /= "require" then
-         raise Constraint_Error;
-      end if;
-
       return To_Ada (FDB, PDB, Toolkit.XML.Get_Text (XML));
    end To_Ada;
 
    ----------------
    -- Transcribe --
    ----------------
-   function Transcribe (PL : Phoneme_List) return String
-   is
+   function Transcribe (PL : Phoneme_List) return String is
       use Ada.Strings.Unbounded;
 
       Buffer : Unbounded_String;
@@ -93,4 +77,5 @@ package body Toolkit.Phonemes is
 
       return To_String (Buffer);
    end Transcribe;
+
 end Toolkit.Phonemes;

@@ -14,12 +14,23 @@ package Toolkit.Features is
    --  Identifies the properties of a specific feature instance.
    --  This is valid only so long as the feature map is visible.
 
+   Null_Feature : Feature_Instance renames Features_Impl.Null_Feature;
+   --  The feature of the first invalid element in a list.
+   --
+   --  Represented by [] in XML, this feature must occur alone.
+
    use type Feature_Instance;
    package Feature_Sets is new Ada.Containers.Vectors
      (Natural, Feature_Instance);
    subtype Feature_Set is Feature_Sets.Vector;
    --  A set of features sufficient to describe a single monophthong
    --  or morpheme
+
+   Empty_Feature_Set : constant Feature_Set;
+   --  A feature set containing no features
+
+   Null_Feature_Set : constant Feature_Set;
+   --  A feature set containing only the null feature
 
    use type Feature_Set;
    package Feature_Set_Lists is new Ada.Containers.Vectors
@@ -31,6 +42,9 @@ package Toolkit.Features is
    ----------------
    -- OPERATIONS --
    ----------------
+   function Add (L, R : Feature_Set) return Feature_Set;
+   --  Return the list of elements in either set, normalised
+
    function Subtract (L, R : Feature_Set) return Feature_Set;
    --  Returns the list of elements only in L, but not R
 
@@ -83,4 +97,8 @@ package Toolkit.Features is
      Features_Impl.Read;
    --  Read all features from `Doc` and parse them
    --  Raise Duplicate_Feature if a feature is repeated
+private
+   Empty_Feature_Set : constant Feature_Set := Feature_Sets.Empty_Vector;
+   Null_Feature_Set  : constant Feature_Set :=
+     Feature_Sets.To_Vector (Null_Feature, 1);
 end Toolkit.Features;
