@@ -71,7 +71,9 @@ package body Toolkit.Contexts is
       use type DOM.Core.Node;
       Attr : DOM.Core.Attr;
    begin
-      if DOM.Core.Nodes.Node_Type (XML) /= DOM.Core.Element_Node then
+      if DOM.Core.Nodes.Node_Type (XML) /= DOM.Core.Element_Node
+        or else DOM.Core.Nodes.Node_Name (XML) /= "context"
+      then
          raise Invalid_Context;
       end if;
 

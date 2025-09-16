@@ -28,9 +28,16 @@ package Toolkit.Contexts is
    ----------------------
    subtype Context_Scope is Toolkit.Contexts_Impl.Context_Scope;
    subtype Cursor_Placement is Toolkit.Contexts_Impl.Cursor_Placement;
-   No_Cursor : exception renames Toolkit.Contexts_Impl.No_Cursor;
    subtype Cursor is Toolkit.Contexts_Impl.Cursor;
    --  Used to systematically navigate feature sets and elements
+
+   function Is_Null (C : Cursor'Class) return Boolean
+      renames Toolkit.Contexts_Impl.Is_Null;
+   --  Return whether a cursor represents an invalid position.
+
+   function No_Cursor return Cursor'Class
+      renames Toolkit.Contexts_Impl.No_Cursor;
+   --  A Pure function which returns a Cursor representing an invalid position.
 
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
@@ -46,7 +53,7 @@ package Toolkit.Contexts is
         (LE : List.Element_Type) return Features.Feature_Set;
       with function Get_Sub
         (LE : List.Element_Type; Placement : Cursor_Placement)
-         return Cursor'Class is (raise No_Cursor);
+         return Cursor'Class is (No_Cursor);
    package Generic_Cursors is
       type Generic_Cursor is new Cursor with private;
 

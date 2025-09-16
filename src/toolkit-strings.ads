@@ -9,4 +9,8 @@ package Toolkit.Strings is
 
    function Split
      (Input : String; Delimiter : String := " ") return Argument_List;
+
+   function Join
+     (List : Argument_List; First, Last : Positive; Delimiter : String := " ")
+      return String;
 end Toolkit.Strings;

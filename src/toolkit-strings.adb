@@ -1,6 +1,7 @@
 pragma Ada_2012;
 
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded;
 
 package body Toolkit.Strings is
    function Split
@@ -32,4 +33,20 @@ package body Toolkit.Strings is
 
       return Result;
    end Split;
+
+   function Join
+     (List : Argument_List; First, Last : Positive; Delimiter : String := " ")
+      return String
+   is
+      use Ada.Strings.Unbounded;
+      Buffer : Unbounded_String;
+   begin
+      for I in First .. Last loop
+         Append (Buffer, List (I));
+         Append (Buffer, Delimiter);
+      end loop;
+
+      return To_String (Buffer);
+   end Join;
+
 end Toolkit.Strings;

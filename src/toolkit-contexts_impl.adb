@@ -8,7 +8,6 @@ with DOM.Core.Elements;
 with DOM.Core.Nodes;
 
 package body Toolkit.Contexts_Impl is
-
    ------------
    -- Lookup --
    ------------
@@ -59,6 +58,9 @@ package body Toolkit.Contexts_Impl is
             Before, After : Toolkit.Features.Feature_Set_List;
 
             procedure Collect_Before (WC : Cursor'Class);
+            --  Collect all preceding elements specified in
+            --  the context from the cursor
+
             procedure Collect_Before (WC : Cursor'Class) is
                use type Toolkit.Features.Feature_Set;
                LWC : Cursor'Class := WC;
@@ -70,19 +72,20 @@ package body Toolkit.Contexts_Impl is
                   end loop;
                   Before.Prepend (Toolkit.Features.Null_Feature_Set);
                else
-                  begin
-                     loop
-                        Collect_Before (LWC.Sub (Last));
-                        LWC := LWC.Previous;
-                     end loop;
-                  exception
-                     when No_Cursor =>
+                  loop
+                     Collect_Before (LWC.Sub (Last));
+                     LWC := LWC.Previous;
+                     if Is_Null (LWC) then
                         return;
-                  end;
+                     end if;
+                  end loop;
                end if;
             end Collect_Before;
 
             procedure Collect_After (WC : Cursor'Class);
+            --  Collect all successive elements specified
+            --  in the context from the cursor
+
             procedure Collect_After (WC : Cursor'Class) is
                use type Toolkit.Features.Feature_Set;
                LWC : Cursor'Class := WC;
@@ -94,19 +97,20 @@ package body Toolkit.Contexts_Impl is
                   end loop;
                   After.Append (Toolkit.Features.Null_Feature_Set);
                else
-                  begin
-                     loop
-                        Collect_After (LWC.Sub (First));
-                        LWC := LWC.Next;
-                     end loop;
-                  exception
-                     when No_Cursor =>
+                  loop
+                     Collect_After (LWC.Sub (First));
+                     LWC := LWC.Next;
+                     if Is_Null (LWC) then
                         return;
-                  end;
+                     end if;
+                  end loop;
                end if;
             end Collect_After;
 
             function Apply (CS : Context_Single) return Boolean;
+            --  Check whether a single context clause applies to
+            --  the given cursor
+
             function Apply (CS : Context_Single) return Boolean is
             begin
                case CS.K is
@@ -147,7 +151,8 @@ package body Toolkit.Contexts_Impl is
                   when Super =>
                      return
                        Toolkit.Features.Superset
-                         (Level_Cur.Super.Features, CS.FS);
+                         (Level_Cur.Rescope (SC.Within, First).Features,
+                          CS.FS);
                end case;
             end Apply;
 

@@ -307,13 +307,13 @@
    <phoneme id="yi">
       <!-- Variant after syllable containing ұ -->
       <phone>
-         <context ref="yi_ooue_preceding_syllable"/>
+         <context ref="post_closeclosemid_syllable"/>
          <provide>voicing/voiced manner/vocalic place/backcentral height/closeclosemid hardness/hard length/short</provide>
          <ipa>ʊ</ipa>
       </phone>
       <!-- Variant after syllable containing ү -->
       <phone>
-         <context ref="yi_ooue_preceding_syllable"/>
+         <context ref="post_closeclosemid_syllable"/>
          <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft rounded length/short</provide>
          <ipa>ʏ</ipa>
       </phone>

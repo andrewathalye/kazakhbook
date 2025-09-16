@@ -5,14 +5,75 @@
    -->
 <contexts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/contexts.xsd">
    <!--
-         A construct permitted between two vowels
-      -->
+      Phonology
+   -->
+   <!-- Between two vowels -->
    <context id="intervocalic">
       <scope level="phoneme" within="text">
          <prev>manner/vocalic</prev>
          <next>manner/vocalic</next>
       </scope>
    </context>
+   <!-- Before a vowel -->
+   <context id="prevocalic">
+      <scope level="phoneme" within="word">
+         <next>manner/vocalic</next>
+      </scope>
+   </context>
+   <!-- After a vowel -->
+   <context id="postvocalic">
+      <scope level="phoneme" within="word">
+         <prev>manner/vocalic</prev>
+      </scope>
+   </context>
+   <!-- Stressed or initial -->
+   <context id="initial_or_stressed">
+      <scope level="phoneme" within="word">
+         <any>
+            <prev>[]</prev>
+            <super>stressed</super>
+         </any>
+      </scope>
+   </context>
+   <!-- Stressed -->
+   <context id="stressed">
+      <scope level="phoneme" within="syllable">
+         <super>stressed</super>
+      </scope>
+   </context>
+   <!-- Initial -->
+   <context id="initial">
+      <scope level="phoneme" within="word">
+         <prev>[]</prev>
+      </scope>
+   </context>
+   <!-- Desinental -->
+   <context id="desinental">
+      <scope level="phoneme" within="word">
+         <next>[]</next>
+      </scope>
+   </context>
+   <!-- South Dialect -->
+   <context id="south_dialect">
+      <scope level="phoneme" within="text">
+         <super>dialect/south</super>
+      </scope>
+   </context>
+   <!-- West Dialect -->
+   <context id="west_dialect">
+      <scope level="phoneme" within="text">
+         <super>dialect/west</super>
+      </scope>
+   </context>
+   <!-- Following a syllable with ұ/ү -->
+   <context id="post_closeclosemid_syllable">
+      <scope level="phoneme" within="word">
+         <anyprev>manner/vocalic height/closeclosemid</anyprev>
+      </scope>
+   </context>
+   <!-- 
+      Morphology
+   -->
    <!-- 
          A word is countable iff it is a noun, personal pronoun
          or indefinite verb.

@@ -23,9 +23,13 @@ package Toolkit.Contexts_Impl is
    ------------
    -- CURSOR --
    ------------
-   No_Cursor : exception;
    type Cursor is interface;
    type Cursor_Placement is (First, Last);
+
+   function No_Cursor return Cursor'Class;
+   pragma Pure_Function (No_Cursor);
+
+   function Is_Null (C : Cursor'Class) return Boolean;
 
    function Scope (C : Cursor) return Context_Scope is abstract;
    function Rescope
@@ -56,7 +60,6 @@ package Toolkit.Contexts_Impl is
      (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database);
 private
-
    type Context_Kind is (None, Anyprev, Anynext, Prev, Next, Unique, Super);
 
    type Context_Single (K : Context_Kind := None) is record
@@ -82,4 +85,32 @@ private
 
    type Context_Database is new Context_Databases.Map with null record;
    type Context is new Context_Databases.Cursor;
+
+   ---------------
+   -- No_Cursor --
+   ---------------
+   type No_Cursor_Type is new Cursor with null record;
+   function Scope (C : No_Cursor_Type) return Context_Scope is (None);
+
+   function Features
+     (C : No_Cursor_Type) return Toolkit.Features.Feature_Set is
+     (Toolkit.Features.Null_Feature_Set);
+
+   function Previous (C : No_Cursor_Type) return No_Cursor_Type is
+     (No_Cursor_Type (No_Cursor));
+   function Next (C : No_Cursor_Type) return No_Cursor_Type is
+     (No_Cursor_Type (No_Cursor));
+
+   function Sub
+     (C : No_Cursor_Type; Placement : Cursor_Placement) return Cursor'Class is
+     (No_Cursor);
+   function Super (C : No_Cursor_Type) return Cursor'Class is (No_Cursor);
+
+   L_No_Cursor : aliased constant No_Cursor_Type := (null record);
+
+   function No_Cursor return Cursor'Class is (L_No_Cursor);
+
+   function Is_Null (C : Cursor'Class) return Boolean is
+     (C in No_Cursor_Type'Class);
+
 end Toolkit.Contexts_Impl;
