@@ -3,7 +3,9 @@
 ------------------------
 pragma Ada_2012;
 
+with Ada.Containers.Indefinite_Holders;
 with DOM.Core;
+
 with Toolkit.Features;
 
 private with Ada.Containers.Vectors;
@@ -12,7 +14,7 @@ private with Ada.Strings.Hash;
 
 package Toolkit.Contexts_Impl is
    type Context_Scope is
-     (None, Phoneme, Syllable, Symbol, Morpheme, Word, Clause, Sentence, Text);
+     (None, Phoneme, Syllable, Morpheme, Symbol, Word, Clause, Sentence, Text);
 
    type Context_Database is private;
    type Context is private;
@@ -26,12 +28,14 @@ package Toolkit.Contexts_Impl is
    type Cursor is interface;
    type Cursor_Placement is (First, Last);
 
-   function No_Cursor return Cursor'Class;
-   pragma Pure_Function (No_Cursor);
+   pragma Warnings (Off, "is not referenced");
+   function Never_Equal (L, R : Cursor'Class) return Boolean is (False);
+   pragma Warnings (On, "is not referenced");
 
-   function Is_Null (C : Cursor'Class) return Boolean;
+   Invalid_Cursor : exception;
 
    function Scope (C : Cursor) return Context_Scope is abstract;
+
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
       return Cursor'Class;
@@ -39,13 +43,19 @@ package Toolkit.Contexts_Impl is
    function Features
      (C : Cursor) return Toolkit.Features.Feature_Set is abstract;
 
-   function Previous (C : Cursor) return Cursor is abstract;
-   function Next (C : Cursor) return Cursor is abstract;
+   function First (C : Cursor) return Cursor'Class is abstract;
+   function Previous (C : Cursor) return Cursor'Class is abstract;
+   function Next (C : Cursor) return Cursor'Class is abstract;
+   function Last (C : Cursor) return Cursor'Class is abstract;
 
    function Sub
      (C : Cursor; Placement : Cursor_Placement)
       return Cursor'Class is abstract;
    function Super (C : Cursor) return Cursor'Class is abstract;
+
+   package Cursor_Holders is new Ada.Containers.Indefinite_Holders
+     (Cursor'Class, Never_Equal);
+   subtype Cursor_Holder is Cursor_Holders.Holder;
 
    -----------
    -- STATE --
@@ -85,32 +95,4 @@ private
 
    type Context_Database is new Context_Databases.Map with null record;
    type Context is new Context_Databases.Cursor;
-
-   ---------------
-   -- No_Cursor --
-   ---------------
-   type No_Cursor_Type is new Cursor with null record;
-   function Scope (C : No_Cursor_Type) return Context_Scope is (None);
-
-   function Features
-     (C : No_Cursor_Type) return Toolkit.Features.Feature_Set is
-     (Toolkit.Features.Null_Feature_Set);
-
-   function Previous (C : No_Cursor_Type) return No_Cursor_Type is
-     (No_Cursor_Type (No_Cursor));
-   function Next (C : No_Cursor_Type) return No_Cursor_Type is
-     (No_Cursor_Type (No_Cursor));
-
-   function Sub
-     (C : No_Cursor_Type; Placement : Cursor_Placement) return Cursor'Class is
-     (No_Cursor);
-   function Super (C : No_Cursor_Type) return Cursor'Class is (No_Cursor);
-
-   L_No_Cursor : aliased constant No_Cursor_Type := (null record);
-
-   function No_Cursor return Cursor'Class is (L_No_Cursor);
-
-   function Is_Null (C : Cursor'Class) return Boolean is
-     (C in No_Cursor_Type'Class);
-
 end Toolkit.Contexts_Impl;

@@ -1,7 +1,9 @@
-pragma Ada_2012;
+pragma Ada_2022;
 
 with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
+
+with Ada.Text_IO; use Ada.Text_IO;
 
 with DOM.Core.Documents;
 with DOM.Core.Elements;
@@ -42,6 +44,8 @@ package body Toolkit.Contexts_Impl is
    ----------------
    function Applicable (Cur : Cursor'Class; Ctx : Context) return Boolean is
    begin
+      Put_Line (To_XML (Ctx));
+
       ------------------------
       -- Process Each Scope --
       ------------------------
@@ -63,21 +67,24 @@ package body Toolkit.Contexts_Impl is
 
             procedure Collect_Before (WC : Cursor'Class) is
                use type Toolkit.Features.Feature_Set;
-               LWC : Cursor'Class := WC;
+               LWC : Cursor_Holder := Cursor_Holders.To_Holder (WC);
             begin
-               if LWC.Scope = SC.Level then
-                  while LWC.Features /= Toolkit.Features.Null_Feature_Set loop
-                     LWC := LWC.Previous;
-                     Before.Prepend (LWC.Features);
+               if LWC.Element.Scope = SC.Level then
+                  while LWC.Element.Features /=
+                    Toolkit.Features.Null_Feature_Set
+                  loop
+                     LWC.Replace_Element (LWC.Element.Previous);
+                     Before.Prepend (LWC.Element.Features);
                   end loop;
-                  Before.Prepend (Toolkit.Features.Null_Feature_Set);
                else
                   loop
-                     Collect_Before (LWC.Sub (Last));
-                     LWC := LWC.Previous;
-                     if Is_Null (LWC) then
-                        return;
-                     end if;
+                     Collect_Before (LWC.Element.Sub (Last));
+                     begin
+                        LWC.Replace_Element (LWC.Element.Previous);
+                     exception
+                        when Invalid_Cursor =>
+                           return;
+                     end;
                   end loop;
                end if;
             end Collect_Before;
@@ -88,21 +95,24 @@ package body Toolkit.Contexts_Impl is
 
             procedure Collect_After (WC : Cursor'Class) is
                use type Toolkit.Features.Feature_Set;
-               LWC : Cursor'Class := WC;
+               LWC : Cursor_Holder := Cursor_Holders.To_Holder (WC);
             begin
-               if LWC.Scope = SC.Level then
-                  while LWC.Features /= Toolkit.Features.Null_Feature_Set loop
-                     LWC := LWC.Next;
-                     After.Append (LWC.Features);
+               if LWC.Element.Scope = SC.Level then
+                  while LWC.Element.Features /=
+                    Toolkit.Features.Null_Feature_Set
+                  loop
+                     LWC.Replace_Element (LWC.Element.Next);
+                     After.Append (LWC.Element.Features);
                   end loop;
-                  After.Append (Toolkit.Features.Null_Feature_Set);
                else
                   loop
-                     Collect_After (LWC.Sub (First));
-                     LWC := LWC.Next;
-                     if Is_Null (LWC) then
-                        return;
-                     end if;
+                     Collect_After (LWC.Element.Sub (First));
+                     begin
+                        LWC.Replace_Element (LWC.Element.Next);
+                     exception
+                        when Invalid_Cursor =>
+                           return;
+                     end;
                   end loop;
                end if;
             end Collect_After;
@@ -162,6 +172,9 @@ package body Toolkit.Contexts_Impl is
             --------------------------
             Collect_Before (Level_Cur.Rescope (SC.Within, First));
             Collect_After (Level_Cur.Rescope (SC.Within, First));
+
+            Put_Line (Toolkit.Features.To_XML (Before));
+            Put_Line (Toolkit.Features.To_XML (After));
 
             ------------------------
             -- Check all Features --
@@ -246,7 +259,7 @@ package body Toolkit.Contexts_Impl is
          Append_CM (SC.C_All);
          Append (Buffer, "</scope>");
       end loop;
-      Append (Buffer, "</context");
+      Append (Buffer, "</context>");
 
       return To_String (Buffer);
    end To_XML;
@@ -361,6 +374,7 @@ package body Toolkit.Contexts_Impl is
                end if;
             end loop;
             DOM.Core.Free (X_Scope_Children);
+            SCL.Append (SC);
          end loop;
          DOM.Core.Free (X_Scopes);
          CDB.Insert (DOM.Core.Nodes.Node_Value (X_Context_Id), SCL);

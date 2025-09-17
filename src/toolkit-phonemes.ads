@@ -87,7 +87,7 @@ package Toolkit.Phonemes is
    ----------------
    function To_XML (Instance : Phoneme_Instance) return String renames
      Phonemes_Impl.To_XML;
-   --  Convert a phoneme instance to an XML phone description
+   --  Convert a phoneme instance to an XML phoneme description
 
    Unknown_Phoneme : exception renames Phonemes_Impl.Unknown_Phoneme;
    function To_Ada

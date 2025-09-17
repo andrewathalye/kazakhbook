@@ -67,7 +67,6 @@ package body Toolkit.Phonemes_Impl is
                goto Context_Success;
             end if;
             for Ctx of L_Phone.Contexts loop
-               Put_Line (Contexts.To_XML (Ctx));
                if Contexts.Applicable (Cur, Ctx) then
                   Put_Line ("Succeed!");
                   goto Context_Success;
@@ -92,6 +91,11 @@ package body Toolkit.Phonemes_Impl is
       Cur : Contexts.Cursor'Class) return Phoneme_Instance
    is
    begin
+      if Phoneme_Maps.Has_Element (AP.Phoneme) then
+         Put ("@" & String (Phoneme_Maps.Key (AP.Phoneme)) & ": ");
+      end if;
+      Put_Line (Features.To_XML (AP.Features));
+
       if Phoneme_Maps.Has_Element (AP.Phoneme) then
          return Resolve_Within (Cur, AP.Features, AP.Phoneme);
       else
@@ -143,6 +147,11 @@ package body Toolkit.Phonemes_Impl is
 
       Buffer : Unbounded_String;
    begin
+      Append
+        (Buffer,
+         "<phoneme id=" & ASCII.Quotation &
+         String (Phoneme_Maps.Key (Instance.Phoneme)) & ASCII.Quotation & ">");
+
       Append (Buffer, "<phone>");
 
       Append
@@ -154,6 +163,8 @@ package body Toolkit.Phonemes_Impl is
       Append (Buffer, "</ipa>");
 
       Append (Buffer, "</phone>");
+
+      Append (Buffer, "</phoneme>");
 
       return To_String (Buffer);
    end To_XML;

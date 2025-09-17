@@ -73,6 +73,10 @@ package body Toolkit.Features is
 
       Buffer : Unbounded_String;
    begin
+      if Set = Null_Feature_Set then
+         return "[]";
+      end if;
+
       for C in Set.Iterate loop
          Append (Buffer, To_String (Feature_Sets.Element (C)));
 

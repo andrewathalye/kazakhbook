@@ -14,7 +14,7 @@ procedure Analyse is
    use Toolkit;
    use type Ada.Containers.Count_Type;
 
-   type Commands is (C_Help, C_Load, C_Resolve, C_Quit);
+   type Commands is (C_Help, C_Load, C_Resolve, C_Quit, C_Q);
 
    procedure Help;
    procedure Help is
@@ -78,14 +78,17 @@ begin
                     Phonemes.To_Cursor (APL.First));
                Put_Line (Phonemes.To_XML (PI));
             exception
-               when X : Phonemes.Indeterminate_Phoneme =>
+               when X : Phonemes.Indeterminate_Phoneme   =>
                   Put_Line (Ada.Exceptions.Exception_Information (X));
                   Put_Line ("| Indeterminate phoneme");
+               when X : Phonemes.Unknown_Phoneme         =>
+                  Put_Line (Ada.Exceptions.Exception_Information (X));
+                  Put_Line ("| Unknown phoneme");
                when X : Toolkit.Features.Unknown_Feature =>
                   Put_Line (Ada.Exceptions.Exception_Information (X));
                   Put_Line ("| Unknown feature");
             end;
-         when C_Quit =>
+         when C_Quit | C_Q =>
             Quit := True;
       end case;
       <<Next>>

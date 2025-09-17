@@ -1,7 +1,6 @@
 pragma Ada_2012;
 pragma Extensions_Allowed (all);
 
-with Ada.Containers.Indefinite_Holders;
 with Ada.Containers.Vectors;
 
 with DOM.Core;
@@ -31,20 +30,14 @@ package Toolkit.Contexts is
    subtype Cursor is Toolkit.Contexts_Impl.Cursor;
    --  Used to systematically navigate feature sets and elements
 
-   function Is_Null (C : Cursor'Class) return Boolean
-      renames Toolkit.Contexts_Impl.Is_Null;
-   --  Return whether a cursor represents an invalid position.
-
-   function No_Cursor return Cursor'Class
-      renames Toolkit.Contexts_Impl.No_Cursor;
-   --  A Pure function which returns a Cursor representing an invalid position.
-
+   Invalid_Cursor : exception renames Contexts_Impl.Invalid_Cursor;
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
      return Cursor'Class renames Contexts_Impl.Rescope;
-   --  Set the scope of cursor `C` to target or raise No_Cursor
+   --  Set the scope of cursor `C` to target
    --  @param Placement
    --     Set where the cursor should be placed if the level must be reduced
+   --  @exception Invalid_Cursor
 
    generic
       Cursor_Scope : Context_Scope;
@@ -53,8 +46,11 @@ package Toolkit.Contexts is
         (LE : List.Element_Type) return Features.Feature_Set;
       with function Get_Sub
         (LE : List.Element_Type; Placement : Cursor_Placement)
-         return Cursor'Class is (No_Cursor);
+         return Cursor'Class is (raise Invalid_Cursor);
    package Generic_Cursors is
+      --  Cursor based on vectors. If a super-cursor is requested
+      --  but no super has been set, a 'surrogate' cursor will be
+      --  returned that has only a Sub
       type Generic_Cursor is new Cursor with private;
 
       function Create (LC : List.Cursor) return Generic_Cursor;
@@ -65,22 +61,18 @@ package Toolkit.Contexts is
       overriding function Features
         (C : Generic_Cursor) return Toolkit.Features.Feature_Set;
 
-      overriding function Previous (C : Generic_Cursor) return Generic_Cursor;
-      overriding function Next (C : Generic_Cursor) return Generic_Cursor;
+      overriding function First (C : Generic_Cursor) return Cursor'Class;
+      overriding function Previous (C : Generic_Cursor) return Cursor'Class;
+      overriding function Next (C : Generic_Cursor) return Cursor'Class;
+      overriding function Last (C : Generic_Cursor) return Cursor'Class;
 
       overriding function Sub
         (C : Generic_Cursor; Placement : Cursor_Placement) return Cursor'Class;
       overriding function Super (C : Generic_Cursor) return Cursor'Class;
    private
-      pragma Warnings (Off, "is not referenced");
-      function "=" (L, R : Cursor'Class) return Boolean is (False);
-      pragma Warnings (On, "is not referenced");
-
-      package Cursor_Holders is new Ada.Containers.Indefinite_Holders
-        (Cursor'Class);
       type Generic_Cursor is new Cursor with record
          L_Cursor : List.Cursor;
-         L_Super  : Cursor_Holders.Holder;
+         L_Super  : Contexts_Impl.Cursor_Holder;
       end record;
    end Generic_Cursors;
 
@@ -93,7 +85,6 @@ package Toolkit.Contexts is
      Toolkit.Contexts_Impl.Applicable;
    --  Return whether the given context applies to the current state.
    --  Raise State_Incomplete if not all data required is available
-   --  TODO raise this
 
    ----------------
    -- CONVERSION --
