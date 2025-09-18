@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:complexType name="syllable">
+      <xs:sequence maxOccurs="unbounded">
+         <xs:choice>
+         <xs:element name="exclude" type="xs:string"/>
+         <xs:element name="require" type="xs:string"/>
+         </xs:choice>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:element name="syllables">
+      <xs:complexType>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="syllable" type="syllable"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

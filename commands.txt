@@ -1,2 +1,17 @@
 load kazakh
-resolve @yi
+add @b
+add @ooue hardness/soft
+add @ggh hardness/soft
+add @yi hardness/soft
+add @n
+resolve
+add @schwa
+add @kq hardness/soft
+add @yi hardness/soft
+add @m
+add @sh
+add @yi hardness/soft
+add @l
+add @yi hardness/soft
+add @kq hardness/soft
+resolve

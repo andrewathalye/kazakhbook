@@ -3,33 +3,39 @@
       As with other features, we try each rule in order and back-track
       if a choice makes it impossible to determine the next syllable.
    -->
-<syllables>
+<syllables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/syllables.xsd">
    <!-- V syllable -->
    <syllable>
       <require>voicing/voiced manner/vocalic</require>
    </syllable>
    <!-- CV syllable -->
    <syllable>
-      <require>!manner/vocalic</require>
-      <require>voicing/voiced manner/vocalic</require>
+      <exclude>manner/vocalic</exclude>
+      <require>manner/vocalic</require>
    </syllable>
    <!-- VC syllable -->
    <syllable>
-      <require>voicing/voiced manner/vocalic</require>
-      <require>!manner/vocalic</require>
+      <require>manner/vocalic</require>
+      <exclude>manner/vocalic</exclude>
    </syllable>
    <!-- CVC syllable -->
    <syllable>
-      <require>!manner/vocalic</require>
-      <require>voicing/voiced manner/vocalic</require>
-      <require>!manner/vocalic</require>
+      <exclude>manner/vocalic</exclude>
+      <require>manner/vocalic</require>
+      <exclude>manner/vocalic voicing/voiced</exclude>
    </syllable>
+   <!-- CVn syllable -->
+   <syllable>
+      <exclude>manner/vocalic</exclude>
+      <require>manner/vocalic</require>
+      <require>manner/nasal place/alveolar</require>
+   </syllable>
+
    <!-- CVnt syllable -->
    <syllable>
-      <require>!manner/vocalic</require>
-      <require>voicing/voiced manner/vocalic</require>
-      <require>@n</require>
-      <require>@t</require>
+      <exclude>manner/vocalic</exclude>
+      <require>manner/vocalic</require>
+      <require>manner/nasal place/alveolar</require>
+      <require>voicing/voiceless manner/plosive place/alveolar</require>
    </syllable>
 </syllables>
-

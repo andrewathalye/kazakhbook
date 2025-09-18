@@ -34,9 +34,20 @@ package body Toolkit.Phonemes is
      (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
       Cur : Contexts.Cursor'Class) return Phoneme_List
    is
+      Result : Phoneme_List;
+
+      L_Cur : Contexts.Cursor'Class := Cur;
    begin
-      pragma Compile_Time_Warning (Standard.True, "Resolve unimplemented");
-      return raise Program_Error with "Unimplemented function Resolve";
+      for AP of List loop
+         Result.Append (Resolve (PDB, AP, L_Cur));
+         begin
+            L_Cur := L_Cur.Next;
+         exception
+            when Toolkit.Contexts.Invalid_Cursor => null;
+         end;
+      end loop;
+
+      return Result;
    end Resolve;
 
    -----------------

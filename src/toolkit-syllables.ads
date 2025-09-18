@@ -1,0 +1,73 @@
+pragma Ada_2012;
+
+with Ada.Containers.Vectors;
+
+with DOM.Core;
+
+with Toolkit.Features;
+with Toolkit.Phonemes;
+with Toolkit.Contexts;
+
+package Toolkit.Syllables is
+   type Syllable_Database is private;
+   --  Contains a record of syllabification rules
+   --  Associated with a Feature Database
+
+   type Syllable is record
+      Sounds   : Phonemes.Phoneme_List;
+      Features : Toolkit.Features.Feature_Set;
+   end record;
+   --  Sounds produced in one single movement of the vocal apparatus
+
+   package Syllable_Lists is new Ada.Containers.Vectors (Positive, Syllable);
+   subtype Syllable_List is Syllable_Lists.Vector;
+
+   -------------
+   -- CURSORS --
+   -------------
+   function To_Cursor
+     (SLC : Syllable_Lists.Cursor) return Contexts.Cursor'Class;
+
+   ----------------
+   -- CONVERSION --
+   ----------------
+   Syllable_Error : exception;
+   function Syllabify
+     (SDB : Syllable_Database; Phonetic_Word : Phonemes.Phoneme_List)
+      return Syllable_List;
+   --  Syllabify a list of phonemes according to the rules provided
+   --  @exception Syllable_Error
+   --    Raised when the given sounds cannot form a valid syllable
+
+   function Flatten (SL : Syllable_List) return Phonemes.Phoneme_List;
+   --  Flatten a list of syllables into a list of phonemes
+
+   ------------
+   -- OUTPUT --
+   ------------
+   function Transcribe (S : Syllable) return String;
+   function Transcribe (SL : Syllable_List) return String;
+   --  Transcribe a syllable or list of syllables in IPA notation
+
+   procedure Read
+     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+      SDB : out Syllable_Database);
+   --  Read a syllable database from XML data
+private
+   type Syllable_Element_Kind is (Exclude, Require);
+   type Syllable_Element
+     (Kind : Syllable_Element_Kind := Syllable_Element_Kind'First) is
+   record
+      FS : Features.Feature_Set;
+   end record;
+
+   package Syllable_Element_Lists is new Ada.Containers.Vectors
+     (Positive, Syllable_Element);
+   subtype Syllable_Definition is Syllable_Element_Lists.Vector;
+   use type Syllable_Definition;
+
+   package Syllable_Definition_Lists is new Ada.Containers.Vectors
+     (Positive, Syllable_Definition);
+   type Syllable_Database is
+   new Syllable_Definition_Lists.Vector with null record;
+end Toolkit.Syllables;

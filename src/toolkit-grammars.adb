@@ -42,21 +42,11 @@ package body Toolkit.Grammars is
         (Get_Tree (Reader), G.Features, G.Contexts, G.Phonemes);
 
       Put_Line (">> Syllables");
-      Put_Line ("unimplemented");
-
-      Put_Line (">> Symbols");
-      Put_Line ("unimplemented");
-      --  Open (Path & "/symbols.xml", Input);
-      --  Parse (Reader, Input);
-      --  Close (Input);
-      --  Toolkit.Symbols.Read
-      --    (Get_Tree (Reader), G.Features, G.Phonemes, G.Symbols);
-
-      Put_Line (">> Rules");
-      Put_Line ("unimplemented");
-
-      Put_Line (">> Morphemes");
-      Put_Line ("unimplemented");
+      Open (Path & "/syllables.xml", Input);
+      Parse (Reader, Input);
+      Close (Input);
+      Toolkit.Syllables.Read
+        (Get_Tree (Reader), G.Features, G.Syllables);
 
       Free (Reader);
       Put_Line ("Done.");

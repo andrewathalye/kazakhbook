@@ -1,9 +1,7 @@
-pragma Ada_2022;
+pragma Ada_2012;
 
 with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
-
-with Ada.Text_IO; use Ada.Text_IO;
 
 with DOM.Core.Documents;
 with DOM.Core.Elements;
@@ -44,8 +42,6 @@ package body Toolkit.Contexts_Impl is
    ----------------
    function Applicable (Cur : Cursor'Class; Ctx : Context) return Boolean is
    begin
-      Put_Line (To_XML (Ctx));
-
       ------------------------
       -- Process Each Scope --
       ------------------------
@@ -57,65 +53,10 @@ package body Toolkit.Contexts_Impl is
 
          Level :
          declare
-            Level_Cur     : constant Cursor'Class :=
-              Rescope (Cur, SC.Level, First);
+            Level_Cur : Cursor'Class := Rescope (Cur, SC.Level, First);
+            L_Within  : Context_Scope;
+
             Before, After : Toolkit.Features.Feature_Set_List;
-
-            procedure Collect_Before (WC : Cursor'Class);
-            --  Collect all preceding elements specified in
-            --  the context from the cursor
-
-            procedure Collect_Before (WC : Cursor'Class) is
-               use type Toolkit.Features.Feature_Set;
-               LWC : Cursor_Holder := Cursor_Holders.To_Holder (WC);
-            begin
-               if LWC.Element.Scope = SC.Level then
-                  while LWC.Element.Features /=
-                    Toolkit.Features.Null_Feature_Set
-                  loop
-                     LWC.Replace_Element (LWC.Element.Previous);
-                     Before.Prepend (LWC.Element.Features);
-                  end loop;
-               else
-                  loop
-                     Collect_Before (LWC.Element.Sub (Last));
-                     begin
-                        LWC.Replace_Element (LWC.Element.Previous);
-                     exception
-                        when Invalid_Cursor =>
-                           return;
-                     end;
-                  end loop;
-               end if;
-            end Collect_Before;
-
-            procedure Collect_After (WC : Cursor'Class);
-            --  Collect all successive elements specified
-            --  in the context from the cursor
-
-            procedure Collect_After (WC : Cursor'Class) is
-               use type Toolkit.Features.Feature_Set;
-               LWC : Cursor_Holder := Cursor_Holders.To_Holder (WC);
-            begin
-               if LWC.Element.Scope = SC.Level then
-                  while LWC.Element.Features /=
-                    Toolkit.Features.Null_Feature_Set
-                  loop
-                     LWC.Replace_Element (LWC.Element.Next);
-                     After.Append (LWC.Element.Features);
-                  end loop;
-               else
-                  loop
-                     Collect_After (LWC.Element.Sub (First));
-                     begin
-                        LWC.Replace_Element (LWC.Element.Next);
-                     exception
-                        when Invalid_Cursor =>
-                           return;
-                     end;
-                  end loop;
-               end if;
-            end Collect_After;
 
             function Apply (CS : Context_Single) return Boolean;
             --  Check whether a single context clause applies to
@@ -124,11 +65,12 @@ package body Toolkit.Contexts_Impl is
             function Apply (CS : Context_Single) return Boolean is
             begin
                case CS.K is
-                  when None =>
-                     raise Invalid_Context;
                   when Anyprev =>
-                     for FS of Before loop
-                        if Toolkit.Features.Superset (FS, CS.FS) then
+                     for FS_C in reverse Before.Iterate loop
+                        if Toolkit.Features.Superset
+                            (Toolkit.Features.Feature_Set_Lists.Element (FS_C),
+                             CS.FS)
+                        then
                            return True;
                         end if;
                      end loop;
@@ -167,14 +109,61 @@ package body Toolkit.Contexts_Impl is
             end Apply;
 
          begin
+            -----------------------------
+            -- Determine Actual Within --
+            -----------------------------
+            --  TODO remove once everything implemented?
+            for Test_Scope in Level_Cur.Scope .. SC.Within loop
+               begin
+                  declare
+                     Discard : Cursor'Class :=
+                       Rescope (Level_Cur, Test_Scope, First);
+                  begin
+                     null;
+                  end;
+               exception
+                  when Invalid_Cursor =>
+                     L_Within := Context_Scope'Pred (Test_Scope);
+                     goto Scope_Tested;
+               end;
+            end loop;
+            L_Within := SC.Within;
+            <<Scope_Tested>>
+
+            Level_Cur := Level_Cur.Prune (L_Within);
+
             --------------------------
             -- Collect all Features --
             --------------------------
-            Collect_Before (Level_Cur.Rescope (SC.Within, First));
-            Collect_After (Level_Cur.Rescope (SC.Within, First));
+            Collect_Before :
+            begin
+               declare
+                  Working_Cur : Cursor'Class := Level_Cur;
+               begin
+                  loop
+                     Working_Cur := Working_Cur.Previous;
+                     Before.Prepend (Working_Cur.Features);
+                  end loop;
+               exception
+                  when Invalid_Cursor =>
+                     Before.Prepend (Toolkit.Features.Null_Feature_Set);
+               end;
+            end Collect_Before;
 
-            Put_Line (Toolkit.Features.To_XML (Before));
-            Put_Line (Toolkit.Features.To_XML (After));
+            Collect_After :
+            begin
+               declare
+                  Working_Cur : Cursor'Class := Level_Cur;
+               begin
+                  loop
+                     Working_Cur := Working_Cur.Next;
+                     After.Append (Working_Cur.Features);
+                  end loop;
+               exception
+                  when Invalid_Cursor =>
+                     After.Append (Toolkit.Features.Null_Feature_Set);
+               end;
+            end Collect_After;
 
             ------------------------
             -- Check all Features --
@@ -185,6 +174,9 @@ package body Toolkit.Contexts_Impl is
                end if;
             end loop;
 
+            if SC.C_Any.Is_Empty then
+               goto Any;
+            end if;
             for CS of SC.C_Any loop
                if Apply (CS) then
                   goto Any;
@@ -221,9 +213,6 @@ package body Toolkit.Contexts_Impl is
       procedure Append_CM (CM : Context_Multiple) is
       begin
          for CS of CM loop
-            if CS.K = None then
-               raise Invalid_Context;
-            end if;
             Append (Buffer, "<" & To_Lower (CS.K'Image) & ">");
             Append (Buffer, Toolkit.Features.To_String (CS.FS));
             Append (Buffer, "</" & To_Lower (CS.K'Image) & ">");

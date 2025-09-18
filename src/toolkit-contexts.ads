@@ -54,17 +54,28 @@ package Toolkit.Contexts is
       type Generic_Cursor is new Cursor with private;
 
       function Create (LC : List.Cursor) return Generic_Cursor;
+
+      Invalid_Super : exception;
       procedure Set_Super (C : in out Generic_Cursor; Super : Cursor'Class);
+      --  @exception Invalid_Super
+      --    Raised when `Super` does not have the correct scope
 
       overriding function Scope (C : Generic_Cursor) return Context_Scope;
+      overriding function Prune (C : Generic_Cursor; Target : Context_Scope)
+         return Generic_Cursor;
+      --  Return a tree going up only to Target
+      --  @exception Invalid_Super
+      --    Raised when Target is a lower scope than C.Scope
+      --  @exception Invalid_Cursor
+      --    Raised when C does not have a Super scope, but one is requested
 
       overriding function Features
         (C : Generic_Cursor) return Toolkit.Features.Feature_Set;
 
-      overriding function First (C : Generic_Cursor) return Cursor'Class;
-      overriding function Previous (C : Generic_Cursor) return Cursor'Class;
-      overriding function Next (C : Generic_Cursor) return Cursor'Class;
-      overriding function Last (C : Generic_Cursor) return Cursor'Class;
+      overriding function First (C : Generic_Cursor) return Generic_Cursor;
+      overriding function Previous (C : Generic_Cursor) return Generic_Cursor;
+      overriding function Next (C : Generic_Cursor) return Generic_Cursor;
+      overriding function Last (C : Generic_Cursor) return Generic_Cursor;
 
       overriding function Sub
         (C : Generic_Cursor; Placement : Cursor_Placement) return Cursor'Class;

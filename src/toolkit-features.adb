@@ -65,6 +65,30 @@ package body Toolkit.Features is
       return Result;
    end Flatten;
 
+   ------------
+   -- Shared --
+   ------------
+   function Shared (L : Feature_Set_List) return Feature_Set is
+      use type Ada.Containers.Count_Type;
+      Result : Feature_Set;
+   begin
+      if L.Length = 1 then
+         return L.First_Element;
+      end if;
+
+      for FI of L.First_Element loop
+         for FS of L loop
+            if not FS.Contains (FI) then
+               goto Skip;
+            end if;
+         end loop;
+         Result.Append (FI);
+         <<Skip>>
+      end loop;
+
+      return Add (Empty_Feature_Set, Result);
+   end Shared;
+
    ---------------
    -- To_String --
    ---------------
@@ -110,7 +134,7 @@ package body Toolkit.Features is
    function To_Ada
      (DB : Feature_Database; XML : DOM.Core.Node) return Feature_Set
    is
-      Text    : constant String := Toolkit.XML.Get_Text (XML);
+      Text : constant String := Toolkit.XML.Get_Text (XML);
       Strings : constant Toolkit.Strings.Argument_List :=
         Toolkit.Strings.Split (Text);
 

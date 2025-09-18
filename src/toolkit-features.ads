@@ -55,6 +55,9 @@ package Toolkit.Features is
    --  Return the set of all features in all sets in L
    --  (this removes any duplicate features)
 
+   function Shared (L : Feature_Set_List) return Feature_Set;
+   --  Return the set of all features shared by all sets in L
+
    ----------------
    -- CONVERSION --
    ----------------

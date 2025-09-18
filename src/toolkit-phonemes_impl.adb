@@ -1,7 +1,6 @@
 pragma Ada_2012;
 
 with Ada.Strings.Hash;
-with Ada.Text_IO; use Ada.Text_IO;
 
 with DOM.Core.Attrs;
 with DOM.Core.Documents;
@@ -68,11 +67,9 @@ package body Toolkit.Phonemes_Impl is
             end if;
             for Ctx of L_Phone.Contexts loop
                if Contexts.Applicable (Cur, Ctx) then
-                  Put_Line ("Succeed!");
                   goto Context_Success;
                end if;
             end loop;
-            Put_Line ("Fail!");
             goto Next;
             <<Context_Success>>
             --  Check Features
@@ -91,11 +88,6 @@ package body Toolkit.Phonemes_Impl is
       Cur : Contexts.Cursor'Class) return Phoneme_Instance
    is
    begin
-      if Phoneme_Maps.Has_Element (AP.Phoneme) then
-         Put ("@" & String (Phoneme_Maps.Key (AP.Phoneme)) & ": ");
-      end if;
-      Put_Line (Features.To_XML (AP.Features));
-
       if Phoneme_Maps.Has_Element (AP.Phoneme) then
          return Resolve_Within (Cur, AP.Features, AP.Phoneme);
       else
@@ -176,8 +168,6 @@ package body Toolkit.Phonemes_Impl is
      (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
       return Abstract_Phoneme
    is
-      use type Phoneme_Maps.Cursor;
-
       Required_Set     : Features.Feature_Set;
       Required_Phoneme : Phoneme_Maps.Cursor;
 
@@ -188,7 +178,7 @@ package body Toolkit.Phonemes_Impl is
       for S of Strings loop
          --  Handle phoneme references
          if S (S'First) = '@' then
-            if S'Length = 1 or Required_Phoneme /= Phoneme_Maps.No_Element then
+            if S'Length = 1 then
                raise Constraint_Error;
             end if;
 
@@ -206,6 +196,20 @@ package body Toolkit.Phonemes_Impl is
             Required_Set.Append (Features.To_Ada (FDB, S));
          end if;
       end loop;
+
+      --  Determine a set of features common to all phones of the given phoneme
+      if Phoneme_Maps.Has_Element (Required_Phoneme) then
+         declare
+            Declared_Features : Features.Feature_Set_List;
+         begin
+            for Phone_I of Phoneme_Maps.Element (Required_Phoneme) loop
+               Declared_Features.Append (Features.Flatten (Phone_I.Sounds));
+            end loop;
+
+            Required_Set :=
+              Features.Add (Required_Set, Features.Shared (Declared_Features));
+         end;
+      end if;
 
       return (Required_Phoneme, Required_Set);
    end To_Ada;

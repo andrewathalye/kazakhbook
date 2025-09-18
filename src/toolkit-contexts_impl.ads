@@ -14,7 +14,7 @@ private with Ada.Strings.Hash;
 
 package Toolkit.Contexts_Impl is
    type Context_Scope is
-     (None, Phoneme, Syllable, Morpheme, Symbol, Word, Clause, Sentence, Text);
+     (Phoneme, Syllable, Morpheme, Symbol, Word, Clause, Sentence, Text);
 
    type Context_Database is private;
    type Context is private;
@@ -35,6 +35,8 @@ package Toolkit.Contexts_Impl is
    Invalid_Cursor : exception;
 
    function Scope (C : Cursor) return Context_Scope is abstract;
+   function Prune
+     (C : Cursor; Target : Context_Scope) return Cursor is abstract;
 
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
@@ -43,10 +45,10 @@ package Toolkit.Contexts_Impl is
    function Features
      (C : Cursor) return Toolkit.Features.Feature_Set is abstract;
 
-   function First (C : Cursor) return Cursor'Class is abstract;
-   function Previous (C : Cursor) return Cursor'Class is abstract;
-   function Next (C : Cursor) return Cursor'Class is abstract;
-   function Last (C : Cursor) return Cursor'Class is abstract;
+   function First (C : Cursor) return Cursor is abstract;
+   function Previous (C : Cursor) return Cursor is abstract;
+   function Next (C : Cursor) return Cursor is abstract;
+   function Last (C : Cursor) return Cursor is abstract;
 
    function Sub
      (C : Cursor; Placement : Cursor_Placement)
@@ -70,16 +72,18 @@ package Toolkit.Contexts_Impl is
      (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database);
 private
-   type Context_Kind is (None, Anyprev, Anynext, Prev, Next, Unique, Super);
+   type Context_Kind is (Anyprev, Anynext, Prev, Next, Unique, Super);
 
-   type Context_Single (K : Context_Kind := None) is record
+   type Context_Single (K : Context_Kind := Context_Kind'First) is record
       FS : Toolkit.Features.Feature_Set;
    end record;
 
    package CM is new Ada.Containers.Vectors (Natural, Context_Single);
    subtype Context_Multiple is CM.Vector;
 
-   type Scoped_Context (Level, Within : Context_Scope := None) is record
+   type Scoped_Context (Level, Within : Context_Scope := Context_Scope'First)
+   is
+   record
       C_Not : Context_Multiple;
       C_Any : Context_Multiple;
       C_All : Context_Multiple;

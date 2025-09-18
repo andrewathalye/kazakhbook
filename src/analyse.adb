@@ -9,12 +9,13 @@ with Toolkit.Grammars;
 with Toolkit.Features;
 with Toolkit.Phonemes;
 with Toolkit.Strings;
+with Toolkit.Syllables;
 
 procedure Analyse is
    use Toolkit;
    use type Ada.Containers.Count_Type;
 
-   type Commands is (C_Help, C_Load, C_Resolve, C_Quit, C_Q);
+   type Commands is (C_Help, C_Load, C_Add, C_Resolve, C_Quit, C_Q);
 
    procedure Help;
    procedure Help is
@@ -31,6 +32,7 @@ procedure Analyse is
    Arguments : Toolkit.Strings.Argument_List;
    Command   : Commands;
    Grammar   : Toolkit.Grammars.Grammar;
+   APL       : Phonemes.Abstract_Phoneme_List;
 begin
    while not Quit loop
       Put ("> ");
@@ -58,7 +60,7 @@ begin
                   Put_Line (Ada.Exceptions.Exception_Information (X));
                   goto Next;
             end;
-         when C_Resolve =>
+         when C_Add =>
             if Arguments.Length < 2 then
                Put_Line ("| Requires a feature list after command name");
                goto Next;
@@ -66,21 +68,11 @@ begin
             declare
                Feature_List : constant String :=
                  Strings.Join (Arguments, 2, Arguments.Last_Index);
-               APL          : Phonemes.Abstract_Phoneme_List;
-               PI           : Phonemes.Phoneme_Instance;
             begin
                APL.Append
                  (Phonemes.To_Ada
                     (Grammar.Features, Grammar.Phonemes, Feature_List));
-               PI :=
-                 Phonemes.Resolve
-                   (Grammar.Phonemes, APL.First_Element,
-                    Phonemes.To_Cursor (APL.First));
-               Put_Line (Phonemes.To_XML (PI));
             exception
-               when X : Phonemes.Indeterminate_Phoneme   =>
-                  Put_Line (Ada.Exceptions.Exception_Information (X));
-                  Put_Line ("| Indeterminate phoneme");
                when X : Phonemes.Unknown_Phoneme         =>
                   Put_Line (Ada.Exceptions.Exception_Information (X));
                   Put_Line ("| Unknown phoneme");
@@ -88,6 +80,34 @@ begin
                   Put_Line (Ada.Exceptions.Exception_Information (X));
                   Put_Line ("| Unknown feature");
             end;
+         when C_Resolve =>
+            if Arguments.Length /= 1 then
+               Put_Line ("| Does not take arguments");
+               goto Next;
+            end if;
+            if APL.Length = 0 then
+               Put_Line ("| Call Add to add phonemes");
+               goto Next;
+            end if;
+
+            declare
+               PL : Phonemes.Phoneme_List;
+               SL : Syllables.Syllable_List;
+            begin
+               PL :=
+                 Phonemes.Resolve
+                   (Grammar.Phonemes, APL,
+                    Phonemes.To_Cursor (APL.First));
+               SL := Syllables.Syllabify (Grammar.Syllables, PL);
+               Put_Line ("Result: " & Syllables.Transcribe (SL));
+            exception
+               when X : Phonemes.Indeterminate_Phoneme =>
+                  Put_Line (Ada.Exceptions.Exception_Information (X));
+                  Put_Line ("| Indeterminate phoneme");
+
+            end;
+
+            APL.Clear;
          when C_Quit | C_Q =>
             Quit := True;
       end case;
