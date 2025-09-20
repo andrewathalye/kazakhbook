@@ -7,15 +7,19 @@ with Ada.IO_Exceptions;
 
 with Toolkit.Grammars;
 with Toolkit.Features;
+with Toolkit.Contexts;
 with Toolkit.Phonemes;
 with Toolkit.Strings;
 with Toolkit.Syllables;
+with Toolkit.Log;
 
 procedure Analyse is
    use Toolkit;
+   use all type Contexts.Context_Scope;
    use type Ada.Containers.Count_Type;
 
-   type Commands is (C_Help, C_Load, C_Add, C_Resolve, C_Quit, C_Q);
+   type Commands is
+     (C_Help, C_Load, C_Add, C_Resolve, C_Syllabify, C_Debug, C_Quit, C_Q);
 
    procedure Help;
    procedure Help is
@@ -38,6 +42,13 @@ begin
       Put ("> ");
 
       Arguments := Toolkit.Strings.Split (Get_Line);
+
+      --  Comments
+      if not Arguments.Is_Empty and then Arguments.First_Element = "#" then
+         goto Next;
+      end if;
+
+      --  Parse Command
       begin
          Command := Commands'Value ("C_" & Arguments (1));
       exception
@@ -92,14 +103,11 @@ begin
 
             declare
                PL : Phonemes.Phoneme_List;
-               SL : Syllables.Syllable_List;
             begin
                PL :=
                  Phonemes.Resolve
-                   (Grammar.Phonemes, APL,
-                    Phonemes.To_Cursor (APL.First));
-               SL := Syllables.Syllabify (Grammar.Syllables, PL);
-               Put_Line ("Result: " & Syllables.Transcribe (SL));
+                   (Grammar.Phonemes, APL, Contexts.Isolated (Text));
+               Put_Line ("Result: " & Phonemes.Transcribe (PL));
             exception
                when X : Phonemes.Indeterminate_Phoneme =>
                   Put_Line (Ada.Exceptions.Exception_Information (X));
@@ -108,6 +116,27 @@ begin
             end;
 
             APL.Clear;
+         when C_Syllabify =>
+            if Arguments.Length /= 2 then
+               Put_Line ("| Takes one argument");
+               goto Next;
+            end if;
+
+            APL := Phonemes.Transcribe (Grammar.Phonemes, Arguments (2));
+            Put_Line
+              ("Result: " &
+               Syllables.Transcribe
+                 (Syllables.Syllabify
+                    (Grammar.Syllables,
+                     Phonemes.Resolve
+                       (Grammar.Phonemes, APL, Contexts.Isolated (Text)))));
+         when C_Debug =>
+            if Arguments.Length /= 2 then
+               Put_Line ("| Takes one argument");
+               goto Next;
+            end if;
+            Toolkit.Log.Enable
+              (Toolkit.Log.Log_Category'Value (Arguments (2)));
          when C_Quit | C_Q =>
             Quit := True;
       end case;

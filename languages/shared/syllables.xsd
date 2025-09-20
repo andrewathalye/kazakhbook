@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:include schemaLocation="contexts.xsd"></xs:include>
+   <xs:include schemaLocation="features.xsd"></xs:include>
+   <xs:include schemaLocation="phonemes.xsd"></xs:include>
    <xs:complexType name="syllable">
-      <xs:sequence maxOccurs="unbounded">
-         <xs:choice>
-         <xs:element name="exclude" type="xs:string"/>
-         <xs:element name="require" type="xs:string"/>
-         </xs:choice>
+      <xs:sequence>
+         <xs:element name="initial_context" type="context_ref" minOccurs="0">
+            <xs:annotation>
+               <xs:documentation>Context for the first phoneme in the syllable</xs:documentation>
+            </xs:annotation>
+         </xs:element>
+         <xs:sequence maxOccurs="unbounded">
+            <xs:choice>
+               <xs:element name="forbid" type="provide"/>
+               <xs:element name="require" type="provide"/>
+            </xs:choice>
+         </xs:sequence>
+         <xs:element name="final_context" type="context_ref" minOccurs="0">
+            <xs:annotation>
+               <xs:documentation>Context for the last phoneme in the syllable</xs:documentation>
+            </xs:annotation>
+         </xs:element>
+         <xs:element name="provide" type="provide" minOccurs="0"/>
       </xs:sequence>
+      <xs:attribute name="id" use="required"/>
    </xs:complexType>
    <xs:element name="syllables">
       <xs:complexType>

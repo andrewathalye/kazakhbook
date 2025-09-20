@@ -19,6 +19,8 @@ package Toolkit.Contexts_Impl is
    type Context_Database is private;
    type Context is private;
 
+   Empty_Context : constant Context;
+
    Invalid_Context : exception;
    function Lookup (DB : Context_Database; Name : String) return Context;
 
@@ -99,4 +101,6 @@ private
 
    type Context_Database is new Context_Databases.Map with null record;
    type Context is new Context_Databases.Cursor;
+
+   Empty_Context : constant Context := Context (Context_Databases.No_Element);
 end Toolkit.Contexts_Impl;

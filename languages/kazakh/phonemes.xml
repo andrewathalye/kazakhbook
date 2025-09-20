@@ -152,13 +152,13 @@
          <!-- After a non-vowel (hard) -->
          <provide>voicing/voiced manner/vocalic place/back height/close hardness/hard</provide>
          <provide>voicing/voiced place/alveolar manner/latapprox</provide>
-         <ipa>ɯl</ipa>
+         <ipa>ɯ˘l</ipa>
       </phone>
       <phone>
          <!-- After a non-vowel (soft) -->
          <provide>voicing/voiced manner/vocalic place/frontcentral height/closeclosemid hardness/soft</provide>
          <provide>voicing/voiced place/alveolar manner/latapprox</provide>
-         <ipa>ɪl</ipa>
+         <ipa>ɪ˘l</ipa>
       </phone>
    </phoneme>
    <phoneme id="m">

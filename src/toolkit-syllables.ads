@@ -1,6 +1,8 @@
 pragma Ada_2012;
 
 with Ada.Containers.Vectors;
+with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Strings.Hash;
 
 with DOM.Core;
 
@@ -51,10 +53,11 @@ package Toolkit.Syllables is
 
    procedure Read
      (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+      CDB :     Contexts.Context_Database; PDB : Phonemes.Phoneme_Database;
       SDB : out Syllable_Database);
    --  Read a syllable database from XML data
 private
-   type Syllable_Element_Kind is (Exclude, Require);
+   type Syllable_Element_Kind is (Forbid, Require);
    type Syllable_Element
      (Kind : Syllable_Element_Kind := Syllable_Element_Kind'First) is
    record
@@ -63,11 +66,17 @@ private
 
    package Syllable_Element_Lists is new Ada.Containers.Vectors
      (Positive, Syllable_Element);
-   subtype Syllable_Definition is Syllable_Element_Lists.Vector;
-   use type Syllable_Definition;
+   subtype Syllable_Element_List is Syllable_Element_Lists.Vector;
+   type Syllable_Definition is record
+      Initial_Context : Contexts.Context;
+      Elements        : Syllable_Element_List;
+      Final_Context   : Contexts.Context;
+      Provides        : Features.Feature_Set;
+   end record;
 
-   package Syllable_Definition_Lists is new Ada.Containers.Vectors
-     (Positive, Syllable_Definition);
+   package Syllable_Definition_Maps is new Ada.Containers
+     .Indefinite_Hashed_Maps
+     (String, Syllable_Definition, Ada.Strings.Hash, "=");
    type Syllable_Database is
-   new Syllable_Definition_Lists.Vector with null record;
+   new Syllable_Definition_Maps.Map with null record;
 end Toolkit.Syllables;

@@ -20,6 +20,13 @@
          <next>manner/vocalic</next>
       </scope>
    </context>
+   <context id="preconsonantal">
+      <scope level="phoneme" within="word">
+         <not>
+            <next>manner/vocalic</next>
+         </not>
+      </scope>
+   </context>
    <!-- After a vowel -->
    <context id="postvocalic">
       <scope level="phoneme" within="word">

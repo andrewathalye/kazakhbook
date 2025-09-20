@@ -123,6 +123,7 @@ package body Toolkit.Features is
    begin
       for Set of List loop
          Append (Buffer, To_XML (Set));
+         Append (Buffer, ASCII.LF);
       end loop;
 
       return To_String (Buffer);

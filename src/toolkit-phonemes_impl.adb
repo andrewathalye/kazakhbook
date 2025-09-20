@@ -1,5 +1,6 @@
 pragma Ada_2012;
 
+with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
 
 with DOM.Core.Attrs;
@@ -9,6 +10,7 @@ with DOM.Core.Nodes;
 
 with Toolkit.Strings;
 with Toolkit.XML;
+with Toolkit.Log; use Toolkit.Log;
 
 package body Toolkit.Phonemes_Impl is
    ------------------
@@ -307,6 +309,46 @@ package body Toolkit.Phonemes_Impl is
    begin
       return
         Ada.Strings.Unbounded.To_String (Phone_Lists.Element (P.Instance).IPA);
+   end Transcribe;
+
+   ----------------
+   -- Transcribe --
+   ----------------
+   function Transcribe
+     (PDB : Phoneme_Database; IPA : String; C : in out Natural)
+      return Abstract_Phoneme
+   is
+      use Ada.Strings.Fixed;
+      use Ada.Strings.Unbounded;
+      Max_Length : Natural := 0;
+      Result     : Abstract_Phoneme;
+   begin
+      Put_Log (Log.Phonemes, "TRANSCRIBE1: " & IPA (C .. IPA'Last));
+
+      --  TODO also add phoneme cursor?
+      for PL of PDB loop
+         for P of PL loop
+            if Length (P.IPA) > Max_Length
+              and then Index (IPA, To_String (P.IPA), C) = C
+            then
+               Max_Length      := Length (P.IPA);
+               Result.Features := Features.Flatten (P.Sounds);
+            end if;
+         end loop;
+      end loop;
+
+      if Max_Length = 0 then
+         raise Unknown_Phoneme with IPA (C .. C);
+      end if;
+
+      Put_Log (Log.Phonemes, "FOUND1: " & IPA (C .. C + Max_Length - 1));
+
+      C := C + Max_Length;
+      if C > IPA'Last then
+         C := 0;
+      end if;
+
+      return Result;
    end Transcribe;
 
    ----------

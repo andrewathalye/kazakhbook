@@ -17,6 +17,9 @@ package Toolkit.Contexts is
    --  Each context defines a set of conditions which must
    --  be met for a feature to occur.
 
+   Empty_Context : Context renames Toolkit.Contexts_Impl.Empty_Context;
+   --  An empty context that always applies
+
    use type Context;
    package Context_Lists is new Ada.Containers.Vectors (Natural, Context);
    subtype Context_List is Context_Lists.Vector;
@@ -38,6 +41,11 @@ package Toolkit.Contexts is
    --  @param Placement
    --     Set where the cursor should be placed if the level must be reduced
    --  @exception Invalid_Cursor
+
+   function Isolated (Scope : Context_Scope) return Cursor'Class;
+   --  An entirely isolated cursor, meant to be used for debugging.
+   --  It will return Null_Feature_Set for any query and another isolated
+   --  cursor for Sub and Super
 
    generic
       Cursor_Scope : Context_Scope;

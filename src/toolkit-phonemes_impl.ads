@@ -44,6 +44,10 @@ package Toolkit.Phonemes_Impl is
       CDB : Contexts.Context_Database; PDB : out Phoneme_Database);
 
    function Transcribe (P : Phoneme_Instance) return String;
+
+   function Transcribe
+     (PDB : Phoneme_Database; IPA : String; C : in out Natural)
+      return Abstract_Phoneme;
 private
    type Phone is record
       Contexts : Toolkit.Contexts.Context_List;

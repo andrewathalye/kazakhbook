@@ -59,6 +59,7 @@ package Toolkit.Phonemes is
    --  Resolve a list of abstract phonemes to a list of concrete
    --  phoneme instances based upon context
    --
+   --
    --  Raise Indeterminate_Phoneme if the context is insufficient
    --   to identify a phoneme.
 
@@ -81,6 +82,14 @@ package Toolkit.Phonemes is
      Phonemes_Impl.Subtract;
    --  Perform transformations on the features specified for
    --   an abstract phoneme
+
+   function Get_Features
+     (AP : Phoneme_Instance) return Features.Feature_Set renames
+     Phonemes_Impl.Get_Features;
+   function Get_Features
+     (AP : Abstract_Phoneme) return Features.Feature_Set renames
+     Phonemes_Impl.Get_Features;
+   --  Get all features defined for a(n abstract) phoneme
 
    ----------------
    -- CONVERSION --
@@ -106,6 +115,10 @@ package Toolkit.Phonemes is
      Phonemes_Impl.Transcribe;
    function Transcribe (PL : Phoneme_List) return String;
    --  Return the transcription of P(L) in IPA notation
+
+   function Transcribe
+     (PDB : Phoneme_Database; IPA : String) return Abstract_Phoneme_List;
+   --  Transcribe IPA notation back into abstract phonemes
 
    --------------------
    -- INITIALISATION --

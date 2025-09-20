@@ -1,7 +1,9 @@
 pragma Ada_2022;
 
 with Ada.Strings.Unbounded;
+
 with Toolkit.XML;
+with Toolkit.Log; use Toolkit.Log;
 
 package body Toolkit.Phonemes is
 
@@ -38,6 +40,8 @@ package body Toolkit.Phonemes is
 
       L_Cur : Contexts.Cursor'Class := Cur;
    begin
+      Put_Log (Log.Phonemes, "RESOLVE");
+
       for AP of List loop
          Result.Append (Resolve (PDB, AP, L_Cur));
          begin
@@ -87,6 +91,22 @@ package body Toolkit.Phonemes is
       end loop;
 
       return To_String (Buffer);
+   end Transcribe;
+
+   ----------------
+   -- Transcribe --
+   ----------------
+   function Transcribe
+     (PDB : Phoneme_Database; IPA : String) return Abstract_Phoneme_List
+   is
+      Result : Abstract_Phoneme_List;
+      C : Natural := IPA'First;
+   begin
+      Put_Log (Log.Phonemes, "TRANSCRIBE: " & IPA);
+      while C /= 0 loop
+         Result.Append (Phonemes_Impl.Transcribe (PDB, IPA, C));
+      end loop;
+      return Result;
    end Transcribe;
 
 end Toolkit.Phonemes;

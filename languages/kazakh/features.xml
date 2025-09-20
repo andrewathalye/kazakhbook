@@ -187,6 +187,11 @@
    <feature id="particle">
       <value id="interrogative"/>
    </feature>
+   <!-- Syllable features -->
+   <feature id="syllable">
+      <value id="open"/>
+      <value id="closed"/>
+   </feature>
    <!-- General features -->
    <feature id="dialect">
       <value id="west"/>

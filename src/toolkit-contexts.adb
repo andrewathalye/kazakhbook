@@ -3,6 +3,40 @@ pragma Ada_2012;
 with DOM.Core.Nodes;
 
 package body Toolkit.Contexts is
+
+   ---------------------
+   -- Isolated Cursor --
+   ---------------------
+   type Isolated_Cursor (CS : Context_Scope) is new Cursor with null record;
+
+   overriding function Scope (C : Isolated_Cursor) return Context_Scope is
+     (C.CS);
+   overriding function Prune
+     (C : Isolated_Cursor; Target : Context_Scope) return Isolated_Cursor is
+     (C);
+
+   overriding function Features
+     (C : Isolated_Cursor) return Toolkit.Features.Feature_Set is
+     (Toolkit.Features.Null_Feature_Set);
+
+   overriding function First (C : Isolated_Cursor) return Isolated_Cursor is
+     (C);
+   overriding function Previous (C : Isolated_Cursor) return Isolated_Cursor is
+     (raise Invalid_Cursor);
+   overriding function Next (C : Isolated_Cursor) return Isolated_Cursor is
+     (raise Invalid_Cursor);
+   overriding function Last (C : Isolated_Cursor) return Isolated_Cursor is
+     (C);
+
+   overriding function Sub
+     (C : Isolated_Cursor; Placement : Cursor_Placement) return Cursor'Class is
+     (Isolated (Context_Scope'Pred (C.CS)));
+   overriding function Super (C : Isolated_Cursor) return Cursor'Class is
+     (Isolated (Context_Scope'Succ (C.CS)));
+
+   function Isolated (Scope : Context_Scope) return Cursor'Class is
+     (Isolated_Cursor'(CS => Scope));
+
    ---------------------
    -- Generic_Cursors --
    ---------------------
@@ -151,7 +185,10 @@ package body Toolkit.Contexts is
       Attr : DOM.Core.Attr;
    begin
       if DOM.Core.Nodes.Node_Type (XML) /= DOM.Core.Element_Node
-        or else DOM.Core.Nodes.Node_Name (XML) /= "context"
+        or else
+        (DOM.Core.Nodes.Node_Name (XML) /= "context" and
+         DOM.Core.Nodes.Node_Name (XML) /= "initial_context" and
+         DOM.Core.Nodes.Node_Name (XML) /= "final_context")
       then
          raise Invalid_Context;
       end if;

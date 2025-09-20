@@ -4,38 +4,40 @@
       if a choice makes it impossible to determine the next syllable.
    -->
 <syllables xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../shared/syllables.xsd">
-   <!-- V syllable -->
-   <syllable>
-      <require>voicing/voiced manner/vocalic</require>
-   </syllable>
-   <!-- CV syllable -->
-   <syllable>
-      <exclude>manner/vocalic</exclude>
+   <!--
+      Open syllables
+   -->
+   <syllable id="open_v">
       <require>manner/vocalic</require>
+      <provide>syllable/open</provide>
    </syllable>
-   <!-- VC syllable -->
-   <syllable>
+   <syllable id="open_cv">
+      <forbid>manner/vocalic</forbid>
       <require>manner/vocalic</require>
-      <exclude>manner/vocalic</exclude>
+      <provide>syllable/open</provide>
    </syllable>
-   <!-- CVC syllable -->
-   <syllable>
-      <exclude>manner/vocalic</exclude>
+   <!-- 
+      Closed Syllables
+   -->
+   <!-- Must not occur before a vowel -->
+   <syllable id="closed_vc">
       <require>manner/vocalic</require>
-      <exclude>manner/vocalic voicing/voiced</exclude>
+      <forbid>manner/vocalic</forbid>
+      <final_context ref="preconsonantal"/>
+      <provide>syllable/closed</provide>
    </syllable>
-   <!-- CVn syllable -->
-   <syllable>
-      <exclude>manner/vocalic</exclude>
+   <syllable id="closed_cvc">
+      <forbid>manner/vocalic</forbid>
       <require>manner/vocalic</require>
-      <require>manner/nasal place/alveolar</require>
+      <forbid>manner/vocalic</forbid>
+      <final_context ref="preconsonantal"/>
+      <provide>syllable/closed</provide>
    </syllable>
-
-   <!-- CVnt syllable -->
-   <syllable>
-      <exclude>manner/vocalic</exclude>
+   <syllable id="closed_cvnt">
+      <forbid>manner/vocalic</forbid>
       <require>manner/vocalic</require>
-      <require>manner/nasal place/alveolar</require>
-      <require>voicing/voiceless manner/plosive place/alveolar</require>
+      <require>@n</require>
+      <require>@t</require>
+      <provide>syllable/closed</provide>
    </syllable>
 </syllables>
