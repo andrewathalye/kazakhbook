@@ -49,19 +49,22 @@ package Toolkit.Phonemes is
       Cur : Contexts.Cursor'Class) return Phoneme_Instance renames
      Phonemes_Impl.Resolve;
    --  Resolve a single abstract phoneme to a phoneme instance within a context
+   --  @param Cur
+   --    Must have scope PHONEME
    --
-   --  Raise Indeterminate_Phoneme if the context is insufficient to identify
-   --  a phone
+   --  @exception Indeterminate_Phoneme
+   --    If the context is insufficient to identify a phone
 
    function Resolve
      (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
       Cur : Contexts.Cursor'Class) return Phoneme_List;
    --  Resolve a list of abstract phonemes to a list of concrete
    --  phoneme instances based upon context
+   --  @param Cur
+   --    Must have scope WORD
    --
-   --
-   --  Raise Indeterminate_Phoneme if the context is insufficient
-   --   to identify a phoneme.
+   --  @exception Indeterminate_Phoneme
+   --   If the context is insufficient to identify a phonem.
 
    --------------------
    -- TRANSFORMATION --

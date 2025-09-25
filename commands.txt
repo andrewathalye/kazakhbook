@@ -1,7 +1,7 @@
 # debug grammars
 # debug contexts
 debug phonemes
-# debug syllables
+debug syllables
 load kazakh
 add @b
 add @ooue hardness/soft

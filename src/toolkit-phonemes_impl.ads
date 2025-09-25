@@ -22,9 +22,11 @@ package Toolkit.Phonemes_Impl is
    function Get_Features (AP : Abstract_Phoneme) return Features.Feature_Set;
 
    Indeterminate_Phoneme : exception;
+   use all type Toolkit.Contexts.Context_Scope;
    function Resolve
      (PDB : Phoneme_Database; AP : Abstract_Phoneme;
-      Cur : Contexts.Cursor'Class) return Phoneme_Instance;
+      Cur : Contexts.Cursor'Class) return Phoneme_Instance with
+     Pre => Cur.Scope = Phoneme;
 
    function Abstractise (Instance : Phoneme_Instance) return Abstract_Phoneme;
    procedure Add (AP : in out Abstract_Phoneme; FS : Features.Feature_Set);

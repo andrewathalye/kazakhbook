@@ -51,6 +51,7 @@ package body Toolkit.Syllables is
       return Syllable_List
    is
       use type Phonemes.Phoneme_Lists.Cursor;
+      use type Ada.Containers.Count_Type;
 
       function Largest_Syllable
         (Initial_Cur : in out Phonemes.Phoneme_Lists.Cursor) return Syllable;
@@ -61,14 +62,21 @@ package body Toolkit.Syllables is
          use Syllable_Definition_Maps;
          Prev_Working_Cur : Phonemes.Phoneme_Lists.Cursor;
          Working_Cur      : Phonemes.Phoneme_Lists.Cursor := Initial_Cur;
-         Candidates       : Syllable_List;
-         S                : Syllable;
+         Temp, Result     : Syllable;
+         Max_Length       : Ada.Containers.Count_Type     := 0;
       begin
          Check_Syllable_Definitions :
          for SD_Cursor in SDB.Iterate loop
             Put_Log (Log.Syllables, "TYPE: " & Key (SD_Cursor));
-            S.Sounds.Clear;
-            S.Features := Element (SD_Cursor).Provides;
+
+            --  Only consider candidates longer than the existing one
+            if Element (SD_Cursor).Elements.Length <= Max_Length then
+               Put_Log (Log.Syllables, "SKIP BY LENGTH");
+               goto Failed_Match;
+            end if;
+
+            Temp.Sounds.Clear;
+            Temp.Features := Element (SD_Cursor).Provides;
             Check_Elements :
             for SE of Element (SD_Cursor).Elements loop
                if not Has_Element (Working_Cur) then
@@ -110,7 +118,7 @@ package body Toolkit.Syllables is
                         goto Failed_Match;
                      end if;
                end case;
-               S.Sounds.Append (Element (Working_Cur));
+               Temp.Sounds.Append (Element (Working_Cur));
                Prev_Working_Cur := Working_Cur;
                Working_Cur      := Next (Working_Cur);
                Put_Log (Log.Syllables, "PASS");
@@ -127,16 +135,19 @@ package body Toolkit.Syllables is
                Put_Log (Log.Syllables, "CONTEXT: FAILED");
                goto Failed_Match;
             end if;
-            Put_Log (Log.Syllables, "CONTEXT PASSED");
 
-            Candidates.Append (S);
+            --  Set Result and Length
+            Put_Log (Log.Syllables, "CONTEXT PASSED");
+            Result     := Temp;
+            Max_Length := Result.Sounds.Length;
+
             <<Failed_Match>>
             Working_Cur := Initial_Cur;
             Put_Log (Log.Syllables, "NEXT");
          end loop Check_Syllable_Definitions;
 
          --  Error Out if Candidates Empty
-         if Candidates.Is_Empty then
+         if Result.Sounds.Is_Empty then
             declare
                Error_Portion : Phonemes.Phoneme_List;
             begin
@@ -147,29 +158,16 @@ package body Toolkit.Syllables is
             end;
          end if;
 
-         ------------------------------
-         -- Sieve Through Candidates --
-         ------------------------------
-         declare
-            use type Ada.Containers.Count_Type;
-            Longest_Candidate : Syllable;
-         begin
-            for Candidate of Candidates loop
-               if Candidate.Sounds.Length > Longest_Candidate.Sounds.Length
-               then
-                  Longest_Candidate := Candidate;
-               end if;
-            end loop;
+         Put_Log
+           (Log.Syllables, "RESULT: " & Phonemes.Transcribe (Result.Sounds));
 
-            for I in 1 .. Longest_Candidate.Sounds.Length loop
-               Initial_Cur := Next (Initial_Cur);
-            end loop;
+         --  Advance initial cursor so that the next lookup
+         --  starts at the end of this syllable.
+         for I in 1 .. Result.Sounds.Length loop
+            Initial_Cur := Next (Initial_Cur);
+         end loop;
 
-            Put_Log
-              (Log.Syllables,
-               "RESULT: " & Phonemes.Transcribe (Longest_Candidate.Sounds));
-            return Longest_Candidate;
-         end;
+         return Result;
       end Largest_Syllable;
 
       Result : Syllable_List;
