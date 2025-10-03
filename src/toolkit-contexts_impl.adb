@@ -67,7 +67,7 @@ package body Toolkit.Contexts_Impl is
          Level :
          declare
             Level_Cur : Cursor'Class := Rescope (Cur, SC.Level, First);
-            L_Within : Context_Scope;
+            L_Within  : Context_Scope;
 
             Before, After : Toolkit.Features.Feature_Set_List;
 
@@ -121,7 +121,8 @@ package body Toolkit.Contexts_Impl is
                              CS.FS);
                      exception
                         when Invalid_Cursor =>
-                           Put_Log (Warn, "No SUPER for context");
+                           Put_Log
+                             (Warn, "No SUPER for scope " & SC.Within'Image);
                            return False;
                      end;
                end case;
@@ -235,7 +236,7 @@ package body Toolkit.Contexts_Impl is
       use Ada.Characters.Handling;
 
       Buffer : Unbounded_String;
-      SCL : Scoped_Context_List;
+      SCL    : Scoped_Context_List;
 
       procedure Append_CM (CM : Context_Multiple);
       procedure Append_CM (CM : Context_Multiple) is
@@ -293,7 +294,7 @@ package body Toolkit.Contexts_Impl is
    ----------
 
    procedure Read
-     (Doc : DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
+     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database)
    is
       use type DOM.Core.Node_Types;
@@ -303,16 +304,16 @@ package body Toolkit.Contexts_Impl is
          Result : Context_Single;
       begin
          Result :=
-           (K => Context_Kind'Value (DOM.Core.Nodes.Node_Name (X)),
+           (K  => Context_Kind'Value (DOM.Core.Nodes.Node_Name (X)),
             FS => Toolkit.Features.To_Ada (FDB, X));
          return Result;
       end Read_CS;
 
       function Read_CM (X : DOM.Core.Element) return Context_Multiple;
       function Read_CM (X : DOM.Core.Element) return Context_Multiple is
-         Result : Context_Multiple;
+         Result    : Context_Multiple;
          X_CS_List : DOM.Core.Node_List;
-         X_CS : DOM.Core.Node;
+         X_CS      : DOM.Core.Node;
       begin
          X_CS_List := DOM.Core.Nodes.Child_Nodes (X);
          for I in 1 .. DOM.Core.Nodes.Length (X_CS_List) loop
@@ -326,18 +327,18 @@ package body Toolkit.Contexts_Impl is
       end Read_CM;
 
       SCL : Scoped_Context_List;
-      SC : Scoped_Context;
+      SC  : Scoped_Context;
 
-      X_Contexts : DOM.Core.Node_List;
-      X_Context : DOM.Core.Element;
-      X_Context_Id : DOM.Core.Attr;
-      X_Scopes : DOM.Core.Node_List;
-      X_Scope : DOM.Core.Element;
-      X_Scope_Attrs : DOM.Core.Named_Node_Map;
-      X_Scope_Level : DOM.Core.Attr;
-      X_Scope_Within : DOM.Core.Attr;
+      X_Contexts       : DOM.Core.Node_List;
+      X_Context        : DOM.Core.Element;
+      X_Context_Id     : DOM.Core.Attr;
+      X_Scopes         : DOM.Core.Node_List;
+      X_Scope          : DOM.Core.Element;
+      X_Scope_Attrs    : DOM.Core.Named_Node_Map;
+      X_Scope_Level    : DOM.Core.Attr;
+      X_Scope_Within   : DOM.Core.Attr;
       X_Scope_Children : DOM.Core.Node_List;
-      X_Scope_Child : DOM.Core.Node;
+      X_Scope_Child    : DOM.Core.Node;
    begin
       -----------------------
       -- Read all Contexts --
@@ -346,7 +347,7 @@ package body Toolkit.Contexts_Impl is
       X_Contexts :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name (Doc, "context");
       for X_Context_Index in 1 .. DOM.Core.Nodes.Length (X_Contexts) loop
-         X_Context := DOM.Core.Nodes.Item (X_Contexts, X_Context_Index - 1);
+         X_Context    := DOM.Core.Nodes.Item (X_Contexts, X_Context_Index - 1);
          X_Context_Id :=
            DOM.Core.Nodes.Get_Named_Item
              (DOM.Core.Nodes.Attributes (X_Context), "id");
@@ -359,14 +360,14 @@ package body Toolkit.Contexts_Impl is
            DOM.Core.Elements.Get_Elements_By_Tag_Name (X_Context, "scope");
          for X_Scope_Index in 1 .. DOM.Core.Nodes.Length (X_Scopes) loop
             X_Scope := DOM.Core.Nodes.Item (X_Scopes, X_Scope_Index - 1);
-            X_Scope_Attrs := DOM.Core.Nodes.Attributes (X_Scope);
-            X_Scope_Level :=
+            X_Scope_Attrs  := DOM.Core.Nodes.Attributes (X_Scope);
+            X_Scope_Level  :=
               DOM.Core.Nodes.Get_Named_Item (X_Scope_Attrs, "level");
             X_Scope_Within :=
               DOM.Core.Nodes.Get_Named_Item (X_Scope_Attrs, "within");
 
             SC :=
-              (Level =>
+              (Level  =>
                  Context_Scope'Value
                    (DOM.Core.Nodes.Node_Value (X_Scope_Level)),
                Within =>

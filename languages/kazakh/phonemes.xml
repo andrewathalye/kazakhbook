@@ -292,7 +292,7 @@
    </phoneme>
    <phoneme id="sh">
       <phone>
-         <provide>voicing/voiceless manner/fricative place/postalveolar</provide>
+         <provide>voicing/voiceless manner/fricative place/postalveolar length/short</provide>
          <ipa>ʃ</ipa>
       </phone>
       <phone>
