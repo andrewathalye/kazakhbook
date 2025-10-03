@@ -5,7 +5,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body Toolkit.Log is
 
    type Enabler is array (Log_Category) of Boolean;
-   Enabled : Enabler := (others => False);
+   Enabled : Enabler := (Warn => True, others => False);
 
    -------------
    -- Put_Log --

@@ -2,6 +2,7 @@ pragma Ada_2012;
 
 with Ada.Containers.Vectors;
 
+with Toolkit.Contexts_Impl;
 with Toolkit.Features;
 with Toolkit.Contexts;
 with Toolkit.Phonemes_Impl;
@@ -55,13 +56,18 @@ package Toolkit.Phonemes is
    --  @exception Indeterminate_Phoneme
    --    If the context is insufficient to identify a phone
 
+   use type Contexts_Impl.Context_Scope;
    function Resolve
-     (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
-      Cur : Contexts.Cursor'Class) return Phoneme_List;
+     (PDB           : Phoneme_Database; List : Abstract_Phoneme_List;
+      Cur        : Contexts.Cursor'Class)
+      return Phoneme_List with
+     Pre => Cur.Scope = Contexts_Impl.Phoneme;
    --  Resolve a list of abstract phonemes to a list of concrete
    --  phoneme instances based upon context
+   --  @param List
+   --    The list of abstract phonemes to be resolved to concrete sounds
    --  @param Cur
-   --    Must have scope WORD
+   --    Must have scope PHONEME. Point at first phoneme in `List`
    --
    --  @exception Indeterminate_Phoneme
    --   If the context is insufficient to identify a phonem.

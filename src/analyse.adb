@@ -106,7 +106,7 @@ begin
             begin
                PL :=
                  Phonemes.Resolve
-                   (Grammar.Phonemes, APL, Contexts.Isolated (Text));
+                   (Grammar.Phonemes, APL, Phonemes.To_Cursor (APL.First));
                Put_Line ("Result: " & Phonemes.Transcribe (PL));
             exception
                when X : Phonemes.Indeterminate_Phoneme =>
@@ -129,7 +129,8 @@ begin
                  (Syllables.Syllabify
                     (Grammar.Syllables,
                      Phonemes.Resolve
-                       (Grammar.Phonemes, APL, Contexts.Isolated (Text)))));
+                       (Grammar.Phonemes, APL,
+                         Phonemes.To_Cursor (APL.First)))));
          when C_Debug =>
             if Arguments.Length /= 2 then
                Put_Line ("| Takes one argument");

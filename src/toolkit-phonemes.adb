@@ -11,10 +11,18 @@ package body Toolkit.Phonemes is
    -- To_Cursor --
    ---------------
    use all type Contexts.Context_Scope;
+
+   pragma Warnings (Off, "is not referenced");
+   function Get_Child (LE : Phoneme_Instance) return Contexts.Cursor'Class is
+     (raise Contexts.Invalid_Cursor);
+   function Get_Child (LE : Abstract_Phoneme) return Contexts.Cursor'Class is
+     (raise Contexts.Invalid_Cursor);
+   pragma Warnings (On, "is not referenced");
+
    package Phoneme_Cursors is new Contexts.Generic_Cursors
-     (Phoneme, Phoneme_Lists, Phonemes_Impl.Get_Features);
+     (Phoneme, Phoneme_Lists, Phonemes_Impl.Get_Features, Get_Child);
    package Abstract_Phoneme_Cursors is new Contexts.Generic_Cursors
-     (Phoneme, Abstract_Phoneme_Lists, Phonemes_Impl.Get_Features);
+     (Phoneme, Abstract_Phoneme_Lists, Phonemes_Impl.Get_Features, Get_Child);
 
    function To_Cursor (C : Phoneme_Lists.Cursor) return Contexts.Cursor'Class
    is
@@ -47,7 +55,7 @@ package body Toolkit.Phonemes is
          begin
             L_Cur := L_Cur.Next;
          exception
-            when Toolkit.Contexts.Invalid_Cursor => null;
+            when Contexts.Invalid_Cursor => exit;
          end;
       end loop;
 
@@ -100,7 +108,7 @@ package body Toolkit.Phonemes is
      (PDB : Phoneme_Database; IPA : String) return Abstract_Phoneme_List
    is
       Result : Abstract_Phoneme_List;
-      C : Natural := IPA'First;
+      C      : Natural := IPA'First;
    begin
       Put_Log (Log.Phonemes, "TRANSCRIBE: " & IPA);
       while C /= 0 loop

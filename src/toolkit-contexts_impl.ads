@@ -3,7 +3,6 @@
 ------------------------
 pragma Ada_2012;
 
-with Ada.Containers.Indefinite_Holders;
 with DOM.Core;
 
 with Toolkit.Features;
@@ -28,38 +27,49 @@ package Toolkit.Contexts_Impl is
    -- CURSOR --
    ------------
    type Cursor is interface;
+   Invalid_Cursor : exception;
    type Cursor_Placement is (First, Last);
 
-   pragma Warnings (Off, "is not referenced");
-   function Never_Equal (L, R : Cursor'Class) return Boolean is (False);
-   pragma Warnings (On, "is not referenced");
+   function Reparent
+     (C : Cursor; Parent : Cursor'Class) return Cursor is abstract;
+   --  Set a new parent for `C`
 
-   Invalid_Cursor : exception;
+   function Prune
+     (C : Cursor; Scope : Context_Scope) return Cursor is abstract;
+   --  Cut off the inheritance tree at SCOPE
 
    function Scope (C : Cursor) return Context_Scope is abstract;
-   function Prune
-     (C : Cursor; Target : Context_Scope) return Cursor is abstract;
+   --  Return the scope of this cursor
 
-   function Rescope
-     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
-      return Cursor'Class;
+   function First (C : Cursor) return Cursor is abstract;
+   --  The first cursor available at this level
+   --  Result.Previous will raise Invalid_Cursor
+
+   function Previous (C : Cursor) return Cursor is abstract;
+   --  Cursor for the previous unit
+   --  @exception Invalid_Cursor
 
    function Features
      (C : Cursor) return Toolkit.Features.Feature_Set is abstract;
+   --  All features of the current unit
 
-   function First (C : Cursor) return Cursor is abstract;
-   function Previous (C : Cursor) return Cursor is abstract;
    function Next (C : Cursor) return Cursor is abstract;
+   --  Cursor for the next unit
+   --  @exception Invalid_Cursor
+
    function Last (C : Cursor) return Cursor is abstract;
+   --  The last cursor available at this level
+   --  Result.Next will raise Invalid_Cursor
+
+   function Super (C : Cursor) return Cursor'Class is abstract;
+   --  Cursor for the parent unit of `C`
+   --  @exception Invalid_Cursor
 
    function Sub
      (C : Cursor; Placement : Cursor_Placement)
       return Cursor'Class is abstract;
-   function Super (C : Cursor) return Cursor'Class is abstract;
-
-   package Cursor_Holders is new Ada.Containers.Indefinite_Holders
-     (Cursor'Class, Never_Equal);
-   subtype Cursor_Holder is Cursor_Holders.Holder;
+   --  Cursor for the first or last unit of the child unit of C
+   --  @exception Invalid_Cursor
 
    -----------
    -- STATE --

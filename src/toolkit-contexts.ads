@@ -1,6 +1,6 @@
 pragma Ada_2012;
-pragma Extensions_Allowed (all);
 
+with Ada.Containers.Indefinite_Holders;
 with Ada.Containers.Vectors;
 
 with DOM.Core;
@@ -34,48 +34,31 @@ package Toolkit.Contexts is
    --  Used to systematically navigate feature sets and elements
 
    Invalid_Cursor : exception renames Contexts_Impl.Invalid_Cursor;
-   function Rescope
-     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
-     return Cursor'Class renames Contexts_Impl.Rescope;
-   --  Set the scope of cursor `C` to target
-   --  @param Placement
-   --     Set where the cursor should be placed if the level must be reduced
-   --  @exception Invalid_Cursor
+   --  If no cursor exists in that position
 
    function Isolated (Scope : Context_Scope) return Cursor'Class;
-   --  An entirely isolated cursor, meant to be used for debugging.
-   --  It will return Null_Feature_Set for any query and another isolated
-   --  cursor for Sub and Super
+   --  An entirely isolated cursor, used for debugging and isolation
+   --  It will return Null_Feature_Set for any query and Invalid_Cursor
+   --  for any request to Sub or Super
 
    generic
       Cursor_Scope : Context_Scope;
       with package List is new Ada.Containers.Vectors (<>);
       with function Get_Features
-        (LE : List.Element_Type) return Features.Feature_Set;
-      with function Get_Sub
-        (LE : List.Element_Type; Placement : Cursor_Placement)
-         return Cursor'Class is (raise Invalid_Cursor);
+        (LE : List.Element_Type) return Toolkit.Features.Feature_Set;
+      with function Get_Child (LE : List.Element_Type) return Cursor'Class;
    package Generic_Cursors is
-      --  Cursor based on vectors. If a super-cursor is requested
-      --  but no super has been set, a 'surrogate' cursor will be
-      --  returned that has only a Sub
       type Generic_Cursor is new Cursor with private;
 
       function Create (LC : List.Cursor) return Generic_Cursor;
 
-      Invalid_Super : exception;
-      procedure Set_Super (C : in out Generic_Cursor; Super : Cursor'Class);
-      --  @exception Invalid_Super
-      --    Raised when `Super` does not have the correct scope
+      overriding function Reparent
+        (C : Generic_Cursor; Parent : Cursor'Class) return Generic_Cursor;
+
+      overriding function Prune
+        (C : Generic_Cursor; Scope : Context_Scope) return Generic_Cursor;
 
       overriding function Scope (C : Generic_Cursor) return Context_Scope;
-      overriding function Prune (C : Generic_Cursor; Target : Context_Scope)
-         return Generic_Cursor;
-      --  Return a tree going up only to Target
-      --  @exception Invalid_Super
-      --    Raised when Target is a lower scope than C.Scope
-      --  @exception Invalid_Cursor
-      --    Raised when C does not have a Super scope, but one is requested
 
       overriding function Features
         (C : Generic_Cursor) return Toolkit.Features.Feature_Set;
@@ -89,9 +72,17 @@ package Toolkit.Contexts is
         (C : Generic_Cursor; Placement : Cursor_Placement) return Cursor'Class;
       overriding function Super (C : Generic_Cursor) return Cursor'Class;
    private
+      pragma Warnings (Off, "is not referenced");
+      function Never_Equal (L, R : Cursor'Class) return Boolean is (False);
+      pragma Warnings (On, "is not referenced");
+
+      package Cursor_Holders is new Ada.Containers.Indefinite_Holders
+        (Cursor'Class, Never_Equal);
+      subtype Cursor_Holder is Cursor_Holders.Holder;
+
       type Generic_Cursor is new Cursor with record
+         L_Parent : Cursor_Holder;
          L_Cursor : List.Cursor;
-         L_Super  : Contexts_Impl.Cursor_Holder;
       end record;
    end Generic_Cursors;
 
@@ -125,9 +116,10 @@ package Toolkit.Contexts is
    --------------------
    Duplicate_Context : exception renames Contexts_Impl.Duplicate_Context;
    procedure Read
-     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+     (Doc :     DOM.Core.Document; FDB : Toolkit.Features.Feature_Database;
       CDB : out Context_Database) renames
      Contexts_Impl.Read;
    --  Read all contexts from `Doc` and parse them
    --  Raise Duplicate_Context if a context name is repeated
+
 end Toolkit.Contexts;

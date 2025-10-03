@@ -1,12 +1,12 @@
 # debug grammars
 # debug contexts
-debug phonemes
+# debug phonemes
 debug syllables
 load kazakh
-add @b
-add @ooue hardness/soft
-add @ggh hardness/soft
-add @yi hardness/soft
-add @n
-resolve
+# add @b
+# add @ooue hardness/soft
+# add @ggh hardness/soft
+# add @yi hardness/soft
+# add @n
+# resolve
 syllabify ækɪmʃɪlɪk

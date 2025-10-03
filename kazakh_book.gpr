@@ -1,4 +1,5 @@
 with "xmlada";
+with "gnatcoll_core";
 
 project Kazakh_Book is
    type Build_Mode_Type is ("dev", "prod");

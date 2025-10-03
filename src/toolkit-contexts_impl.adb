@@ -27,6 +27,10 @@ package body Toolkit.Contexts_Impl is
    -------------
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
+      return Cursor'Class;
+
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
       return Cursor'Class
    is
    begin
@@ -110,10 +114,16 @@ package body Toolkit.Contexts_Impl is
                      end loop;
                      return True;
                   when Super =>
-                     return
-                       Toolkit.Features.Superset
-                         (Level_Cur.Rescope (SC.Within, First).Features,
-                          CS.FS);
+                     begin
+                        return
+                          Toolkit.Features.Superset
+                            (Level_Cur.Rescope (SC.Within, First).Features,
+                             CS.FS);
+                     exception
+                        when Invalid_Cursor =>
+                           Put_Log (Warn, "No SUPER for context");
+                           return False;
+                     end;
                end case;
             end Apply;
 

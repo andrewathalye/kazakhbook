@@ -12,36 +12,19 @@ package body Toolkit.Syllables is
    function Get_Features (S : Syllable) return Features.Feature_Set is
      (S.Features);
 
-   function Get_Sub
-     (LE : Syllable; Placement : Contexts.Cursor_Placement)
-      return Contexts.Cursor'Class;
-   function Get_Sub
-     (LE : Syllable; Placement : Contexts.Cursor_Placement)
-      return Contexts.Cursor'Class
-   is
-      use all type Contexts.Cursor_Placement;
-   begin
-      case Placement is
-         when First =>
-            return Phonemes.To_Cursor (LE.Sounds.First);
-         when Last =>
-            return Phonemes.To_Cursor (LE.Sounds.Last);
-      end case;
-   end Get_Sub;
-
    ---------------
    -- To_Cursor --
    ---------------
+   function Get_Child (LE : Syllable) return Contexts.Cursor'Class is
+     (Phonemes.To_Cursor (LE.Sounds.First));
+
    package Syllable_Cursors is new Toolkit.Contexts.Generic_Cursors
      (Cursor_Scope => Toolkit.Contexts_Impl.Syllable, List => Syllable_Lists,
-      Get_Features => Get_Features, Get_Sub => Get_Sub);
+      Get_Features => Get_Features, Get_Child => Get_Child);
 
    function To_Cursor
-     (SLC : Syllable_Lists.Cursor) return Contexts.Cursor'Class
-   is
-   begin
-      return Syllable_Cursors.Create (SLC);
-   end To_Cursor;
+     (SLC : Syllable_Lists.Cursor) return Contexts.Cursor'Class is
+     (Syllable_Cursors.Create (SLC));
 
    ---------------
    -- Syllabify --

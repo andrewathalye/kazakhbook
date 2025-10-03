@@ -46,8 +46,8 @@ package body Toolkit.Phonemes_Impl is
       type Opaque is null record;
       type Cursor_Mirror is record
          Container : access constant Phoneme_Maps.Map'Class;
-         Node      : access constant Opaque;
-         Position  : Natural;
+         Node : access constant Opaque;
+         Position : Natural;
       end record;
 
       Mirror_Within : Cursor_Mirror with
@@ -59,6 +59,8 @@ package body Toolkit.Phonemes_Impl is
           (Mirror_Within.Container.all, Phoneme_Maps.Key (PMC))
           .Element.all;
    begin
+      Put_Log (Phonemes, "WITHIN @" & String (Phoneme_Maps.Key (PMC)));
+
       for Phone_C in L_Phones.Iterate loop
          declare
             L_Phone : Phone renames Phone_Lists.Element (Phone_C);
@@ -170,7 +172,7 @@ package body Toolkit.Phonemes_Impl is
      (FDB : Features.Feature_Database; PDB : Phoneme_Database; Text : String)
       return Abstract_Phoneme
    is
-      Required_Set     : Features.Feature_Set;
+      Required_Set : Features.Feature_Set;
       Required_Phoneme : Phoneme_Maps.Cursor;
 
       Strings : constant Toolkit.Strings.Argument_List :=
@@ -220,21 +222,21 @@ package body Toolkit.Phonemes_Impl is
    -- Read --
    ----------
    function Read_Phone
-     (FDB     : Features.Feature_Database; CDB : Contexts.Context_Database;
+     (FDB : Features.Feature_Database; CDB : Contexts.Context_Database;
       X_Phone : DOM.Core.Element) return Phone;
    function Read_Phone
-     (FDB     : Features.Feature_Database; CDB : Contexts.Context_Database;
+     (FDB : Features.Feature_Database; CDB : Contexts.Context_Database;
       X_Phone : DOM.Core.Element) return Phone
    is
       X_Contexts, X_Provides, X_IPA : DOM.Core.Node_List;
-      Result                        : Phone;
+      Result : Phone;
    begin
-      X_Contexts      :=
+      X_Contexts :=
         DOM.Core.Elements.Get_Elements_By_Tag_Name (X_Phone, "context");
       Result.Contexts := Toolkit.Contexts.To_Ada (CDB, X_Contexts);
       DOM.Core.Free (X_Contexts);
 
-      X_Provides    :=
+      X_Provides :=
         DOM.Core.Elements.Get_Elements_By_Tag_Name (X_Phone, "provide");
       Result.Sounds := Toolkit.Features.To_Ada (FDB, X_Provides);
       DOM.Core.Free (X_Provides);
@@ -249,15 +251,15 @@ package body Toolkit.Phonemes_Impl is
    end Read_Phone;
 
    function Read_Phones
-     (FDB       : Features.Feature_Database; CDB : Contexts.Context_Database;
+     (FDB : Features.Feature_Database; CDB : Contexts.Context_Database;
       X_Phoneme : DOM.Core.Element) return Phone_List;
    function Read_Phones
-     (FDB       : Features.Feature_Database; CDB : Contexts.Context_Database;
+     (FDB : Features.Feature_Database; CDB : Contexts.Context_Database;
       X_Phoneme : DOM.Core.Element) return Phone_List
    is
-      Result   : Phone_List;
+      Result : Phone_List;
       X_Phones : DOM.Core.Node_List;
-      X_Phone  : DOM.Core.Element;
+      X_Phone : DOM.Core.Element;
    begin
       X_Phones :=
         DOM.Core.Elements.Get_Elements_By_Tag_Name (X_Phoneme, "phone");
@@ -280,8 +282,8 @@ package body Toolkit.Phonemes_Impl is
      (Doc : DOM.Core.Document; FDB : Features.Feature_Database;
       CDB : Contexts.Context_Database; PDB : out Phoneme_Database)
    is
-      X_Phonemes   : DOM.Core.Node_List;
-      X_Phoneme    : DOM.Core.Element;
+      X_Phonemes : DOM.Core.Node_List;
+      X_Phoneme : DOM.Core.Element;
       X_Phoneme_ID : DOM.Core.Attr;
    begin
       PDB.Clear;
@@ -289,7 +291,7 @@ package body Toolkit.Phonemes_Impl is
       X_Phonemes :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name (Doc, "phoneme");
       for X_Phoneme_Index in 1 .. DOM.Core.Nodes.Length (X_Phonemes) loop
-         X_Phoneme    := DOM.Core.Nodes.Item (X_Phonemes, X_Phoneme_Index - 1);
+         X_Phoneme := DOM.Core.Nodes.Item (X_Phonemes, X_Phoneme_Index - 1);
          X_Phoneme_ID :=
            DOM.Core.Nodes.Get_Named_Item
              (DOM.Core.Nodes.Attributes (X_Phoneme), "id");
@@ -321,7 +323,7 @@ package body Toolkit.Phonemes_Impl is
       use Ada.Strings.Fixed;
       use Ada.Strings.Unbounded;
       Max_Length : Natural := 0;
-      Result     : Abstract_Phoneme;
+      Result : Abstract_Phoneme;
    begin
       Put_Log (Log.Phonemes, "TRANSCRIBE1: " & IPA (C .. IPA'Last));
 
@@ -331,7 +333,7 @@ package body Toolkit.Phonemes_Impl is
             if Length (P.IPA) > Max_Length
               and then Index (IPA, To_String (P.IPA), C) = C
             then
-               Max_Length      := Length (P.IPA);
+               Max_Length := Length (P.IPA);
                Result.Features := Features.Flatten (P.Sounds);
             end if;
          end loop;

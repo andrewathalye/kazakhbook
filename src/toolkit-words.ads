@@ -18,6 +18,7 @@ package Toolkit.Words is
 private
    type Word is record
       Symbols  : Toolkit.Symbols.Symbol_List;
+      Morphemes : Toolkit.Morphemes.Morph_List;
       Features : Toolkit.Features.Feature_Set;
    end record;
 end Toolkit.Words;
