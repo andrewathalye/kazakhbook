@@ -7,19 +7,19 @@ with Ada.IO_Exceptions;
 
 with Toolkit.Grammars;
 with Toolkit.Features;
-with Toolkit.Contexts;
 with Toolkit.Phonemes;
 with Toolkit.Strings;
 with Toolkit.Syllables;
 with Toolkit.Log;
+with Toolkit.Symbols;
 
 procedure Analyse is
    use Toolkit;
-   use all type Contexts.Context_Scope;
    use type Ada.Containers.Count_Type;
 
    type Commands is
-     (C_Help, C_Load, C_Add, C_Resolve, C_Syllabify, C_Debug, C_Quit, C_Q);
+     (C_Help, C_Load, C_Add, C_Resolve, C_Syllabify, C_Desymbolify, C_Debug,
+      C_Quit, C_Q);
 
    procedure Help;
    procedure Help is
@@ -131,6 +131,25 @@ begin
                      Phonemes.Resolve
                        (Grammar.Phonemes, APL,
                          Phonemes.To_Cursor (APL.First)))));
+         when C_Desymbolify =>
+            if Arguments.Length /= 2 then
+               Put_Line ("| Takes one argument");
+               goto Next;
+            end if;
+
+            declare
+               ASL : Symbols.Abstract_Symbol_List;
+            begin
+               ASL := Symbols.To_Ada (Grammar.Symbols, Arguments (2));
+               Put_Line
+                 ("Result: " &
+                  Phonemes.Transcribe
+                    (Symbols.To_Phonemes
+                       (Symbols.Resolve
+                          (Grammar.Phonemes, ASL,
+                            Symbols.To_Cursor (ASL.First)))));
+            end;
+
          when C_Debug =>
             if Arguments.Length /= 2 then
                Put_Line ("| Takes one argument");

@@ -4,6 +4,7 @@ with Toolkit.Features;
 with Toolkit.Contexts;
 with Toolkit.Phonemes;
 with Toolkit.Syllables;
+with Toolkit.Symbols;
 
 package Toolkit.Grammars is
    type Grammar is record
@@ -11,7 +12,7 @@ package Toolkit.Grammars is
       Contexts : Toolkit.Contexts.Context_Database;
       Phonemes : Toolkit.Phonemes.Phoneme_Database;
       Syllables : Toolkit.Syllables.Syllable_Database;
-      --      Symbols   : Toolkit.Symbols.Symbol_Database;
+      Symbols   : Toolkit.Symbols.Symbol_Database;
       --      Rules     : Toolkit.Rules.Rule_Database;
       --      Morphemes : Toolkit.Morphemes.Morpheme_Database;
    end record;

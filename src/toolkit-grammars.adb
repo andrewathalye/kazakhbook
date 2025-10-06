@@ -1,7 +1,7 @@
 pragma Ada_2012;
 
 with Ada.Directories; use Ada.Directories;
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;     use Ada.Text_IO;
 
 with Input_Sources.File; use Input_Sources.File;
 with Sax.Readers;
@@ -49,6 +49,13 @@ package body Toolkit.Grammars is
       Close (Input);
       Toolkit.Syllables.Read
         (Get_Tree (Reader), G.Features, G.Contexts, G.Phonemes, G.Syllables);
+
+      Put_Log (Log.Grammars, ">> Symbols");
+      Open (Path & "/symbols.xml", Input);
+      Parse (Reader, Input);
+      Close (Input);
+      Toolkit.Symbols.Read
+        (Get_Tree (Reader), G.Features, G.Contexts, G.Phonemes, G.Symbols);
 
       Free (Reader);
       Put_Log (Log.Grammars, "Done.");

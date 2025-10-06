@@ -1,100 +1,52 @@
 pragma Ada_2012;
 
 with Ada.Strings.Unbounded;
+with Ada.Strings.UTF_Encoding;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
-
-with Toolkit.Phonemes_Impl;
+with Toolkit.Contexts_Impl;
+with Toolkit.Log; use Toolkit.Log;
 
 package body Toolkit.Symbols is
+
+   package Symbol_List_Cursors is new Contexts.Generic_Cursors
+     (Cursor_Scope => Contexts_Impl.Symbol, List => Symbol_Lists,
+      Get_Features => Symbols_Impl.Dump_Features,
+      Get_Child    => Symbols_Impl.Get_Child);
+
+   package Abstract_Symbol_List_Cursors is new Contexts.Generic_Cursors
+     (Cursor_Scope => Contexts_Impl.Symbol, List => Abstract_Symbol_Lists,
+      Get_Features => Symbols_Impl.Dump_Features,
+      Get_Child    => Symbols_Impl.Get_Child);
+
+   ---------------
+   -- To_Cursor --
+   ---------------
+   function To_Cursor (Pos : Symbol_Lists.Cursor) return Contexts.Cursor'Class
+   is
+   begin
+      return Symbol_List_Cursors.Create (Pos);
+   end To_Cursor;
+
+   ---------------
+   -- To_Cursor --
+   ---------------
+   function To_Cursor
+     (Pos : Abstract_Symbol_Lists.Cursor) return Contexts.Cursor'Class
+   is
+   begin
+      return Abstract_Symbol_List_Cursors.Create (Pos);
+   end To_Cursor;
+
    -------------
    -- Resolve --
    -------------
    function Resolve
      (PDB : Phonemes.Phoneme_Database; ASL : Abstract_Symbol_List;
-      External_Symbol_Context, External_Phoneme_Context : Contexts.Context)
-      return Symbol_List
+      Cur : Contexts.Cursor'Class) return Symbol_List
    is
-      function Dump_Phoneme_Features
-        (X : Abstract_Symbol) return Features.Feature_Set;
-
-      function Dump_Phoneme_Features
-        (X : Abstract_Symbol) return Features.Feature_Set
-      is
-         pragma Unreferenced (X);
-      begin
-         return Features.Feature_Sets.Empty_Vector;
-      end Dump_Phoneme_Features;
-
-      function Dump_Phoneme_Features
-        (X : Symbol_Instance) return Features.Feature_Set;
-
-      function Dump_Phoneme_Features
-        (X : Symbol_Instance) return Features.Feature_Set
-      is
-         F : Features.Feature_Set;
-      begin
-         for P of To_Phonemes (X) loop
-            F.Append (Phonemes_Impl.Dump_Features (P));
-         end loop;
-
-         return F;
-      end Dump_Phoneme_Features;
-
-      function Derive_Symbol_Context is new Contexts.Derive_Context
-        (Index    => Positive, Element => Abstract_Symbol,
-         Lists    => Abstract_Symbol_Lists,
-         Features => Symbols_Impl.Dump_Features);
-
-      function Derive_Phoneme_Context is new Contexts.Derive_Context
-        (Index => Positive, Element => Abstract_Symbol,
-         Lists => Abstract_Symbol_Lists, Features => Dump_Phoneme_Features);
-
-      function Derive_Symbol_Context is new Contexts.Derive_Context
-        (Index    => Positive, Element => Symbol_Instance,
-         Lists    => Symbol_Lists,
-         Features => Symbols_Impl.Dump_Features);
-
-      function Derive_Phoneme_Context is new Contexts.Derive_Context
-        (Index => Positive, Element => Symbol_Instance,
-         Lists => Symbol_Lists, Features => Dump_Phoneme_Features);
-
-      Result : Symbol_List;
    begin
-      --  Evaluate all symbols with only basic phoneme context
-      for AS in ASL.Iterate loop
-         begin
-            Result.Append
-              (Resolve
-                 (PDB, Abstract_Symbol_Lists.Element (AS),
-                  Derive_Symbol_Context (AS, External_Symbol_Context),
-                  Derive_Phoneme_Context (AS, External_Phoneme_Context)));
-         exception
-            when Phonemes.Indeterminate_Phoneme =>
-               Result.Append (Symbols_Impl.Null_Symbol);
-         end;
-      end loop;
-
-      --  Re-evaluate all null symbols
-      for S in Result.Iterate loop
-         if Result (S) = Symbols_Impl.Null_Symbol then
-            Result (S) :=
-              Resolve
-                (PDB, ASL (Symbol_Lists.To_Index (S)),
-                 Derive_Symbol_Context (S, External_Symbol_Context),
-                 Derive_Phoneme_Context (S, External_Phoneme_Context));
-         end if;
-      end loop;
-
-      --  Re-evaluate all symbols left to right
-      for S in Result.Iterate loop
-         Result (S) :=
-           Resolve
-             (PDB, ASL (Symbol_Lists.To_Index (S)),
-              Derive_Symbol_Context (S, External_Symbol_Context),
-              Derive_Phoneme_Context (S, External_Phoneme_Context));
-      end loop;
-
-      return Result;
+      pragma Compile_Time_Warning (Standard.True, "Resolve unimplemented");
+      return raise Program_Error with "Unimplemented function Resolve";
    end Resolve;
 
    ------------
@@ -104,41 +56,36 @@ package body Toolkit.Symbols is
      (SDB : Symbol_Database; Text : String) return Abstract_Symbol_List
    is
       use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
-
-      TU32              : constant Wide_Wide_String := Decode (Text);
-      Index             : Natural                   := TU32'First;
-      Max_Symbol_Length : constant                  := 4;
-      --  A symbol can be a maximum of four Unicode characters
-      --  TODO
-      Symbol_Length : Natural;
-
-      Result : Abstract_Symbol_List;
+      WW_Text     : Wide_Wide_String := Decode (Text);
+      Result      : Abstract_Symbol_List;
+      Start_Index : Positive         := WW_Text'First;
    begin
-      while Index <= TU32'Last loop
-         --  Determine readahead
-         Symbol_Length :=
-           (if TU32'Last - Index < Max_Symbol_Length then TU32'Last - Index
-            else Max_Symbol_Length);
-
-         --  Search for a match
-         for SL in reverse 0 .. Symbol_Length loop
+      Put_Log (Log.Symbols, "Resolve " & Text);
+      while Start_Index <= WW_Text'Last loop
+         for Symbol_Length in reverse 1 .. 4 loop
             begin
+               Put_Log
+                 (Log.Symbols,
+                  "Try " &
+                  Encode
+                    (WW_Text (Start_Index .. Start_Index + Symbol_Length - 1)));
+
                Result.Append
-                 (Abstract_Symbol'
-                    (To_Ada (SDB, Encode (TU32 (Index .. Index + SL)))));
-               Index := Index + SL + 1;
-               goto Next;
+                 (Symbols_Impl.To_Ada
+                    (SDB,
+                     Encode
+                       (WW_Text
+                          (Start_Index .. Start_Index + Symbol_Length - 1))));
+               Start_Index := Start_Index + Symbol_Length;
+               goto Found_Symbol;
             exception
+               when Constraint_Error => null;
                when Unknown_Symbol =>
                   null;
             end;
          end loop;
-
-         --  Abort if no match
-         raise Unknown_Symbol
-           with Encode (TU32 (Index .. Index + Symbol_Length));
-
-         <<Next>>
+         raise Unknown_Symbol;
+         <<Found_Symbol>>
       end loop;
 
       return Result;
@@ -149,26 +96,26 @@ package body Toolkit.Symbols is
    ----------------
    function To_Unicode (S : Symbol_List) return String is
       use Ada.Strings.Unbounded;
-
-      Buffer : Unbounded_String;
+      Buf : Ada.Strings.Unbounded.Unbounded_String;
    begin
       for Sym of S loop
-         Append (Buffer, To_Unicode (Sym));
+         Append (Buf, Symbols_Impl.To_Unicode (Sym));
       end loop;
 
-      return To_String (Buffer);
+      return To_String (Buf);
    end To_Unicode;
 
    -----------------
    -- To_Phonemes --
    -----------------
    function To_Phonemes (SL : Symbol_List) return Phonemes.Phoneme_List is
-      PL : Phonemes.Phoneme_List;
+      Result : Phonemes.Phoneme_List;
    begin
-      for Sym of SL loop
-         PL.Append_Vector (To_Phonemes (Sym));
+      for S of SL loop
+         Result.Append_Vector (Symbols_Impl.To_Phonemes (S));
       end loop;
 
-      return PL;
+      return Result;
    end To_Phonemes;
+
 end Toolkit.Symbols;

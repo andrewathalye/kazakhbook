@@ -1,7 +1,8 @@
 # debug grammars
 # debug contexts
 # debug phonemes
-debug syllables
+# debug syllables
+debug symbols
 load kazakh
 # add @b
 # add @ooue hardness/soft
@@ -10,3 +11,4 @@ load kazakh
 # add @n
 # resolve
 syllabify ækɪmʃɪlɪk
+desymbolify әкімшілік

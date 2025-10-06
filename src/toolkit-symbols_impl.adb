@@ -1,14 +1,12 @@
 pragma Ada_2012;
 
-pragma Warnings (Off);
-
-with Ada.Strings.Unbounded;
 with DOM.Core.Documents;
 with DOM.Core.Elements;
 with DOM.Core.Nodes;
 with Toolkit.XML;
 
 package body Toolkit.Symbols_Impl is
+
    ------------
    -- To_Ada --
    ------------
@@ -17,19 +15,20 @@ package body Toolkit.Symbols_Impl is
    is
       use Ada.Strings.Unbounded;
    begin
-      Check_Symbols :
-      for SC in SDB.Iterate loop
-         Check_Forms :
-         for FC in SDB (SC).Forms.Iterate loop
-            declare
-               F : Form renames Form_Lists.Element (FC);
-            begin
-               if Text = To_String (F.Text) then
-                  return (SC, FC);
+      for Symbol_C in SDB.Iterate loop
+         declare
+            Symbol_Forms :
+              Form_List renames Symbol_Databases.Element (Symbol_C).Forms;
+         begin
+            for Form_C in Symbol_Forms.Iterate loop
+               --  TODO unicode normalisation!
+               if To_String (Form_Lists.Element (Form_C).Text) = Text then
+                  return (Symbol_C, Form_C);
                end if;
-            end;
-         end loop Check_Forms;
-      end loop Check_Symbols;
+            end loop;
+
+         end;
+      end loop;
 
       raise Unknown_Symbol with Text;
    end To_Ada;
@@ -47,151 +46,113 @@ package body Toolkit.Symbols_Impl is
    -- Read --
    ----------
    procedure Read
-     (Doc : DOM.Core.Document; FDB : Features.Feature_Database;
-      PDB : Phonemes.Phoneme_Database; SDB : out Symbol_Database)
+     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+      CDB :     Contexts.Context_Database; PDB : Phonemes.Phoneme_Database;
+      SDB : out Symbol_Database)
    is
-      use DOM.Core;
       use Ada.Strings.Unbounded;
-
       X_Symbols : DOM.Core.Node_List;
-      X_Symbol : DOM.Core.Element;
    begin
-      SDB.Clear;
-
       X_Symbols := DOM.Core.Documents.Get_Elements_By_Tag_Name (Doc, "symbol");
 
-      Read_Symbol :
-      for I in 1 .. DOM.Core.Nodes.Length (X_Symbols) loop
-         X_Symbol := DOM.Core.Nodes.Item (X_Symbols, I - 1);
-
+      --  Handle each Symbol
+      for X_Symbol_Index in 1 .. DOM.Core.Nodes.Length (X_Symbols) loop
          declare
-            L_Symbol : Symbol_Definition;
-            X_Complex, X_Majuscule, X_Minuscule,
-            X_Unicase : DOM.Core.Node_List;
-            X_Pronunciations : DOM.Core.Node_List;
-            X_Provide : DOM.Core.Node_List;
+            X_Symbol          : constant DOM.Core.Node      :=
+              DOM.Core.Nodes.Item (X_Symbols, X_Symbol_Index - 1);
+            X_Symbol_Children : constant DOM.Core.Node_List :=
+              DOM.Core.Nodes.Child_Nodes (X_Symbol);
+            SD                : Symbol_Definition;
          begin
-            --  Read Forms
-            X_Complex :=
-              Elements.Get_Elements_By_Tag_Name (X_Symbol, "complex");
-            X_Majuscule :=
-              Elements.Get_Elements_By_Tag_Name (X_Symbol, "majuscule");
-            X_Minuscule :=
-              Elements.Get_Elements_By_Tag_Name (X_Symbol, "minuscule");
-
-            for I in 1 .. Nodes.Length (X_Complex) loop
+            --  Iterate over children
+            for X_Symbol_Child_Index in
+              1 .. DOM.Core.Nodes.Length (X_Symbol_Children)
+            loop
                declare
-                  L_Form : Form;
-                  X_Complex_Element : Node := Nodes.Item (X_Complex, I - 1);
-                  X_Contexts : Node_List;
-                  X_Unicode : Node_List;
+                  X_Symbol_Child : constant DOM.Core.Node :=
+                    DOM.Core.Nodes.Item
+                      (X_Symbol_Children, X_Symbol_Child_Index - 1);
                begin
-                  X_Contexts :=
-                    Elements.Get_Elements_By_Tag_Name
-                      (X_Complex_Element, "context");
-                  X_Unicode :=
-                    Elements.Get_Elements_By_Tag_Name
-                      (X_Complex_Element, "unicode");
-                  L_Form :=
-                    (Contexts.To_Ada (FDB, X_Contexts),
-                     To_Unbounded_String
-                       (Toolkit.XML.Get_Text (Nodes.Item (X_Unicode, 0))));
-                  Free (X_Contexts);
-                  Free (X_Unicode);
+                  --  Handle all the different types of children
+                  if X_Symbol_Child in DOM.Core.Element then
+                     --  TODO implement contexts for majuscule and minuscule
+                     if DOM.Core.Nodes.Node_Name (X_Symbol_Child) =
+                       "majuscule" or
+                       DOM.Core.Nodes.Node_Name (X_Symbol_Child) =
+                         "minuscule" or
+                       DOM.Core.Nodes.Node_Name (X_Symbol_Child) = "unicase"
+                     then
+                        SD.Forms.Append
+                          (Form'
+                             (Contexts => <>,
+                              Text     =>
+                                To_Unbounded_String
+                                  (Toolkit.XML.Get_Text (X_Symbol_Child))));
+                     elsif DOM.Core.Nodes.Node_Name (X_Symbol_Child) =
+                       "complex"
+                     then
+                        declare
+                           X_Contexts : DOM.Core.Node_List;
+                           New_Form   : Form;
+                        begin
+                           X_Contexts        :=
+                             DOM.Core.Elements.Get_Elements_By_Tag_Name
+                               (X_Symbol_Child, "context");
+                           New_Form.Contexts :=
+                             Contexts.To_Ada (CDB, X_Contexts);
+                           New_Form.Text     :=
+                             To_Unbounded_String
+                               (Toolkit.XML.Get_Text
+                                  (DOM.Core.Nodes.Last_Child
+                                     (X_Symbol_Child)));
+                           DOM.Core.Free (X_Contexts);
+                           SD.Forms.Append (New_Form);
+                        end;
+                     elsif DOM.Core.Nodes.Node_Name (X_Symbol_Child) =
+                       "pronunciation"
+                     then
+                        declare
+                           X_Contexts        : DOM.Core.Node_List;
+                           X_Requires        : DOM.Core.Node_List;
+                           New_Pronunciation : Pronunciation;
+                        begin
+                           X_Contexts                 :=
+                             DOM.Core.Elements.Get_Elements_By_Tag_Name
+                               (X_Symbol_Child, "context");
+                           New_Pronunciation.Contexts :=
+                             Contexts.To_Ada (CDB, X_Contexts);
 
-                  L_Symbol.Forms.Append (L_Form);
+                           for X_Require_Index in
+                             1 .. DOM.Core.Nodes.Length (X_Requires)
+                           loop
+                              New_Pronunciation.Abstract_Phonemes.Append
+                                (Phonemes.To_Ada
+                                   (FDB, PDB,
+                                    DOM.Core.Nodes.Item
+                                      (X_Requires, X_Require_Index - 1)));
+                           end loop;
+
+                           DOM.Core.Free (X_Contexts);
+                           DOM.Core.Free (X_Requires);
+                           SD.Pronunciations.Append (New_Pronunciation);
+                        end;
+                     elsif DOM.Core.Nodes.Node_Name (X_Symbol_Child) =
+                       "provide"
+                     then
+                        SD.Features.Append
+                          (Features.To_Ada (FDB, X_Symbol_Child));
+                     else --  UNKNOWN CHILD (error)
+                        raise Program_Error
+                          with DOM.Core.Nodes.Node_Name (X_Symbol_Child);
+                     end if;
+                  end if;
                end;
             end loop;
-
-            --  TODO handle majuscule context
-            for I in 1 .. Nodes.Length (X_Majuscule) loop
-               L_Symbol.Forms.Append
-                 (Form'
-                    (Contexts => <>,
-                     Text =>
-                       To_Unbounded_String
-                         (Toolkit.XML.Get_Text
-                            (Nodes.Item (X_Majuscule, 0)))));
-            end loop;
-
-            --  TODO handle minuscule context
-            for I in 1 .. Nodes.Length (X_Minuscule) loop
-               L_Symbol.Forms.Append
-                 (Form'
-                    (Contexts => <>,
-                     Text =>
-                       To_Unbounded_String
-                         (Toolkit.XML.Get_Text
-                            (Nodes.Item (X_Minuscule, 0)))));
-            end loop;
-
-            for I in 1 .. Nodes.Length (X_Unicase) loop
-               L_Symbol.Forms.Append
-                 (Form'
-                    (Contexts => <>,
-                     Text =>
-                       To_Unbounded_String
-                         (Toolkit.XML.Get_Text (Nodes.Item (X_Unicase, 0)))));
-            end loop;
-
-            Free (X_Complex);
-            Free (X_Majuscule);
-            Free (X_Minuscule);
-            Free (X_Unicase);
-
-            --  Read pronunciations
-            X_Pronunciations :=
-              Elements.Get_Elements_By_Tag_Name (X_Symbol, "pronunciation");
-            for I in 1 .. Nodes.Length (X_Pronunciations) loop
-               declare
-                  L_Pronunciation : Pronunciation;
-                  X_Pronunciation : Node;
-                  X_Contexts : Node_List;
-                  X_Requires : Node_List;
-               begin
-                  X_Pronunciation := Nodes.Item (X_Pronunciations, I - 1);
-                  X_Contexts :=
-                    Elements.Get_Elements_By_Tag_Name
-                      (X_Pronunciation, "context");
-                  X_Requires :=
-                    Elements.Get_Elements_By_Tag_Name
-                      (X_Pronunciation, "require");
-                  L_Pronunciation.Contexts :=
-                    Contexts.To_Ada (FDB, X_Contexts);
-
-                  for I in 1 .. Nodes.Length (X_Requires) loop
-                     declare
-                        L_AP : Phonemes.Abstract_Phoneme;
-                        X_Require : Node;
-                     begin
-                        X_Require := Nodes.Item (X_Requires, I - 1);
-                        L_Pronunciation.Abstract_Phonemes.Append
-                          (Phonemes.To_Ada (FDB, PDB, X_Require));
-                     end;
-                  end loop;
-
-                  Free (X_Contexts);
-                  Free (X_Requires);
-
-                  L_Symbol.Pronunciations.Append (L_Pronunciation);
-               end;
-            end loop;
-            Free (X_Pronunciations);
-
-            --  Provide
-            X_Provide :=
-              Elements.Get_Elements_By_Tag_Name (X_Symbol, "provide");
-            for I in 1 .. Nodes.Length (X_Provide) loop
-               L_Symbol.Features :=
-                 Features.To_Ada (FDB, Nodes.Item (X_Provide, 0));
-            end loop;
-            Free (X_Provide);
-
-            SDB.Append (L_Symbol);
+            SDB.Append (SD);
          end;
-      end loop Read_Symbol;
+      end loop;
 
-      Free (X_Symbols);
+      DOM.Core.Free (X_Symbols);
    end Read;
 
    -----------------
@@ -207,39 +168,51 @@ package body Toolkit.Symbols_Impl is
    -------------
    function Resolve
      (PDB : Phonemes.Phoneme_Database; AS : Abstract_Symbol;
-      Symbol_Context : Contexts.Context; Phoneme_Context : Contexts.Context)
-      return Symbol_Instance
+      Cur : Contexts.Cursor'Class) return Symbol_Instance
    is
-      use Ada.Strings.Unbounded;
-
-      SD : Symbol_Definition renames Symbol_Databases.Element (AS.Symbol);
+      Available_Pronunciations : Pronunciation_List :=
+        Symbol_Databases.Element (AS.Symbol).Pronunciations;
    begin
-      for P of SD.Pronunciations loop
-         if P.Contexts.Is_Empty or
-           Contexts.Has_Superset (Symbol_Context, P.Contexts)
-         then
-            return
-              (AS.Symbol, AS.Form,
-               Phonemes.Resolve (PDB, P.Abstract_Phonemes, Phoneme_Context));
-         end if;
-      end loop;
+      for P of Available_Pronunciations loop
+         for Ctx of P.Contexts loop
+            if Contexts.Applicable (Cur, Ctx) then
+               goto Context_Found;
+            end if;
+         end loop;
+         goto Next;
 
-      raise Indeterminate_Symbol
-        with To_String (Form_Lists.Element (AS.Form).Text) & " in " &
-        Contexts.To_XML (Symbol_Context);
+         <<Context_Found>>
+         --  TODO ?? maybe this Cur isn’t right
+         return
+           (Symbol   => AS.Symbol, Form => AS.Form,
+            Phonemes => Phonemes.Resolve (PDB, P.Abstract_Phonemes, Cur));
+         <<Next>>
+      end loop;
+      raise Indeterminate_Symbol with "No pronunciation found";
    end Resolve;
 
-   -------------------
-   -- Dump_Features --
-   -------------------
-   function Dump_Features (X : Abstract_Symbol) return Features.Feature_Set is
+   --------------------------
+   -- Interop for Generics --
+   --------------------------
+   function Dump_Features (AS : Abstract_Symbol) return Features.Feature_Set is
    begin
-      return Symbol_Databases.Element (X.Symbol).Features;
+      return Symbol_Databases.Element (AS.Symbol).Features;
    end Dump_Features;
 
-   function Dump_Features (X : Symbol_Instance) return Features.Feature_Set is
+   function Dump_Features (SI : Symbol_Instance) return Features.Feature_Set is
    begin
-      return Symbol_Databases.Element (X.Symbol).Features;
+      return Symbol_Databases.Element (SI.Symbol).Features;
    end Dump_Features;
+
+   function Get_Child (AS : Abstract_Symbol) return Contexts.Cursor'Class is
+   begin
+      --  TODO can we do better?
+      return raise Contexts.Invalid_Cursor;
+   end Get_Child;
+
+   function Get_Child (SI : Symbol_Instance) return Contexts.Cursor'Class is
+   begin
+      return Phonemes.To_Cursor (SI.Phonemes.First);
+   end Get_Child;
 
 end Toolkit.Symbols_Impl;

@@ -24,26 +24,24 @@ package Toolkit.Symbols_Impl is
    function To_Unicode (S : Symbol_Instance) return String;
 
    procedure Read
-     (Doc : DOM.Core.Document; FDB : Features.Feature_Database;
-      PDB : Phonemes.Phoneme_Database; SDB : out Symbol_Database);
+     (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
+      CDB :     Contexts.Context_Database; PDB : Phonemes.Phoneme_Database;
+      SDB : out Symbol_Database);
 
    function To_Phonemes (X : Symbol_Instance) return Phonemes.Phoneme_List;
 
    Indeterminate_Symbol : exception;
    function Resolve
-     (PDB            : Phonemes.Phoneme_Database; AS : Abstract_Symbol;
-      Symbol_Context : Contexts.Context; Phoneme_Context : Contexts.Context)
-      return Symbol_Instance;
+     (PDB : Phonemes.Phoneme_Database; AS : Abstract_Symbol;
+      Cur : Contexts.Cursor'Class) return Symbol_Instance;
 
-   --------------
-   -- INTERNAL --
-   --------------
-   Null_Symbol : constant Symbol_Instance;
-   --  Must not be returned to user code
-
-   function Dump_Features (X : Abstract_Symbol) return Features.Feature_Set;
-   function Dump_Features (X : Symbol_Instance) return Features.Feature_Set;
-   --  Return all features associated with the symbol
+   -------------------------------------
+   -- For Use by Toolkit.Symbols ONLY --
+   -------------------------------------
+   function Dump_Features (AS : Abstract_Symbol) return Features.Feature_Set;
+   function Dump_Features (SI : Symbol_Instance) return Features.Feature_Set;
+   function Get_Child (AS : Abstract_Symbol) return Contexts.Cursor'Class;
+   function Get_Child (SI : Symbol_Instance) return Contexts.Cursor'Class;
 private
    type Form is record
       Contexts : Toolkit.Contexts.Context_List;
@@ -77,8 +75,6 @@ private
       Form     : Form_Lists.Cursor;
       Phonemes : Toolkit.Phonemes.Phoneme_List;
    end record;
-
-   Null_Symbol : constant Symbol_Instance := (others => <>);
 
    type Abstract_Symbol is record
       Symbol : Symbol_Databases.Cursor;
