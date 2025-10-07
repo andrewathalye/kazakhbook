@@ -44,9 +44,41 @@ package body Toolkit.Symbols is
      (PDB : Phonemes.Phoneme_Database; ASL : Abstract_Symbol_List;
       Cur : Contexts.Cursor'Class) return Symbol_List
    is
+      use type Abstract_Symbol_Lists.Cursor;
+
+      Result : Symbol_List;
+      L_Cur  : Contexts.Cursor'Class := Cur;
    begin
-      pragma Compile_Time_Warning (Standard.True, "Resolve unimplemented");
-      return raise Program_Error with "Unimplemented function Resolve";
+      Put_Log (Log.Symbols, "RESOLVE " & To_Unicode (ASL));
+
+      --  First Pass
+      --  Use `Cur` only for First and Last
+      Put_Log (Log.Symbols, "First Pass");
+      for AS_C in ASL.Iterate loop
+         begin
+            Result.Append
+              (Resolve (PDB, Abstract_Symbol_Lists.Element (AS_C), L_Cur));
+         exception
+            when Indeterminate_Symbol =>
+               Result.Append (Symbols_Impl.Null_Symbol);
+         end;
+
+         if AS_C /= ASL.Last then
+            L_Cur := L_Cur.Next;
+         end if;
+      end loop;
+
+      --  Second Pass
+      --  Resolve any Unknown Symbols
+      Put_Log (Log.Symbols, "Second Pass");
+      for I in 1 .. Result.Last_Index loop
+         if Result (I) = Symbols_Impl.Null_Symbol then
+            Result (I) :=
+              Resolve (PDB, ASL (I), To_Cursor (Result.To_Cursor (I)));
+         end if;
+      end loop;
+
+      return Result;
    end Resolve;
 
    ------------
@@ -56,9 +88,9 @@ package body Toolkit.Symbols is
      (SDB : Symbol_Database; Text : String) return Abstract_Symbol_List
    is
       use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
-      WW_Text     : Wide_Wide_String := Decode (Text);
+      WW_Text     : constant Wide_Wide_String := Decode (Text);
       Result      : Abstract_Symbol_List;
-      Start_Index : Positive         := WW_Text'First;
+      Start_Index : Positive                  := WW_Text'First;
    begin
       Put_Log (Log.Symbols, "Resolve " & Text);
       while Start_Index <= WW_Text'Last loop
@@ -68,7 +100,8 @@ package body Toolkit.Symbols is
                  (Log.Symbols,
                   "Try " &
                   Encode
-                    (WW_Text (Start_Index .. Start_Index + Symbol_Length - 1)));
+                    (WW_Text
+                       (Start_Index .. Start_Index + Symbol_Length - 1)));
 
                Result.Append
                  (Symbols_Impl.To_Ada
@@ -79,8 +112,9 @@ package body Toolkit.Symbols is
                Start_Index := Start_Index + Symbol_Length;
                goto Found_Symbol;
             exception
-               when Constraint_Error => null;
-               when Unknown_Symbol =>
+               when Constraint_Error =>
+                  null;
+               when Unknown_Symbol   =>
                   null;
             end;
          end loop;
@@ -95,6 +129,16 @@ package body Toolkit.Symbols is
    -- To_Unicode --
    ----------------
    function To_Unicode (S : Symbol_List) return String is
+      use Ada.Strings.Unbounded;
+      Buf : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      for Sym of S loop
+         Append (Buf, Symbols_Impl.To_Unicode (Sym));
+      end loop;
+
+      return To_String (Buf);
+   end To_Unicode;
+   function To_Unicode (S : Abstract_Symbol_List) return String is
       use Ada.Strings.Unbounded;
       Buf : Ada.Strings.Unbounded.Unbounded_String;
    begin

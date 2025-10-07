@@ -36,6 +36,13 @@ package Toolkit.Contexts is
    Invalid_Cursor : exception renames Contexts_Impl.Invalid_Cursor;
    --  If no cursor exists in that position
 
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
+      return Cursor'Class renames
+     Contexts_Impl.Rescope;
+   --  Rescope a Cursor to a different scope level. This returns Invalid_Cursor
+   --  if no other scope is associated with it.
+
    function Isolated (Scope : Context_Scope) return Cursor'Class;
    --  An entirely isolated cursor, used for debugging and isolation
    --  It will return Null_Feature_Set for any query and Invalid_Cursor

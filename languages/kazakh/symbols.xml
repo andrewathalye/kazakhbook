@@ -211,6 +211,7 @@
          <require>@w</require>
       </pronunciation>
       <pronunciation>
+         <context ref="postconsonantal"/>
          <require>@ooue</require>
          <require>@w</require>
       </pronunciation>
@@ -277,7 +278,7 @@
       <majuscule>Щ</majuscule>
       <minuscule>щ</minuscule>
       <pronunciation>
-         <require>@shh</require>
+         <require>@shsh</require>
       </pronunciation>
    </symbol>
    <symbol>

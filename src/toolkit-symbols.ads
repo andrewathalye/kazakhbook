@@ -91,9 +91,12 @@ package Toolkit.Symbols is
 
    function To_Unicode (S : Symbol_Instance) return String renames
      Symbols_Impl.To_Unicode;
+   function To_Unicode (S : Abstract_Symbol) return String renames
+     Symbols_Impl.To_Unicode;
    --  Print a symbol as a Unicode character
 
    function To_Unicode (S : Symbol_List) return String;
+   function To_Unicode (S : Abstract_Symbol_List) return String;
    --  Print a symbol list as a Unicode string
 
    function To_Phonemes

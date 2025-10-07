@@ -1,9 +1,12 @@
-pragma Ada_2012;
+pragma Ada_2022;
 
 with DOM.Core.Documents;
 with DOM.Core.Elements;
 with DOM.Core.Nodes;
+
+with Toolkit.Contexts_Impl;
 with Toolkit.XML;
+with Toolkit.Log; use Toolkit.Log;
 
 package body Toolkit.Symbols_Impl is
 
@@ -17,8 +20,10 @@ package body Toolkit.Symbols_Impl is
    begin
       for Symbol_C in SDB.Iterate loop
          declare
-            Symbol_Forms :
-              Form_List renames Symbol_Databases.Element (Symbol_C).Forms;
+            Symbol_CR    : constant Symbol_Databases.Constant_Reference_Type :=
+              Symbol_Databases.Constant_Reference
+                (Symbol_Databases.Vector (SDB), Symbol_C);
+            Symbol_Forms : Form_List renames Symbol_CR.Forms;
          begin
             for Form_C in Symbol_Forms.Iterate loop
                --  TODO unicode normalisation!
@@ -37,6 +42,12 @@ package body Toolkit.Symbols_Impl is
    -- To_Unicode --
    ----------------
    function To_Unicode (S : Symbol_Instance) return String is
+      use Ada.Strings.Unbounded;
+   begin
+      return To_String (Form_Lists.Element (S.Form).Text);
+   end To_Unicode;
+
+   function To_Unicode (S : Abstract_Symbol) return String is
       use Ada.Strings.Unbounded;
    begin
       return To_String (Form_Lists.Element (S.Form).Text);
@@ -116,9 +127,13 @@ package body Toolkit.Symbols_Impl is
                            X_Requires        : DOM.Core.Node_List;
                            New_Pronunciation : Pronunciation;
                         begin
-                           X_Contexts                 :=
+                           X_Contexts :=
                              DOM.Core.Elements.Get_Elements_By_Tag_Name
                                (X_Symbol_Child, "context");
+                           X_Requires :=
+                             DOM.Core.Elements.Get_Elements_By_Tag_Name
+                               (X_Symbol_Child, "require");
+
                            New_Pronunciation.Contexts :=
                              Contexts.To_Ada (CDB, X_Contexts);
 
@@ -166,26 +181,61 @@ package body Toolkit.Symbols_Impl is
    -------------
    -- Resolve --
    -------------
+   function Image (P : Pronunciation) return String;
+   function Image (P : Pronunciation) return String is
+      use Ada.Strings.Unbounded;
+      Buf : Unbounded_String;
+   begin
+      for Ctx of P.Contexts loop
+         Append (Buf, Contexts.To_XML (Ctx));
+         Append (Buf, ASCII.LF);
+      end loop;
+
+      for AP of P.Abstract_Phonemes loop
+         Append (Buf, Features.To_String (Phonemes.Get_Features (AP)));
+         Append (Buf, ASCII.LF);
+      end loop;
+
+      return To_String (Buf);
+   end Image;
+
    function Resolve
      (PDB : Phonemes.Phoneme_Database; AS : Abstract_Symbol;
       Cur : Contexts.Cursor'Class) return Symbol_Instance
    is
-      Available_Pronunciations : Pronunciation_List :=
+      use Ada.Strings.Unbounded;
+
+      Available_Pronunciations : constant Pronunciation_List :=
         Symbol_Databases.Element (AS.Symbol).Pronunciations;
    begin
+      Put_Log
+        (Log.Symbols,
+         "RESOLVE_SINGLE " & To_String (Form_Lists.Element (AS.Form).Text));
+
       for P of Available_Pronunciations loop
-         for Ctx of P.Contexts loop
-            if Contexts.Applicable (Cur, Ctx) then
-               goto Context_Found;
-            end if;
-         end loop;
+         Put_Log (Log.Symbols, "Try Pronunciation " & Image (P));
+         if P.Contexts.Is_Empty then
+            goto Context_Found;
+         else
+            for Ctx of P.Contexts loop
+               if Contexts.Applicable (Cur, Ctx) then
+                  goto Context_Found;
+               end if;
+            end loop;
+         end if;
          goto Next;
 
          <<Context_Found>>
          --  TODO ?? maybe this Cur isn’t right
-         return
-           (Symbol   => AS.Symbol, Form => AS.Form,
-            Phonemes => Phonemes.Resolve (PDB, P.Abstract_Phonemes, Cur));
+         return SI : Symbol_Instance do
+            SI.Symbol   := AS.Symbol;
+            SI.Form     := AS.Form;
+            SI.Phonemes :=
+              Phonemes.Resolve
+                (PDB, P.Abstract_Phonemes,
+                 Contexts.Rescope
+                   (Cur, Contexts_Impl.Phoneme, Contexts_Impl.First));
+         end return;
          <<Next>>
       end loop;
       raise Indeterminate_Symbol with "No pronunciation found";
@@ -205,9 +255,27 @@ package body Toolkit.Symbols_Impl is
    end Dump_Features;
 
    function Get_Child (AS : Abstract_Symbol) return Contexts.Cursor'Class is
+      use type Ada.Containers.Count_Type;
    begin
       --  TODO can we do better?
-      return raise Contexts.Invalid_Cursor;
+      if Symbol_Databases.Element (AS.Symbol).Pronunciations.Length = 1 then
+         declare
+            Possible_Pronunciation :
+              Pronunciation renames
+              Symbol_Databases.Element (AS.Symbol).Pronunciations
+                .First_Element;
+         begin
+            if Possible_Pronunciation.Contexts.Is_Empty then
+               Put_Log (Log.Symbols, "Returning sole candidate for AS Child");
+               return
+                 Phonemes.To_Cursor
+                   (Possible_Pronunciation.Abstract_Phonemes.First);
+            end if;
+         end;
+      end if;
+
+      Put_Log (Log.Symbols, "Return No Element");
+      return Phonemes.To_Cursor (Phonemes.Abstract_Phoneme_Lists.No_Element);
    end Get_Child;
 
    function Get_Child (SI : Symbol_Instance) return Contexts.Cursor'Class is

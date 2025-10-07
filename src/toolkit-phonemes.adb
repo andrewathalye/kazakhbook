@@ -44,19 +44,20 @@ package body Toolkit.Phonemes is
      (PDB : Phoneme_Database; List : Abstract_Phoneme_List;
       Cur : Contexts.Cursor'Class) return Phoneme_List
    is
+      use type Abstract_Phoneme_Lists.Cursor;
       Result : Phoneme_List;
 
       L_Cur : Contexts.Cursor'Class := Cur;
    begin
       Put_Log (Log.Phonemes, "RESOLVE");
 
-      for AP of List loop
-         Result.Append (Resolve (PDB, AP, L_Cur));
-         begin
+      for AP_C in List.Iterate loop
+         Result.Append
+           (Resolve (PDB, Abstract_Phoneme_Lists.Element (AP_C), L_Cur));
+
+         if AP_C /= List.Last then
             L_Cur := L_Cur.Next;
-         exception
-            when Contexts.Invalid_Cursor => exit;
-         end;
+         end if;
       end loop;
 
       return Result;

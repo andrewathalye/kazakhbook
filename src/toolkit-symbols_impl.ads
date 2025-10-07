@@ -15,6 +15,8 @@ package Toolkit.Symbols_Impl is
    type Symbol_Database is private;
    type Symbol_Instance is private;
    type Abstract_Symbol is private;
+   Null_Symbol          : constant Symbol_Instance;
+   --  Do not return to user code
    Null_Abstract_Symbol : constant Abstract_Symbol;
 
    Unknown_Symbol : exception;
@@ -22,6 +24,7 @@ package Toolkit.Symbols_Impl is
      (SDB : Symbol_Database; Text : String) return Abstract_Symbol;
 
    function To_Unicode (S : Symbol_Instance) return String;
+   function To_Unicode (S : Abstract_Symbol) return String;
 
    procedure Read
      (Doc :     DOM.Core.Document; FDB : Features.Feature_Database;
@@ -81,5 +84,6 @@ private
       Form   : Form_Lists.Cursor;
    end record;
 
+   Null_Symbol          : constant Symbol_Instance := (others => <>);
    Null_Abstract_Symbol : constant Abstract_Symbol := (others => <>);
 end Toolkit.Symbols_Impl;

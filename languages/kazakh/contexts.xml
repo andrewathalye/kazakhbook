@@ -27,10 +27,18 @@
          <next>manner/vocalic</next>
       </scope>
    </context>
+   <!-- Before a consonant -->
    <context id="preconsonantal">
       <scope level="phoneme" within="word">
          <not>
             <next>manner/vocalic</next>
+         </not>
+      </scope>
+   </context>
+   <context id="postconsonantal">
+      <scope level="phoneme" within="word">
+         <not>
+            <prev>manner/vocalic</prev>
          </not>
       </scope>
    </context>

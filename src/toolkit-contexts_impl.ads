@@ -30,6 +30,10 @@ package Toolkit.Contexts_Impl is
    Invalid_Cursor : exception;
    type Cursor_Placement is (First, Last);
 
+   function Rescope
+     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
+      return Cursor'Class;
+
    function Reparent
      (C : Cursor; Parent : Cursor'Class) return Cursor is abstract;
    --  Set a new parent for `C`

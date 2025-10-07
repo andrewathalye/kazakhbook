@@ -27,10 +27,6 @@ package body Toolkit.Contexts_Impl is
    -------------
    function Rescope
      (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
-      return Cursor'Class;
-
-   function Rescope
-     (C : Cursor'Class; Target : Context_Scope; Placement : Cursor_Placement)
       return Cursor'Class
    is
    begin
